@@ -9,6 +9,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   min-width: 320px;
@@ -36,7 +40,12 @@ img {
 .viewer-shell {
   min-height: 100vh;
   color: var(--text);
-  background: var(--bg);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--card) 72%, var(--bg)),
+      var(--bg) 34rem
+    );
   font-family: var(--body-font);
 }
 
@@ -44,14 +53,14 @@ img {
   position: sticky;
   top: 0;
   z-index: 10;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.1rem;
-  background: color-mix(in srgb, var(--bg) 90%, transparent);
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
-  backdrop-filter: blur(22px);
+  gap: 0.85rem;
+  padding: 0.95rem 1rem;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+  backdrop-filter: blur(24px);
 }
 
 .brand {
@@ -69,8 +78,8 @@ img {
 
 .logo-icon {
   display: inline-grid;
-  width: 2.35rem;
-  height: 2.35rem;
+  width: 2.45rem;
+  height: 2.45rem;
   place-items: center;
   flex: 0 0 auto;
 }
@@ -78,17 +87,27 @@ img {
 .logo-icon svg {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 10px 18px color-mix(in srgb, var(--text) 10%, transparent));
+  filter: drop-shadow(0 10px 20px color-mix(in srgb, var(--text) 10%, transparent));
 }
 
 .logo-icon circle {
-  fill: var(--text);
-  stroke: color-mix(in srgb, var(--accent) 58%, transparent);
+  fill: var(--card);
+  stroke: #121212;
   stroke-width: 1.2;
 }
 
 .logo-icon path {
-  fill: var(--accent);
+  fill: none;
+  stroke: #121212;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.5;
+}
+
+.logo-lockup {
+  display: grid;
+  gap: 0.05rem;
+  min-width: 0;
 }
 
 .logo-text {
@@ -97,19 +116,39 @@ img {
   font-size: 1.34rem;
   font-weight: 600;
   letter-spacing: 0;
+  line-height: 1;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.logo-slogan {
+  overflow: hidden;
+  color: var(--secondary-text);
+  font-size: 0.67rem;
+  font-weight: 500;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.footer-nav a,
+.footer-nav span,
+.footer-contact a {
+  color: inherit;
+  text-decoration: none;
 }
 
 .language-switcher {
   display: inline-flex;
   align-items: center;
   gap: 0.18rem;
+  justify-self: end;
   flex: 0 0 auto;
   padding: 0.22rem;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: color-mix(in srgb, var(--card) 78%, transparent);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--text) 5%, transparent);
 }
 
 .language-switcher button {
@@ -125,12 +164,12 @@ img {
 }
 
 .language-switcher button.active {
-  color: var(--text);
-  background: color-mix(in srgb, var(--accent) 74%, transparent);
+  color: var(--card);
+  background: var(--text);
 }
 
 main {
-  width: min(1136px, 100%);
+  width: min(1180px, 100%);
   margin: 0 auto;
   padding: 1rem;
 }
@@ -142,10 +181,10 @@ main {
   overflow: hidden;
   min-height: 34rem;
   padding: 1.4rem;
-  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
-  border-radius: 26px;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border-radius: 30px;
   background: var(--border);
-  box-shadow: 0 28px 80px color-mix(in srgb, var(--text) 12%, transparent);
+  box-shadow: 0 24px 70px color-mix(in srgb, var(--text) 10%, transparent);
 }
 
 .hero-image,
@@ -164,13 +203,13 @@ main {
   background:
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--text) 38%, transparent),
-      color-mix(in srgb, var(--text) 80%, transparent)
+      color-mix(in srgb, var(--text) 18%, transparent),
+      color-mix(in srgb, var(--text) 78%, transparent)
     ),
     linear-gradient(
       90deg,
-      color-mix(in srgb, var(--text) 64%, transparent),
-      color-mix(in srgb, var(--text) 18%, transparent)
+      color-mix(in srgb, var(--text) 68%, transparent),
+      color-mix(in srgb, var(--text) 16%, transparent)
     );
 }
 
@@ -179,15 +218,15 @@ main {
   z-index: 1;
   display: grid;
   gap: 1rem;
-  max-width: 38rem;
+  max-width: 40rem;
   color: var(--card);
 }
 
 .eyebrow {
   margin: 0;
-  color: var(--accent);
+  color: var(--secondary-text);
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 650;
   text-transform: uppercase;
 }
 
@@ -214,9 +253,9 @@ h1 {
 }
 
 .hero-copy > p:not(.eyebrow) {
-  max-width: 32rem;
-  color: color-mix(in srgb, var(--card) 86%, transparent);
-  font-size: 0.98rem;
+  max-width: 34rem;
+  color: color-mix(in srgb, var(--card) 88%, transparent);
+  font-size: 1rem;
   line-height: 1.75;
 }
 
@@ -224,60 +263,67 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   gap: 0.62rem;
-  padding-top: 0.35rem;
+  padding-top: 0.4rem;
 }
 
 .restaurant-meta a,
 .restaurant-meta span {
   display: inline-flex;
   align-items: center;
-  min-height: 2.38rem;
+  min-height: 2.4rem;
   max-width: 100%;
-  padding: 0.54rem 0.86rem;
+  padding: 0.56rem 0.9rem;
   color: var(--card);
-  background: color-mix(in srgb, var(--card) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--border) 36%, transparent);
+  background: color-mix(in srgb, var(--card) 11%, transparent);
+  border: 1px solid color-mix(in srgb, var(--card) 22%, transparent);
   border-radius: 999px;
   font-size: 0.82rem;
-  font-weight: 500;
+  font-weight: 550;
   line-height: 1.35;
   text-decoration: none;
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(18px);
 }
 
 .restaurant-meta a {
-  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--card) 58%, transparent);
 }
 
 .menu-heading {
   display: grid;
-  gap: 0.42rem;
-  padding: 2.8rem 0 0.85rem;
+  justify-items: center;
+  gap: 0.45rem;
+  padding: 4.25rem 0 1rem;
+  text-align: center;
 }
 
 .menu-heading h2,
+.content-section h2,
 .category-section h3 {
   color: var(--text);
-  font-size: 1.9rem;
+  font-size: 2rem;
   line-height: 1.12;
 }
 
 .category-section {
-  padding: 1.55rem 0 0.95rem;
+  padding: 1.8rem 0 1rem;
+}
+
+.category-section h3 {
+  text-align: center;
 }
 
 .dish-grid {
   display: grid;
-  gap: 1.15rem;
-  margin-top: 1rem;
+  gap: 1.2rem;
+  margin-top: 1.2rem;
 }
 
 .dish-card {
   overflow: hidden;
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 22px;
-  box-shadow: 0 18px 44px color-mix(in srgb, var(--text) 6%, transparent);
+  border: 1px solid #E0E0E0;
+  border-radius: 26px;
+  box-shadow: 0 14px 32px color-mix(in srgb, var(--text) 7%, transparent);
 }
 
 .dish-image-button {
@@ -290,14 +336,14 @@ h1 {
 .dish-image-button img,
 .dish-modal img {
   width: 100%;
-  height: 15rem;
+  height: 15.25rem;
   object-fit: cover;
 }
 
 .dish-content {
   display: grid;
-  gap: 0.95rem;
-  padding: 1.18rem;
+  gap: 1rem;
+  padding: 1.25rem;
 }
 
 .dish-title-row {
@@ -320,7 +366,6 @@ h1 {
 .dish-title-row h2 {
   font-family: var(--heading-font);
   font-size: 1.55rem;
-  font-weight: 600;
 }
 
 .dish-title-row span,
@@ -335,48 +380,125 @@ h1 {
 .dish-card p,
 .dish-modal p,
 .viewer-info-card p,
-.viewer-meta-row span {
+.viewer-meta-row span,
+.section-copy p,
+.contact-panel p,
+.footer-brand p {
   color: var(--secondary-text);
-  font-size: 0.92rem;
-  line-height: 1.66;
+  font-size: 0.94rem;
+  line-height: 1.7;
 }
 
 .dish-actions {
   display: grid;
   grid-template-columns: 0.82fr 1.18fr;
   gap: 0.65rem;
-  padding-top: 0.12rem;
+  padding-top: 0.15rem;
 }
 
 .primary-button,
 .secondary-button,
 .back-button,
 .primary-link,
-.ar-button {
-  min-height: 2.62rem;
-  padding: 0.72rem 0.92rem;
+.secondary-link,
+.ar-button,
+.placeholder-pill {
+  min-height: 2.68rem;
+  padding: 0.75rem 1rem;
   border-radius: 999px;
   font-size: 0.84rem;
-  font-weight: 600;
+  font-weight: 650;
   line-height: 1.2;
   text-align: center;
   text-decoration: none;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
 }
 
 .primary-button,
 .primary-link,
 .ar-button {
-  color: var(--text);
-  background: var(--accent);
-  border: 1px solid color-mix(in srgb, var(--accent) 68%, transparent);
-  box-shadow: 0 12px 24px color-mix(in srgb, var(--accent) 18%, transparent);
+  color: #FFFFFF;
+  background: #121212;
+  border: 1px solid #121212;
+  box-shadow: 0 14px 28px color-mix(in srgb, var(--text) 13%, transparent);
+}
+
+.primary-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.wipe-label {
+  position: relative;
+  display: inline-block;
+  color: transparent;
+}
+
+.wipe-label::before,
+.wipe-label::after {
+  position: absolute;
+  inset: 0;
+  color: #FFFFFF;
+  content: attr(data-text);
+  white-space: nowrap;
+}
+
+.wipe-label::before {
+  opacity: 1;
+  transform: translateX(0);
+  filter: blur(0);
+  transition:
+    opacity 520ms ease,
+    transform 520ms ease,
+    filter 520ms ease;
+}
+
+.wipe-label::after {
+  clip-path: inset(0 100% 0 0);
+  opacity: 0;
+  transform: translateX(-0.55rem);
+  filter: blur(6px);
+  transition:
+    clip-path 560ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 460ms ease,
+    transform 560ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 560ms ease;
+}
+
+.primary-button:hover .wipe-label::before {
+  opacity: 0.38;
+  transform: translateX(0.45rem);
+  filter: blur(3px);
+}
+
+.primary-button:hover .wipe-label::after {
+  clip-path: inset(0 0 0 0);
+  opacity: 1;
+  transform: translateX(0);
+  filter: blur(0);
 }
 
 .secondary-button,
-.back-button {
-  color: var(--text);
-  background: color-mix(in srgb, var(--card) 92%, transparent);
-  border: 1px solid var(--border);
+.secondary-link,
+.back-button,
+.placeholder-pill {
+  color: #121212;
+  background: #FFFFFF;
+  border: 1px solid #CFCFC8;
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--text) 6%, transparent);
+}
+
+.primary-button:hover,
+.secondary-button:hover,
+.back-button:hover,
+.primary-link:hover,
+.secondary-link:hover,
+.ar-button:hover {
+  transform: translateY(1px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--text) 6%, transparent);
 }
 
 .modal-backdrop {
@@ -386,7 +508,7 @@ h1 {
   display: grid;
   align-items: end;
   padding: 1rem;
-  background: color-mix(in srgb, var(--text) 50%, transparent);
+  background: color-mix(in srgb, var(--text) 52%, transparent);
 }
 
 .dish-modal {
@@ -394,15 +516,70 @@ h1 {
   width: min(560px, 100%);
   margin: 0 auto;
   background: var(--card);
-  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
-  border-radius: 22px;
+  border: 1px solid color-mix(in srgb, var(--border) 86%, transparent);
+  border-radius: 28px;
   box-shadow: 0 28px 86px color-mix(in srgb, var(--text) 18%, transparent);
 }
 
 .dish-modal > div {
   display: grid;
   gap: 1rem;
-  padding: 1.2rem;
+  padding: 1.25rem;
+}
+
+.content-section {
+  display: grid;
+  gap: 1.5rem;
+  padding: 4.75rem 0;
+}
+
+.standalone-page {
+  display: grid;
+  min-height: 62vh;
+  align-content: center;
+}
+
+.content-section > div:first-child {
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+  text-align: center;
+}
+
+.section-copy,
+.contact-panel {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.section-copy {
+  display: grid;
+  gap: 1rem;
+}
+
+.contact-panel {
+  display: grid;
+  gap: 1.2rem;
+  padding: 1.4rem;
+  background: var(--card);
+  border: 1px solid #E0E0E0;
+  border-radius: 26px;
+  box-shadow: 0 18px 44px color-mix(in srgb, var(--text) 5%, transparent);
+}
+
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+.placeholder-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--secondary-text);
 }
 
 .viewer-page {
@@ -426,22 +603,22 @@ model-viewer {
   background:
     linear-gradient(
       135deg,
-      color-mix(in srgb, var(--card) 92%, transparent),
-      color-mix(in srgb, var(--border) 72%, transparent)
+      color-mix(in srgb, var(--card) 94%, transparent),
+      color-mix(in srgb, var(--border) 74%, transparent)
     ),
     var(--border);
-  border: 1px solid var(--border);
-  border-radius: 26px;
+  border: 1px solid #E0E0E0;
+  border-radius: 30px;
   box-shadow: 0 18px 44px color-mix(in srgb, var(--text) 6%, transparent);
 }
 
 .viewer-info-card {
   display: grid;
   gap: 0.85rem;
-  padding: 1.15rem;
+  padding: 1.2rem;
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 22px;
+  border: 1px solid #E0E0E0;
+  border-radius: 26px;
   box-shadow: 0 18px 44px color-mix(in srgb, var(--text) 6%, transparent);
 }
 
@@ -472,27 +649,73 @@ model-viewer {
   text-align: center;
 }
 
-footer {
+.site-footer {
+  width: 100%;
+  margin-top: 2rem;
+  padding: 3rem 1rem 1.35rem;
+  color: #FFFFFF;
+  background: #121212;
+}
+
+.site-footer .logo-icon circle {
+  fill: #E0E0E0;
+  stroke: #E0E0E0;
+}
+
+.site-footer .logo-icon path {
+  stroke: #121212;
+}
+
+.site-footer .logo-text {
+  color: #FFFFFF;
+}
+
+.site-footer .logo-slogan,
+.site-footer .footer-brand p,
+.site-footer .footer-contact,
+.powered {
+  color: #A9A9A4;
+}
+
+.footer-inner {
+  display: grid;
   width: min(1120px, 100%);
   margin: 0 auto;
-  padding: 2.4rem 1rem 2.9rem;
-  color: var(--text);
+  gap: 1.8rem;
+}
+
+.footer-brand {
+  display: grid;
+  gap: 1rem;
+  max-width: 22rem;
+}
+
+.footer-nav,
+.footer-contact {
+  display: grid;
+  gap: 0.72rem;
+  align-content: start;
+  font-size: 0.9rem;
+}
+
+.footer-nav a,
+.footer-contact a,
+.footer-nav span {
+  color: #FFFFFF;
+}
+
+.powered {
+  width: min(1120px, 100%);
+  margin: 2.2rem auto 0;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--card) 14%, transparent);
   font-size: 0.82rem;
-  font-weight: 500;
   text-align: center;
 }
 
-footer::before {
-  display: block;
-  width: 2.4rem;
-  height: 1px;
-  margin: 0 auto 0.85rem;
-  background: var(--accent);
-  content: "";
-}
-
-@media (min-width: 720px) {
+@media (min-width: 760px) {
   .site-header {
+    grid-template-columns: minmax(0, 1fr) auto;
     padding: 1.05rem 1.75rem;
   }
 
@@ -502,7 +725,7 @@ footer::before {
 
   .restaurant-hero {
     min-height: 40rem;
-    padding: 2.35rem;
+    padding: 2.6rem;
   }
 
   h1 {
@@ -540,9 +763,13 @@ footer::before {
     align-items: center;
     gap: 1rem;
   }
+
+  .footer-inner {
+    grid-template-columns: minmax(0, 1.4fr) minmax(10rem, 0.55fr) minmax(10rem, 0.75fr);
+  }
 }
 
-@media (min-width: 980px) {
+@media (min-width: 1020px) {
   .dish-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

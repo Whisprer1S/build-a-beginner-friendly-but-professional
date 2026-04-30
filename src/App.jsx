@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { brand } from './data/brand.js';
 import {
   defaultRestaurant,
   defaultRestaurantSlug,
@@ -9,6 +10,12 @@ import {
 const ui = {
   en: {
     menu: 'Menu',
+    home: 'Home',
+    about: 'About',
+    contact: 'Contact',
+    email: 'Email',
+    instagram: 'Instagram',
+    comingSoon: 'Coming soon',
     view3d: 'View in 3D / AR',
     details: 'Details',
     close: 'Close',
@@ -21,6 +28,12 @@ const ui = {
   },
   ka: {
     menu: 'მენიუ',
+    home: 'მთავარი',
+    about: 'შესახებ',
+    contact: 'კონტაქტი',
+    email: 'ელფოსტა',
+    instagram: 'Instagram',
+    comingSoon: 'მალე',
     view3d: 'ნახვა 3D / AR',
     details: 'დეტალები',
     close: 'დახურვა',
@@ -33,6 +46,12 @@ const ui = {
   },
   ru: {
     menu: 'Меню',
+    home: 'Главная',
+    about: 'О нас',
+    contact: 'Контакт',
+    email: 'Email',
+    instagram: 'Instagram',
+    comingSoon: 'Скоро',
     view3d: 'Смотреть в 3D / AR',
     details: 'Детали',
     close: 'Закрыть',
@@ -58,13 +77,27 @@ function getSlugFromPath() {
   return slug || defaultRestaurantSlug;
 }
 
+function getRouteFromPath() {
+  const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+
+  if (path === 'about' || path === 'contact') {
+    return { page: path, slug: defaultRestaurantSlug, params: getParams() };
+  }
+
+  return { page: 'menu', slug: path || defaultRestaurantSlug, params: getParams() };
+}
+
+function getRestaurantPath(slug) {
+  return slug === defaultRestaurantSlug ? '/' : `/${slug}`;
+}
+
 function buildRestaurantUrl(slug, query = {}) {
   const params = new URLSearchParams();
   Object.entries(query).forEach(([key, value]) => {
     if (value) params.set(key, value);
   });
 
-  const path = `/${slug}`;
+  const path = getRestaurantPath(slug);
   const search = params.toString();
   return search ? `${path}?${search}` : path;
 }
@@ -90,10 +123,7 @@ function App() {
     if (languages.some((item) => item.code === requestedLanguage)) return requestedLanguage;
     return localStorage.getItem('sufra-language') || 'en';
   });
-  const [route, setRoute] = useState(() => ({
-    slug: getSlugFromPath(),
-    params: getParams(),
-  }));
+  const [route, setRoute] = useState(() => getRouteFromPath());
   const [selectedDish, setSelectedDish] = useState(null);
 
   useEffect(() => {
@@ -103,7 +133,7 @@ function App() {
   useEffect(() => {
     const handlePopState = () => {
       setSelectedDish(null);
-      setRoute({ slug: getSlugFromPath(), params: getParams() });
+      setRoute(getRouteFromPath());
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -128,7 +158,7 @@ function App() {
   function navigate(slug, query) {
     const url = buildRestaurantUrl(slug, query);
     window.history.pushState({}, '', url);
-    setRoute({ slug, params: getParams() });
+    setRoute({ page: 'menu', slug, params: getParams() });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -151,6 +181,14 @@ function App() {
   }
 
   const themeStyle = getThemeStyle(activeRestaurant);
+
+  if (route.page === 'about') {
+    return <AboutPage language={language} setLanguage={setLanguage} style={themeStyle} />;
+  }
+
+  if (route.page === 'contact') {
+    return <ContactPage language={language} setLanguage={setLanguage} style={themeStyle} />;
+  }
 
   if (view === 'viewer' && activeDish) {
     return (
@@ -195,7 +233,7 @@ function App() {
         </section>
 
         <section className="menu-heading">
-          <p className="eyebrow">{activeRestaurant.brandName}</p>
+          <p className="eyebrow">{brand.name}</p>
           <h2>{ui[language].menu}</h2>
         </section>
 
@@ -228,21 +266,25 @@ function App() {
         />
       )}
 
-      <Footer language={language} />
+      <Footer language={language} restaurant={activeRestaurant} />
     </div>
   );
 }
 
-function Logo({ brandName }) {
+function Logo() {
   return (
     <span className="logo">
       <span className="logo-icon" aria-hidden="true">
         <svg viewBox="0 0 48 48" role="img">
-          <circle cx="24" cy="24" r="22" />
-          <path d="M29.9 14.1c-1.5-1-3.6-1.6-5.9-1.6-4.5 0-7.4 2.3-7.4 5.7 0 3.2 2.4 4.7 6.8 6.3 3.4 1.2 4.7 2.1 4.7 3.9 0 1.8-1.6 3-4.1 3-2.5 0-4.6-.8-6.5-2.3l-1.8 3.2c2 1.7 5 2.7 8.2 2.7 5.1 0 8.5-2.6 8.5-6.7 0-3.3-2.1-5-7.2-6.7-3.1-1.1-4.4-1.8-4.4-3.3 0-1.5 1.3-2.2 3.3-2.2 1.8 0 3.3.5 4.8 1.4l1-3.4Z" />
+          <circle cx="24" cy="24" r="21" />
+          <path d="M16 30.7c3.8 3.1 11.3 3.1 15.1 0 3-2.4 2.3-6.1-1.6-7.6l-8.9-3.5c-2.7-1.1-2.3-3.4.8-4.1 3.4-.8 7.2.1 9.6 2.1" />
+          <path d="M15.6 33.8c4.9 4.1 14.2 4.1 19.1 0" />
         </svg>
       </span>
-      <span className="logo-text">{brandName}</span>
+      <span className="logo-lockup">
+        <span className="logo-text">{brand.name}</span>
+        <span className="logo-slogan">{brand.slogan}</span>
+      </span>
     </span>
   );
 }
@@ -251,7 +293,7 @@ function SiteHeader({ language, restaurant, setLanguage }) {
   return (
     <header className="site-header">
       <a className="brand" href={buildRestaurantUrl(restaurant.slug)}>
-        <Logo brandName={restaurant.brandName} />
+        <Logo />
       </a>
       <LanguageSwitcher language={language} setLanguage={setLanguage} />
     </header>
@@ -284,7 +326,9 @@ function DishCard({ dish, language, restaurant, onDetails, onViewer }) {
       <div className="dish-content">
         <div className="dish-title-row">
           <h4>{text(dish.name, language)}</h4>
-          <span>{dish.price} {restaurant.currency}</span>
+          <span>
+            {dish.price} {restaurant.currency}
+          </span>
         </div>
         <p>{text(dish.description, language)}</p>
         <div className="dish-actions">
@@ -292,7 +336,9 @@ function DishCard({ dish, language, restaurant, onDetails, onViewer }) {
             {ui[language].details}
           </button>
           <button className="primary-button" onClick={onViewer} type="button">
-            {ui[language].view3d}
+            <span className="wipe-label" data-text={ui[language].view3d}>
+              {ui[language].view3d}
+            </span>
           </button>
         </div>
       </div>
@@ -313,7 +359,9 @@ function DishModal({ dish, language, restaurant, onClose, onViewer }) {
         <div>
           <div className="dish-title-row">
             <h2>{text(dish.name, language)}</h2>
-            <span>{dish.price} {restaurant.currency}</span>
+            <span>
+              {dish.price} {restaurant.currency}
+            </span>
           </div>
           <p>{text(dish.description, language)}</p>
           <div className="dish-actions">
@@ -321,11 +369,95 @@ function DishModal({ dish, language, restaurant, onClose, onViewer }) {
               {ui[language].close}
             </button>
             <button className="primary-button" onClick={onViewer} type="button">
-              {ui[language].view3d}
+              <span className="wipe-label" data-text={ui[language].view3d}>
+                {ui[language].view3d}
+              </span>
             </button>
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+function AboutSection({ language }) {
+  return (
+    <section className="content-section about-section" id="about">
+      <div>
+        <p className="eyebrow">{ui[language].about}</p>
+        <h2>{text(brand.aboutTitle, language)}</h2>
+      </div>
+      <div className="section-copy">
+        {text(brand.aboutText, language).map((paragraph) => (
+          <p key={paragraph}>{paragraph}</p>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ContactSection({ language }) {
+  return (
+    <section className="content-section contact-section" id="contact">
+      <div>
+        <p className="eyebrow">{ui[language].contact}</p>
+        <h2>{text(brand.contactTitle, language)}</h2>
+      </div>
+      <div className="contact-panel">
+        <p>{text(brand.contactCta, language)}</p>
+        <div className="contact-actions">
+          {brand.email ? (
+            <a className="primary-link" href={`mailto:${brand.email}`}>
+              {brand.email}
+            </a>
+          ) : (
+            <span className="placeholder-pill">
+              {ui[language].email}: {ui[language].comingSoon}
+            </span>
+          )}
+          {brand.instagramUrl ? (
+            <a className="secondary-link" href={brand.instagramUrl} rel="noreferrer" target="_blank">
+              {ui[language].instagram}
+            </a>
+          ) : (
+            <span className="placeholder-pill">
+              {ui[language].instagram}: {ui[language].comingSoon}
+            </span>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AboutPage({ language, setLanguage, style }) {
+  return (
+    <div className="app-shell" style={style}>
+      <SiteHeader
+        language={language}
+        restaurant={defaultRestaurant}
+        setLanguage={setLanguage}
+      />
+      <main className="standalone-page">
+        <AboutSection language={language} />
+      </main>
+      <Footer language={language} restaurant={defaultRestaurant} />
+    </div>
+  );
+}
+
+function ContactPage({ language, setLanguage, style }) {
+  return (
+    <div className="app-shell" style={style}>
+      <SiteHeader
+        language={language}
+        restaurant={defaultRestaurant}
+        setLanguage={setLanguage}
+      />
+      <main className="standalone-page">
+        <ContactSection language={language} />
+      </main>
+      <Footer language={language} restaurant={defaultRestaurant} />
     </div>
   );
 }
@@ -368,13 +500,15 @@ function ModelViewerPage({ dish, language, restaurant, setLanguage, style, onBac
             </div>
             <p>{text(dish.description, language)}</p>
             <div className="viewer-meta-row">
-              <strong>{dish.price} {restaurant.currency}</strong>
+              <strong>
+                {dish.price} {restaurant.currency}
+              </strong>
               <span>{ui[language].modelHint}</span>
             </div>
           </div>
         </section>
       </main>
-      <Footer language={language} />
+      <Footer language={language} restaurant={restaurant} />
     </div>
   );
 }
@@ -395,12 +529,40 @@ function EmptyState({ language, setLanguage }) {
           {ui[language].backToMenu}
         </a>
       </main>
+      <Footer language={language} restaurant={defaultRestaurant} />
     </div>
   );
 }
 
-function Footer({ language }) {
-  return <footer>{ui[language].powered}</footer>;
+function Footer({ language, restaurant }) {
+  return (
+    <footer className="site-footer">
+      <div className="footer-inner">
+        <div className="footer-brand">
+          <Logo />
+          <p>{text(brand.shortDescription, language)}</p>
+        </div>
+        <nav className="footer-nav" aria-label="Footer navigation">
+          <a href={buildRestaurantUrl(restaurant.slug)}>{ui[language].home}</a>
+          <a href="/about">{ui[language].about}</a>
+          <a href="/contact">{ui[language].contact}</a>
+        </nav>
+        <div className="footer-contact">
+          <span>{brand.email || `${ui[language].email}: ${ui[language].comingSoon}`}</span>
+          {brand.instagramUrl ? (
+            <a href={brand.instagramUrl} rel="noreferrer" target="_blank">
+              {ui[language].instagram}
+            </a>
+          ) : (
+            <span>
+              {ui[language].instagram}: {ui[language].comingSoon}
+            </span>
+          )}
+        </div>
+      </div>
+      <p className="powered">{ui[language].powered}</p>
+    </footer>
+  );
 }
 
 export default App;

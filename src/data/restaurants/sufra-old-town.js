@@ -27,12 +27,12 @@ const sufraOldTown = {
 
   // Change colors and fonts here for this restaurant only.
   theme: {
-    background: "#F8F6F2",
-    text: "#1F1F1F",
-    secondaryText: "#6B6B6B",
-    accent: "#D4AF37",
-    card: "#FDFCF9",
-    border: "#EAE5DC",
+    background: "#FAFAF8",
+    text: "#121212",
+    secondaryText: "#666666",
+    accent: "#121212",
+    card: "#FFFFFF",
+    border: "#E0E0E0",
     headingFont: '"Playfair Display", Georgia, serif',
     bodyFont: 'Inter, "Helvetica Neue", Arial, system-ui, sans-serif',
   },
