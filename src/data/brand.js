@@ -4,8 +4,9 @@
 export const brand = {
   name: 'Sufra AR',
   slogan: 'Dining, Before It Arrives.',
-  email: '',
-  instagramUrl: '',
+  email: 'sufraar@gmail.com',
+  instagramHandle: '@sufraar',
+  instagramUrl: 'https://www.instagram.com/sufraar/',
   shortDescription: {
     en: 'Premium WebAR menu experiences for restaurants and cafes.',
     ka: 'პრემიუმ WebAR მენიუები რესტორნებისა და კაფეებისთვის.',

@@ -1,8 +1,8 @@
 # Sufra AR
 
-Sufra AR is a static React + Vite AR menu system for restaurants. There is no backend, database, login, dashboard, or payment flow.
+Sufra AR is a static React + Vite WebAR menu product for restaurants, cafes, hotels, and lounges.
 
-The app supports multiple restaurants from static config files. Adding a new client means copying one config file and editing data.
+There is no backend, database, login system, dashboard, or payment flow in this MVP. Restaurant pages, menu items, prices, images, 3D models, AR settings, and themes are controlled with simple config files.
 
 ## Run Locally
 
@@ -11,58 +11,59 @@ npm install
 npm run dev
 ```
 
-## Restaurant URLs
+Build for production:
 
-The app reads the restaurant slug from the URL path:
-
-```text
-/                  -> default restaurant
-/sufra-old-town    -> Sufra Old Town
-/demo-cafe         -> Demo Cafe
+```bash
+npm run build
 ```
 
-Example production URLs:
+## Routes
 
 ```text
-https://domain.com/sufra-old-town
-https://domain.com/demo-cafe
+/                  -> product landing page with pricing preview and demo menu
+/sufra-old-town    -> mobile WebAR menu demo
+/demo-cafe         -> second sample restaurant menu
+/pricing           -> full pricing page
+/experience        -> upcoming Virtual Restaurant Experience page
+/about             -> about Sufra AR
+/contact           -> contact placeholder page
 ```
 
-The homepage `/` loads `sufra-old-town` as the default live demo.
-
-## Config Structure
-
-Restaurant configs live in:
+## Project Structure
 
 ```text
-src/data/restaurants
+src/App.jsx                       -> app layout, routing, menu UI, modal, AR viewer
+src/styles.css                    -> global styling and responsive UI
+src/data/brand.js                 -> Sufra AR brand placeholders
+src/data/currencies.js            -> static GEL / USD / EUR conversion
+src/data/plans.js                 -> pricing plan content
+src/data/siteContent.js           -> landing, about, contact, experience copy
+src/data/restaurants/index.js     -> restaurant registry and default restaurant
+src/data/restaurants/*.js         -> restaurant menu configs
 ```
 
-Current configs:
+Assets are referenced from:
 
 ```text
-src/data/restaurants/sufra-old-town.js
-src/data/restaurants/demo-cafe.js
-src/data/restaurants/index.js
+public/images/dishes
+public/models/dishes
 ```
-
-`index.js` imports and registers every restaurant config. It also controls the default homepage restaurant.
 
 ## Add A New Restaurant
 
-1. Duplicate an existing config file, for example:
+1. Copy an existing config:
 
 ```text
-src/data/restaurants/demo-cafe.js
+src/data/restaurants/sufra-old-town.js
 ```
 
-2. Rename it to the new slug:
+2. Rename it to the new URL slug, for example:
 
 ```text
 src/data/restaurants/new-restaurant.js
 ```
 
-3. Edit:
+3. Edit the exported config:
 
 - `slug`
 - `brandName`
@@ -75,71 +76,73 @@ src/data/restaurants/new-restaurant.js
 - `categories`
 - `dishes`
 
-4. Import and add it in:
+4. Import and register it in:
 
 ```text
 src/data/restaurants/index.js
 ```
 
-## Edit Dishes
+Adding a client should usually mean copying one restaurant config and editing data.
 
-Each dish has:
+## Edit Menu Data
+
+Each dish can control:
 
 - `id`
-- `category`
+- `categoryId`
+- `type` as `veg` or `meat`
 - translated `name`
 - translated `description`
-- `price`
+- `priceGEL`
 - `image`
 - `model`
+- `hasModel`
+- `ingredients`
+- `ingredientHotspots`
 - `arScale`
 - `arPlacement`
 - `cameraOrbit`
 - `fieldOfView`
 
-`category` must match a category `id`.
-
-Dish photos go in:
-
-```text
-public/images
-```
-
-3D models go in:
-
-```text
-public/models
-```
-
 Example:
 
 ```js
-image: '/images/steak.jpg',
-model: '/models/steak.glb',
-arScale: '1 1 1',
-arPlacement: 'floor',
-cameraOrbit: '35deg 72deg 2.8m',
-fieldOfView: '28deg',
-```
-
-## Theme
-
-Each restaurant controls its own colors and fonts:
-
-```js
-theme: {
-  background: '#F8F6F2',
-  text: '#1F1F1F',
-  secondaryText: '#6B6B6B',
-  accent: '#D4AF37',
-  card: '#FDFCF9',
-  border: '#EAE5DC',
-  headingFont: '"Playfair Display", Georgia, serif',
-  bodyFont: 'Inter, "Helvetica Neue", Arial, system-ui, sans-serif',
+{
+  id: 'steak',
+  categoryId: 'grill',
+  type: 'meat',
+  priceGEL: 42,
+  image: '/images/dishes/steak.jpg',
+  model: '/models/dishes/steak.glb',
+  hasModel: true,
+  arScale: '1 1 1',
+  arPlacement: 'floor',
+  cameraOrbit: '35deg 72deg 2.8m',
+  fieldOfView: '28deg',
 }
 ```
 
-The React app applies these values as CSS variables.
+If a custom 3D model is not ready, use:
+
+```js
+model: '/models/dishes/placeholder-dish.glb',
+hasModel: false,
+```
+
+## Currency
+
+Base prices are always stored in GEL with `priceGEL`.
+
+Static conversion rates live in:
+
+```text
+src/data/currencies.js
+```
+
+Current rates:
+
+- 1 GEL = 0.37 USD
+- 1 GEL = 0.315 EUR
 
 ## QR Codes
 
@@ -152,7 +155,7 @@ https://domain.com/sufra-old-town
 https://domain.com/demo-cafe
 ```
 
-Use any QR code generator, paste the restaurant URL, and print the result for tables or menus.
+Use any QR code generator, paste the restaurant URL, and print the QR for tables, menus, or signage.
 
 ## Vercel Deployment
 
@@ -161,4 +164,4 @@ Use the default Vite settings:
 - Build command: `npm run build`
 - Output directory: `dist`
 
-The included `vercel.json` rewrites route slugs like `/demo-cafe` back to the React app, so direct QR-code visits work.
+The included `vercel.json` rewrites direct URLs like `/demo-cafe`, `/pricing`, and `/experience` back to the React app, so QR-code visits and page refreshes work on Vercel.
