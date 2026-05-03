@@ -6,6 +6,9 @@ Sufra AR is a premium WebAR restaurant menu product. Guests scan a QR code, brow
 
 The app is a React + Vite frontend deployed on Vercel. It uses static config files only. There is no backend, database, login, dashboard, or payment system.
 
+Technical package/repository name: `sufra-ar`.
+Public product/brand name: `Sufra AR`.
+
 ## Non-Negotiable Rules
 
 - Do not add a backend.

@@ -2,6 +2,9 @@
 
 Sufra AR is a static React + Vite WebAR menu product for restaurants, cafes, hotels, and lounges.
 
+Technical package/repository name: `sufra-ar`.
+Public product/brand name: `Sufra AR`.
+
 There is no backend, database, login system, dashboard, or payment flow in this MVP. Restaurant pages, menu items, prices, images, 3D models, AR settings, and themes are controlled with simple config files.
 
 ## Run Locally
