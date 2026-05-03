@@ -70,19 +70,21 @@ Routes:
 
 | Route | Displays | Handler/component | Notes |
 | --- | --- | --- | --- |
-| `/` | Product landing page with hero, value section, embedded mobile AR menu, virtual experience teaser, pricing preview, footer | `LandingPage` inside `Shell` | Uses default restaurant config for the embedded menu. Default slug is `sufra-old-town`. |
+| `/` | Product landing page with hero, value section, embedded mobile AR menu, virtual experience teaser, pricing preview, footer | `LandingPage` inside `Shell` | Uses default restaurant config for the embedded menu. Default slug is `demo`. |
 | `/pricing` | Full pricing page | `PricingPage` -> `PricingSection` | Pricing data comes from `src/data/plans.js`; visible translated text/features come from `src/data/translations.js`. |
 | `/experience` | Virtual Restaurant Experience coming-soon page | `ExperiencePage` | Uses translated content and real email/Instagram contact links. |
 | `/about` | About page | `AboutPage` -> `InfoPage` | Uses translated text from `src/data/translations.js`. |
 | `/contact` | Contact page | `ContactPage` -> `InfoPage` | Uses real email and Instagram links from `src/data/brand.js`. |
-| `/sufra-old-town` | Restaurant menu page | `MenuExperience` inside `Shell` | Loads `src/data/restaurants/sufra-old-town.js`. |
-| `/demo-cafe` | Second sample restaurant menu page | `MenuExperience` inside `Shell` | Loads `src/data/restaurants/demo-cafe.js`, which currently reuses most of Sufra Old Town config with a different slug/name/subtitle. |
+| `/menu/demo` | Primary public demo menu page | `MenuExperience` inside `Shell` | Loads `src/data/restaurants/sufra-old-town.js`; the file name is legacy, but the public slug is `demo`. |
+| `/menu/demo-cafe` | Second sample restaurant menu page | `MenuExperience` inside `Shell` | Loads `src/data/restaurants/demo-cafe.js`, which currently reuses most of the demo config with a different slug/name/subtitle. |
+| `/sufra-old-town` | Legacy redirect | `getRouteFromPath` | Old public route. Do not use for new links; it is immediately normalized to `/menu/demo`. |
+| `/demo-cafe` | Legacy direct sample route | `MenuExperience` inside `Shell` | Kept for compatibility with the older top-level slug system. Prefer `/menu/demo-cafe` for new links. |
 | `/<invalid-slug>` | Not found page | `NotFoundPage` | Any non-static path is treated as a restaurant slug. If not found, a clean not-found page appears. |
 
 Viewer query route:
 
 ```text
-/sufra-old-town?dish=steak&view=viewer&lang=en
+/menu/demo?dish=steak&view=viewer&lang=en
 ```
 
 When `view=viewer` and `dish=<dish id>` matches a dish in the active restaurant config, `App` renders `ModelViewerPage`.
@@ -154,7 +156,8 @@ Main data files:
   - Current language selector labels are `ENG`, `GEO`, `RUS`.
   - Current registered restaurants are `sufraOldTown` and `demoCafe`.
 - `src/data/restaurants/sufra-old-town.js`
-  - Main default menu config.
+  - Main default demo menu config.
+  - This file keeps its legacy filename for safety, but its public slug is `demo` and its public route is `/menu/demo`.
   - Contains category definitions, dish data, image/model paths, ingredient tags, ingredient hotspots, AR scale/camera settings, and theme values.
 - `src/data/restaurants/demo-cafe.js`
   - Second sample restaurant config.
@@ -309,7 +312,7 @@ Flow:
 4. `openViewer(dish)` clears modal state and navigates to:
 
 ```text
-/sufra-old-town?dish=<dish-id>&view=viewer&lang=<language>
+/menu/demo?dish=<dish-id>&view=viewer&lang=<language>
 ```
 
 5. `App` detects `view=viewer` and renders `ModelViewerPage`.
@@ -747,7 +750,7 @@ Vercel behavior:
 - Build command should be `npm.cmd run build` locally; Vercel normally runs `npm run build`.
 - Output directory is `dist`.
 - SSL is handled by Vercel.
-- `vercel.json` rewrites all routes to `/index.html`, so direct visits like `/pricing`, `/demo-cafe`, and `/sufra-old-town?dish=steak&view=viewer` work with client-side routing.
+- `vercel.json` rewrites all routes to `/index.html`, so direct visits like `/pricing`, `/menu/demo-cafe`, and `/menu/demo?dish=steak&view=viewer` work with client-side routing.
 
 Current `vercel.json`:
 
@@ -810,6 +813,7 @@ Known issues/cleanup notes from inspection:
 
 - `src/App.jsx` currently contains many component functions. This works, but future cleanup could extract reusable components into `src/components`.
 - `src/data/siteContent.js` still contains older English content objects. Current visible copy mostly comes from `src/data/translations.js`; `App.jsx` currently uses only `siteContent.hero.image`.
+- `src/data/restaurants/sufra-old-town.js` still has a legacy filename. The current public route is `/menu/demo`; `/sufra-old-town` redirects to `/menu/demo` and should not be used for new public links.
 - `src/data/brand.js` contains some translated about/contact/description copy, but current visible page copy comes from `src/data/translations.js`; contact identity still comes from `brand.js`.
 - `public/models/dishes/khinkali.glb.glb` appears to duplicate `khinkali.glb`. The app currently uses `/models/dishes/khinkali.glb`. Do not delete or move it unless doing an explicit asset cleanup.
 - Several asset filenames include spaces and uppercase letters. This is supported if paths are exact, but future assets should prefer lowercase kebab-case.
@@ -845,4 +849,4 @@ Checklist:
 12. Test affected local routes.
 13. Avoid duplicate assets.
 14. Preserve mobile-first behavior.
-15. Preserve `/`, `/pricing`, `/experience`, `/about`, `/contact`, `/sufra-old-town`, and `/demo-cafe`.
+15. Preserve `/`, `/pricing`, `/experience`, `/about`, `/contact`, `/menu/demo`, `/menu/demo-cafe`, and the legacy `/sufra-old-town` redirect.

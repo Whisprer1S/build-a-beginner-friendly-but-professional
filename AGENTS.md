@@ -28,13 +28,15 @@ Current routes:
 - `/experience`
 - `/about`
 - `/contact`
-- `/sufra-old-town`
-- `/demo-cafe`
+- `/menu/demo`
+- `/menu/demo-cafe`
+- `/sufra-old-town` redirects to `/menu/demo` as a legacy route
+- `/demo-cafe` remains a legacy direct route for compatibility
 
 Viewer routes use query params, for example:
 
 ```text
-/sufra-old-town?dish=steak&view=viewer&lang=en
+/menu/demo?dish=steak&view=viewer&lang=en
 ```
 
 Important components/functions in `src/App.jsx`:
@@ -93,7 +95,7 @@ Main files:
 - `src/App.jsx` - routing, layout, menu UI, modal, AR viewer, pages, footer
 - `src/styles.css` - all styling
 - `src/data/restaurants/index.js` - restaurant registry and languages
-- `src/data/restaurants/sufra-old-town.js` - default restaurant/menu config
+- `src/data/restaurants/sufra-old-town.js` - default demo restaurant/menu config; legacy filename, public slug is `demo`
 - `src/data/restaurants/demo-cafe.js` - second sample config
 - `src/data/translations.js` - visible UI translations
 - `src/data/currencies.js` - static currency conversion

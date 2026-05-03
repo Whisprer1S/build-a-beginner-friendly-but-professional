@@ -10,8 +10,8 @@ export const languages = [
 // Add new restaurant configs here after copying one of the files in this folder.
 export const restaurants = [sufraOldTown, demoCafe];
 
-// The homepage "/" loads this restaurant.
-export const defaultRestaurantSlug = 'sufra-old-town';
+// The homepage "/" and public demo route "/menu/demo" load this restaurant.
+export const defaultRestaurantSlug = 'demo';
 
 export const defaultRestaurant =
   restaurants.find((restaurant) => restaurant.slug === defaultRestaurantSlug) || restaurants[0];

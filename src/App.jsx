@@ -82,14 +82,21 @@ function getParams() {
 function getRouteFromPath() {
   const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
   const staticPages = ['about', 'contact', 'pricing', 'experience'];
+  const pathParts = path.split('/');
 
   if (!path) return { page: 'home', slug: defaultRestaurantSlug, params: getParams() };
   if (staticPages.includes(path)) return { page: path, slug: defaultRestaurantSlug, params: getParams() };
+  if (path === 'sufra-old-town') {
+    const params = getParams();
+    window.history.replaceState({}, '', buildRestaurantUrl(defaultRestaurantSlug, Object.fromEntries(params.entries())));
+    return { page: 'menu', slug: defaultRestaurantSlug, params: getParams() };
+  }
+  if (pathParts[0] === 'menu' && pathParts[1]) return { page: 'menu', slug: pathParts[1], params: getParams() };
   return { page: 'menu', slug: path, params: getParams() };
 }
 
 function getRestaurantPath(slug) {
-  return slug === defaultRestaurantSlug ? '/sufra-old-town' : `/${slug}`;
+  return `/menu/${slug}`;
 }
 
 function buildRestaurantUrl(slug, query = {}) {
