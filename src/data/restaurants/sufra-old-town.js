@@ -1,4 +1,5 @@
-// Sufra Old Town restaurant config
+// Demo menu restaurant config.
+// This file keeps its legacy name to avoid unsafe file churn, but the public route is /menu/demo.
 // Copy this file when onboarding a restaurant, then edit the categories,
 // dishes, prices, images, models, ingredient tags, and AR settings below.
 
@@ -12,7 +13,7 @@ const menuCategories = [
 ];
 
 const sufraOldTown = {
-  slug: 'sufra-old-town',
+  slug: 'demo',
   brandName: 'Sufra AR',
   currency: 'GEL',
   restaurantName: {

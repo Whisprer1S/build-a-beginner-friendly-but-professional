@@ -21,8 +21,10 @@ npm run build
 
 ```text
 /                  -> product landing page with pricing preview and demo menu
-/sufra-old-town    -> mobile WebAR menu demo
-/demo-cafe         -> second sample restaurant menu
+/menu/demo         -> primary public demo menu
+/menu/demo-cafe    -> second sample restaurant menu
+/sufra-old-town    -> legacy route that redirects to /menu/demo
+/demo-cafe         -> legacy direct route kept for compatibility
 /pricing           -> full pricing page
 /experience        -> upcoming Virtual Restaurant Experience page
 /about             -> about Sufra AR
@@ -57,7 +59,9 @@ public/models/dishes
 src/data/restaurants/sufra-old-town.js
 ```
 
-2. Rename it to the new URL slug, for example:
+The current default demo config keeps this legacy filename for safety, but its public slug is `demo` and its public URL is `/menu/demo`.
+
+2. Rename the copied file to the new restaurant name, for example:
 
 ```text
 src/data/restaurants/new-restaurant.js
@@ -151,11 +155,13 @@ Deploy the app, then generate one QR code per restaurant URL.
 Examples:
 
 ```text
-https://domain.com/sufra-old-town
-https://domain.com/demo-cafe
+https://domain.com/menu/demo
+https://domain.com/menu/demo-cafe
 ```
 
 Use any QR code generator, paste the restaurant URL, and print the QR for tables, menus, or signage.
+
+Do not use `/sufra-old-town` for new QR codes or public links. It is a legacy route that redirects to `/menu/demo` only to protect old visits.
 
 ## Vercel Deployment
 
@@ -164,4 +170,4 @@ Use the default Vite settings:
 - Build command: `npm run build`
 - Output directory: `dist`
 
-The included `vercel.json` rewrites direct URLs like `/demo-cafe`, `/pricing`, and `/experience` back to the React app, so QR-code visits and page refreshes work on Vercel.
+The included `vercel.json` rewrites direct URLs like `/menu/demo`, `/menu/demo-cafe`, `/pricing`, and `/experience` back to the React app, so QR-code visits and page refreshes work on Vercel.
