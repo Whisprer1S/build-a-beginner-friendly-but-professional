@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
 import {
   Beef,
   CircleDollarSign,
@@ -15,6 +15,7 @@ import { brand } from './data/brand.js';
 import { currencies, defaultCurrencyCode, formatPrice } from './data/currencies.js';
 import { pricingPlans } from './data/plans.js';
 import { siteContent } from './data/siteContent.js';
+import { getTranslation, translations } from './data/translations.js';
 import {
   defaultRestaurant,
   defaultRestaurantSlug,
@@ -22,95 +23,52 @@ import {
   languages,
 } from './data/restaurants/index.js';
 
-const ui = {
-  en: {
-    home: 'Home',
-    about: 'About',
-    contact: 'Contact',
-    pricing: 'Pricing',
-    experience: 'Experience',
-    email: 'Email',
-    instagram: 'Instagram',
-    comingSoon: 'Coming soon',
-    viewMenu: 'View menu',
-    seePricing: 'See pricing',
-    learnExperience: 'Learn about the experience',
-    getStarted: 'Get started',
-    contactSales: 'Contact sales',
-    emailUs: 'Email us',
-    search: 'Search dishes...',
-    swipeCategories: 'Swipe categories',
-    moreDishes: 'More dishes coming soon.',
-    all: 'All',
-    veg: 'Veg',
-    meat: 'Meat',
-    details: 'Details',
-    viewOnTable: 'View on your table',
-    backToMenu: 'Back to menu',
-    powered: 'Powered by Sufra AR',
-    notFound: 'Restaurant not found',
-    modelHint: 'Rotate the dish. AR scale is fixed for a realistic table preview.',
-  },
-  ka: {
-    home: 'მთავარი',
-    about: 'შესახებ',
-    contact: 'კონტაქტი',
-    pricing: 'ფასები',
-    experience: 'გამოცდილება',
-    email: 'ელფოსტა',
-    instagram: 'Instagram',
-    comingSoon: 'მალე',
-    viewMenu: 'View menu',
-    seePricing: 'ფასების ნახვა',
-    learnExperience: 'გამოცდილების ნახვა',
-    getStarted: 'Get started',
-    contactSales: 'დაკავშირება',
-    emailUs: 'Email us',
-    search: 'Search dishes...',
-    swipeCategories: 'Swipe categories',
-    moreDishes: 'More dishes coming soon.',
-    all: 'All',
-    veg: 'Veg',
-    meat: 'Meat',
-    details: 'დეტალები',
-    viewOnTable: 'მაგიდაზე ნახვა',
-    backToMenu: 'მენიუში დაბრუნება',
-    powered: 'Powered by Sufra AR',
-    notFound: 'რესტორანი ვერ მოიძებნა',
-    modelHint: 'დაატრიალეთ კერძი. AR მასშტაბი ფიქსირებულია რეალისტური ხედისთვის.',
-  },
-  ru: {
-    home: 'Главная',
-    about: 'О нас',
-    contact: 'Контакт',
-    pricing: 'Цены',
-    experience: 'Опыт',
-    email: 'Email',
-    instagram: 'Instagram',
-    comingSoon: 'Скоро',
-    viewMenu: 'View menu',
-    seePricing: 'Смотреть цены',
-    learnExperience: 'Об опыте',
-    getStarted: 'Get started',
-    contactSales: 'Связаться',
-    emailUs: 'Email us',
-    search: 'Search dishes...',
-    swipeCategories: 'Swipe categories',
-    moreDishes: 'More dishes coming soon.',
-    all: 'All',
-    veg: 'Veg',
-    meat: 'Meat',
-    details: 'Детали',
-    viewOnTable: 'Посмотреть на столе',
-    backToMenu: 'Назад к меню',
-    powered: 'Powered by Sufra AR',
-    notFound: 'Ресторан не найден',
-    modelHint: 'Поверните блюдо. AR масштаб фиксирован для реалистичного просмотра.',
-  },
-};
-
 const demoRequestHref = `mailto:${brand.email}?subject=Sufra%20AR%20Demo%20Request`;
 const customPlanHref = `mailto:${brand.email}?subject=Sufra%20AR%20Custom%20Plan%20Inquiry`;
+const inquiryHref = `mailto:${brand.email}?subject=Sufra%20AR%20Inquiry`;
+
+function t(language, key) {
+  return getTranslation(language, key);
+}
+
+function tArray(language, key) {
+  const value = getTranslation(language, key);
+  return Array.isArray(value) ? value : [];
+}
+
+function getPlanTitle(plan, language) {
+  const titleKeys = {
+    basic: 'pricingBasic',
+    pro: 'pricingPro',
+    vip: 'pricingVip',
+    custom: 'pricingCustom',
+  };
+  return t(language, titleKeys[plan.id]) || plan.title;
+}
+
+function getPlanFeatures(plan, language) {
+  const featureKeys = {
+    basic: 'pricingBasicFeatures',
+    pro: 'pricingProFeatures',
+    vip: 'pricingVipFeatures',
+    custom: 'pricingCustomFeatures',
+  };
+  const translatedFeatures = tArray(language, featureKeys[plan.id]);
+  return translatedFeatures.length ? translatedFeatures : plan.features;
+}
+
+function getPlanPrice(plan, language) {
+  if (plan.id === 'custom') return t(language, 'pricingCustomPrice');
+  return `${plan.price.split(' / ')[0]} / ${t(language, 'pricingMonth')}`;
+}
+
+function translateIngredientName(name, language) {
+  return translations[language]?.ingredientNames?.[name] ?? translations.en.ingredientNames?.[name] ?? name;
+}
+
+function translateIngredientBenefit(benefit, language) {
+  return translations[language]?.ingredientBenefits?.[benefit] ?? translations.en.ingredientBenefits?.[benefit] ?? benefit;
+}
 
 function text(value, language) {
   if (Array.isArray(value)) return value;
@@ -366,7 +324,7 @@ function HeaderControls({ controls }) {
         className="icon-toggle"
         onClick={() => controls.setThemeMode(controls.themeMode === 'dark' ? 'light' : 'dark')}
         type="button"
-        aria-label="Toggle color mode"
+        aria-label={t(controls.language, 'toggleColorMode')}
       >
         {controls.themeMode === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
       </button>
@@ -392,22 +350,22 @@ function LandingPage({ currency, language, menuControls, menuTheme, onDishSelect
         <img src={siteContent.hero.image} alt="" />
         <div className="product-hero-copy">
           <p className="eyebrow">{brand.name}</p>
-          <h1>{siteContent.hero.title}</h1>
-          <p>{siteContent.hero.subtitle}</p>
+          <h1>{t(language, 'heroTitle')}</h1>
+          <p>{t(language, 'heroSubtitle')}</p>
           <div className="hero-actions">
-            <a className="primary-link" href="#menu">{ui[language].viewMenu}</a>
-            <a className="secondary-link" href="/pricing">{ui[language].seePricing}</a>
+            <a className="primary-link" href="#menu">{t(language, 'viewMenu')}</a>
+            <a className="secondary-link" href="/pricing">{t(language, 'seePricing')}</a>
           </div>
         </div>
       </section>
 
-      <ProductValueSection />
+      <ProductValueSection language={language} />
 
       <section className="menu-section" id="menu">
         <div className="section-heading">
-          <p className="eyebrow">Menu</p>
-          <h2>Mobile-first AR menu</h2>
-          <p>Search, filter, inspect ingredients, and view dishes on the table.</p>
+          <p className="eyebrow">{t(language, 'menuLabel')}</p>
+          <h2>{t(language, 'menuTitle')}</h2>
+          <p>{t(language, 'menuSubtitle')}</p>
         </div>
         <MenuExperience
           controls={menuControls}
@@ -426,16 +384,16 @@ function LandingPage({ currency, language, menuControls, menuTheme, onDishSelect
   );
 }
 
-function ProductValueSection() {
+function ProductValueSection({ language }) {
   return (
     <section className="value-section">
       <div className="section-heading">
-        <p className="eyebrow">{siteContent.value.eyebrow}</p>
-        <h2>{siteContent.value.title}</h2>
-        <p>{siteContent.value.subtitle}</p>
+        <p className="eyebrow">{t(language, 'productLabel')}</p>
+        <h2>{t(language, 'productTitle')}</h2>
+        <p>{t(language, 'productSubtitle')}</p>
       </div>
       <div className="value-grid">
-        {siteContent.value.items.map((item) => (
+        {tArray(language, 'productPoints').map((item) => (
           <article className="value-card" key={item}>
             <span />
             <p>{item}</p>
@@ -450,28 +408,28 @@ function PricingSection({ compact = false, language }) {
   return (
     <section className={compact ? 'pricing-section compact' : 'pricing-section'}>
       <div className="section-heading">
-        <p className="eyebrow">{ui[language].pricing}</p>
-        <p>Clear monthly options for restaurants ready to launch a premium AR menu.</p>
+        <p className="eyebrow">{t(language, 'pricingLabel')}</p>
+        <p>{t(language, 'pricingSubtitle')}</p>
       </div>
       <div className="pricing-carousel-shell">
-        <p className="pricing-scroll-hint">Swipe plans</p>
+        <p className="pricing-scroll-hint">{t(language, 'swipePlans')}</p>
         <div className="pricing-grid">
           {pricingPlans.map((plan) => (
             <article className={`pricing-card ${plan.badge ? 'recommended' : ''}`} key={plan.id}>
-              {plan.badge && <span className="plan-badge">{plan.badge}</span>}
-              <h3>{plan.title}</h3>
+              {plan.badge && <span className="plan-badge">{t(language, 'pricingRecommended')}</span>}
+              <h3>{getPlanTitle(plan, language)}</h3>
               <ul>
-                {plan.features.map((feature) => (
+                {getPlanFeatures(plan, language).map((feature) => (
                   <li key={feature}>{feature}</li>
                 ))}
               </ul>
               <div className="plan-bottom">
-                <strong>{plan.price}</strong>
+                <strong>{getPlanPrice(plan, language)}</strong>
                 <a
                   className={plan.id === 'pro' ? 'primary-link' : 'secondary-link'}
                   href={plan.id === 'custom' ? customPlanHref : demoRequestHref}
                 >
-                  {plan.id === 'custom' ? ui[language].contactSales : ui[language].getStarted}
+                  {plan.id === 'custom' ? t(language, 'contactSales') : t(language, 'getStarted')}
                 </a>
               </div>
             </article>
@@ -485,10 +443,10 @@ function PricingSection({ compact = false, language }) {
 function ExperiencePreview({ language }) {
   return (
     <section className="experience-preview">
-      <p className="eyebrow">{siteContent.virtualExperience.eyebrow}</p>
-      <h2>{siteContent.virtualExperience.title}</h2>
-      <p>{siteContent.virtualExperience.summary}</p>
-      <a className="secondary-link" href="/experience">{ui[language].learnExperience}</a>
+      <p className="eyebrow">{t(language, 'experienceLabel')}</p>
+      <h2>{t(language, 'experienceTitle')}</h2>
+      <p>{t(language, 'experienceSubtitle')}</p>
+      <a className="secondary-link" href="/experience">{t(language, 'learnExperience')}</a>
     </section>
   );
 }
@@ -530,7 +488,7 @@ function MenuExperience({ controls, currency, isPreview = false, language, menuT
       <p className="menu-restaurant-label">{text(restaurant.restaurantName, language)}</p>
 
       <div className="category-strip">
-        <div className="category-rail" aria-label="Menu categories">
+        <div className="category-rail" aria-label={t(language, 'menuLabel')}>
           {restaurant.categories.map((category) => (
             <button
               className={category.id === activeCategory?.id ? 'active' : ''}
@@ -542,17 +500,17 @@ function MenuExperience({ controls, currency, isPreview = false, language, menuT
             </button>
           ))}
         </div>
-        <span className="category-scroll-hint">{ui[language].swipeCategories}</span>
+        <span className="category-scroll-hint">{t(language, 'swipeCategories')}</span>
       </div>
 
       <label className="search-box">
         <Search size={18} />
-        <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={ui[language].search} />
+        <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t(language, 'search')} />
       </label>
 
       <div className="menu-toolbar">
         <div>
-          <p className="eyebrow">Category</p>
+          <p className="eyebrow">{t(language, 'category')}</p>
           <h2>{text(activeCategory?.label || activeCategory?.name, language)}</h2>
         </div>
         <div className="toolbar-actions">
@@ -560,13 +518,13 @@ function MenuExperience({ controls, currency, isPreview = false, language, menuT
             <button className={filter === item ? 'active' : ''} key={item} onClick={() => setFilter(item)} type="button">
               {item === 'veg' && <Leaf size={14} />}
               {item === 'meat' && <Beef size={14} />}
-              {ui[language][item]}
+              {t(language, item)}
             </button>
           ))}
-          <button className={viewMode === 'list' ? 'active' : ''} onClick={() => setViewMode('list')} type="button" aria-label="List view">
+          <button className={viewMode === 'list' ? 'active' : ''} onClick={() => setViewMode('list')} type="button" aria-label={t(language, 'listView')}>
             <List size={15} />
           </button>
-          <button className={viewMode === 'grid' ? 'active' : ''} onClick={() => setViewMode('grid')} type="button" aria-label="Grid view">
+          <button className={viewMode === 'grid' ? 'active' : ''} onClick={() => setViewMode('grid')} type="button" aria-label={t(language, 'gridView')}>
             <Grid size={15} />
           </button>
         </div>
@@ -584,19 +542,19 @@ function MenuExperience({ controls, currency, isPreview = false, language, menuT
           />
         ))}
         {!filteredDishes.length && (
-          <div className="empty-menu-state">{ui[language].moreDishes}</div>
+          <div className="empty-menu-state">{t(language, 'moreDishes')}</div>
         )}
       </div>
     </section>
   );
 }
 
-function TypeBadge({ type }) {
+function TypeBadge({ language, type }) {
   const Icon = type === 'veg' ? Leaf : Beef;
   return (
     <span className={`type-badge ${type}`}>
       <Icon size={14} />
-      {type}
+      {t(language, type)}
     </span>
   );
 }
@@ -612,7 +570,7 @@ function DishCard({ currency, dish, language, onDetails }) {
         </div>
         <p>{text(dish.description, language)}</p>
         <div className="dish-meta-row">
-          <TypeBadge type={dish.type} />
+          <TypeBadge language={language} type={dish.type} />
           <button
             className="secondary-button"
             onClick={(event) => {
@@ -621,7 +579,7 @@ function DishCard({ currency, dish, language, onDetails }) {
             }}
             type="button"
           >
-            {ui[language].details}
+            {t(language, 'details')}
           </button>
         </div>
       </div>
@@ -629,11 +587,11 @@ function DishCard({ currency, dish, language, onDetails }) {
   );
 }
 
-function IngredientTags({ ingredients }) {
+function IngredientTags({ ingredients, language }) {
   return (
     <div className="ingredient-tags">
       {(ingredients || []).map((ingredient) => (
-        <span key={ingredient.name}>{ingredient.name}</span>
+        <span key={ingredient.name}>{translateIngredientName(ingredient.name, language)}</span>
       ))}
     </div>
   );
@@ -649,13 +607,13 @@ function DishModal({ currency, dish, language, menuTheme, onClose, onViewer }) {
             <h2>{text(dish.name, language)}</h2>
             <span>{formatPrice(dish.priceGEL, currency)}</span>
           </div>
-          <TypeBadge type={dish.type} />
+          <TypeBadge language={language} type={dish.type} />
           <p>{text(dish.description, language)}</p>
-          <IngredientTags ingredients={dish.ingredients} />
+          <IngredientTags ingredients={dish.ingredients} language={language} />
           <div className="dish-actions">
-            <button className="secondary-button" onClick={onClose} type="button">{ui[language].backToMenu}</button>
+            <button className="secondary-button" onClick={onClose} type="button">{t(language, 'backToMenu')}</button>
             <button className="primary-button" onClick={onViewer} type="button">
-              <span className="wipe-label" data-text={ui[language].viewOnTable}>{ui[language].viewOnTable}</span>
+              <span className="wipe-label" data-text={t(language, 'viewOnTable')}>{t(language, 'viewOnTable')}</span>
             </button>
           </div>
         </div>
@@ -682,7 +640,7 @@ function ModelViewerPage({ controls, currency, dish, language, menuTheme, onBack
     <div className={`viewer-shell menu-theme-${menuTheme}`} style={style}>
       <SiteHeader controls={controls} restaurant={restaurant} />
       <main className="viewer-page">
-        <button className="back-button" onClick={onBack} type="button">{ui[language].backToMenu}</button>
+        <button className="back-button" onClick={onBack} type="button">{t(language, 'backToMenu')}</button>
         <section className="viewer-layout">
           {/* The scale value controls the model-viewer preview plus WebXR/Scene Viewer AR.
              iOS Quick Look may ignore this and use dimensions baked into the USDZ/GLB conversion. */}
@@ -715,12 +673,12 @@ function ModelViewerPage({ controls, currency, dish, language, menuTheme, onBack
                 data-normal={hotspot.normal}
                 type="button"
               >
-                <span>{hotspot.name}</span>
-                <small>{hotspot.benefits.join(' · ')}</small>
+                <span>{translateIngredientName(hotspot.name, language)}</span>
+                <small>{hotspot.benefits.map((benefit) => translateIngredientBenefit(benefit, language)).join(' / ')}</small>
               </button>
             ))}
             <button className="ar-button" slot="ar-button" type="button">
-              <span className="wipe-label" data-text={ui[language].viewOnTable}>{ui[language].viewOnTable}</span>
+              <span className="wipe-label" data-text={t(language, 'viewOnTable')}>{t(language, 'viewOnTable')}</span>
             </button>
           </model-viewer>
           <div className="viewer-info-card">
@@ -729,10 +687,10 @@ function ModelViewerPage({ controls, currency, dish, language, menuTheme, onBack
               <h1>{text(dish.name, language)}</h1>
             </div>
             <p>{text(dish.description, language)}</p>
-            <IngredientTags ingredients={dish.ingredients} />
+            <IngredientTags ingredients={dish.ingredients} language={language} />
             <div className="viewer-meta-row">
               <strong>{formatPrice(dish.priceGEL, currency)}</strong>
-              <span>{dish.hasModel === false ? 'Placeholder model in use.' : ui[language].modelHint}</span>
+              <span>{dish.hasModel === false ? t(language, 'placeholderModel') : t(language, 'modelHint')}</span>
             </div>
           </div>
         </section>
@@ -757,16 +715,16 @@ function ExperiencePage({ controls, language, style }) {
     <Shell controls={controls} language={language} restaurant={defaultRestaurant} style={style}>
       <main className="page-content">
         <section className="experience-page">
-          <p className="eyebrow">{siteContent.virtualExperience.eyebrow}</p>
-          <h1>{siteContent.virtualExperience.title}</h1>
-          <p>{siteContent.virtualExperience.summary}</p>
+          <p className="eyebrow">{t(language, 'experienceLabel')}</p>
+          <h1>{t(language, 'experienceTitle')}</h1>
+          <p>{t(language, 'experienceSubtitle')}</p>
           <div className="experience-list">
-            {siteContent.virtualExperience.details.map((item) => (
+            {tArray(language, 'experienceFeatures').map((item) => (
               <span key={item}><Flame size={16} />{item}</span>
             ))}
           </div>
           <div className="contact-actions centered">
-            <a className="primary-link" href={demoRequestHref}>{ui[language].emailUs}</a>
+            <a className="primary-link" href={inquiryHref}>{t(language, 'emailUs')}</a>
             <a className="secondary-link" href={brand.instagramUrl} rel="noreferrer" target="_blank">
               {brand.instagramHandle}
             </a>
@@ -781,7 +739,7 @@ function AboutPage({ controls, language, style }) {
   return (
     <Shell controls={controls} language={language} restaurant={defaultRestaurant} style={style}>
       <main className="page-content">
-        <InfoPage title={siteContent.about.title} paragraphs={siteContent.about.paragraphs} eyebrow={ui[language].about} />
+        <InfoPage title={t(language, 'aboutTitle')} paragraphs={tArray(language, 'aboutParagraphs')} eyebrow={t(language, 'aboutLabel')} />
       </main>
     </Shell>
   );
@@ -791,13 +749,13 @@ function ContactPage({ controls, language, style }) {
   return (
     <Shell controls={controls} language={language} restaurant={defaultRestaurant} style={style}>
       <main className="page-content">
-        <InfoPage title={siteContent.contact.title} paragraphs={[siteContent.contact.body]} eyebrow={ui[language].contact}>
+        <InfoPage title={t(language, 'contactTitle')} paragraphs={[t(language, 'contactText')]} eyebrow={t(language, 'contactLabel')}>
           <div className="contact-actions">
             <a className="primary-link" href={`mailto:${brand.email}`}>
-              {ui[language].email}: {brand.email}
+              {t(language, 'email')}: {brand.email}
             </a>
             <a className="secondary-link" href={brand.instagramUrl} rel="noreferrer" target="_blank">
-              {ui[language].instagram}: {brand.instagramHandle}
+              {t(language, 'instagram')}: {brand.instagramHandle}
             </a>
           </div>
         </InfoPage>
@@ -823,8 +781,8 @@ function NotFoundPage({ controls, language, style }) {
   return (
     <Shell controls={controls} language={language} restaurant={defaultRestaurant} style={style}>
       <main className="empty-state">
-        <h1>{ui[language].notFound}</h1>
-        <a className="primary-link" href="/">{ui[language].home}</a>
+        <h1>{t(language, 'notFound')}</h1>
+        <a className="primary-link" href="/">{t(language, 'home')}</a>
       </main>
     </Shell>
   );
@@ -836,23 +794,24 @@ function Footer({ language, restaurant }) {
       <div className="footer-inner">
         <div className="footer-brand">
           <Logo />
-          <p>{text(brand.shortDescription, language)}</p>
+          <p>{t(language, 'footerDescription')}</p>
         </div>
-        <nav className="footer-nav" aria-label="Footer navigation">
-          <a href="/">{ui[language].home}</a>
-          <a href="/about">{ui[language].about}</a>
-          <a href="/contact">{ui[language].contact}</a>
+        <nav className="footer-nav" aria-label={t(language, 'footerNavigation')}>
+          <a href="/">{t(language, 'home')}</a>
+          <a href="/about">{t(language, 'about')}</a>
+          <a href="/contact">{t(language, 'contact')}</a>
         </nav>
         <div className="footer-contact">
-          <a href={`mailto:${brand.email}`}>{ui[language].email}: {brand.email}</a>
+          <a href={`mailto:${brand.email}`}>{t(language, 'email')}: {brand.email}</a>
           <a href={brand.instagramUrl} rel="noreferrer" target="_blank">
-            {ui[language].instagram}: {brand.instagramHandle}
+            {t(language, 'instagram')}: {brand.instagramHandle}
           </a>
         </div>
       </div>
-      <p className="powered">{ui[language].powered}</p>
+      <p className="powered">{t(language, 'powered')}</p>
     </footer>
   );
 }
 
 export default App;
+

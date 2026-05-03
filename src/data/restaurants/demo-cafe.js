@@ -14,8 +14,8 @@ const demoCafe = {
   },
   subtitle: {
     en: 'A second sample venue using the same mobile WebAR menu system.',
-    ka: 'A second sample venue using the same mobile WebAR menu system.',
-    ru: 'A second sample venue using the same mobile WebAR menu system.',
+    ka: 'მეორე საცდელი სივრცე იგივე მობილური WebAR მენიუს სისტემით.',
+    ru: 'Вторая тестовая площадка с той же мобильной системой WebAR-меню.',
   },
 };
 

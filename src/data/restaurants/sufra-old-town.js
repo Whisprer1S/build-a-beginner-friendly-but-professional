@@ -3,12 +3,12 @@
 // dishes, prices, images, models, ingredient tags, and AR settings below.
 
 const menuCategories = [
-  { id: 'starters', label: { en: 'Starters', ka: 'Starters', ru: 'Starters' } },
-  { id: 'salads', label: { en: 'Salads', ka: 'Salads', ru: 'Salads' } },
-  { id: 'main-course', label: { en: 'Main Course', ka: 'Main Course', ru: 'Main Course' } },
-  { id: 'grill', label: { en: 'Grill', ka: 'Grill', ru: 'Grill' } },
-  { id: 'desserts', label: { en: 'Desserts', ka: 'Desserts', ru: 'Desserts' } },
-  { id: 'drinks', label: { en: 'Drinks', ka: 'Drinks', ru: 'Drinks' } },
+  { id: 'starters', label: { en: 'Starters', ka: 'სასუსნავი', ru: 'Закуски' } },
+  { id: 'salads', label: { en: 'Salads', ka: 'სალათები', ru: 'Салаты' } },
+  { id: 'main-course', label: { en: 'Main Course', ka: 'ძირითადი კერძები', ru: 'Основные блюда' } },
+  { id: 'grill', label: { en: 'Grill', ka: 'გრილი', ru: 'Гриль' } },
+  { id: 'desserts', label: { en: 'Desserts', ka: 'დესერტები', ru: 'Десерты' } },
+  { id: 'drinks', label: { en: 'Drinks', ka: 'სასმელები', ru: 'Напитки' } },
 ];
 
 const sufraOldTown = {
@@ -51,8 +51,8 @@ const sufraOldTown = {
       name: { en: 'Adjaruli Khachapuri', ka: 'Adjaruli Khachapuri', ru: 'Adjaruli Khachapuri' },
       description: {
         en: 'Boat-shaped Georgian cheese bread with egg yolk and butter.',
-        ka: 'Boat-shaped Georgian cheese bread with egg yolk and butter.',
-        ru: 'Boat-shaped Georgian cheese bread with egg yolk and butter.',
+        ka: 'ნავის ფორმის ქართული ყველიანი პური კვერცხის გულით და კარაქით.',
+        ru: 'Грузинская сырная лепёшка в форме лодочки с яичным желтком и сливочным маслом.',
       },
       priceGEL: 24,
       image: '/images/dishes/adjaruli khachapuri.jfif',
@@ -79,9 +79,9 @@ const sufraOldTown = {
       type: 'meat',
       name: { en: 'Mountain Khinkali', ka: 'Mountain Khinkali', ru: 'Mountain Khinkali' },
       description: {
-        en: 'Hand-folded dumplings filled with spiced beef and warm broth.',
-        ka: 'Hand-folded dumplings filled with spiced beef and warm broth.',
-        ru: 'Hand-folded dumplings filled with spiced beef and warm broth.',
+        en: 'Hand-folded dumplings filled with spiced meat and warm broth.',
+        ka: 'ხელით შეკრული ხინკალი სანელებლებიანი ხორცით და ცხელი წვენით.',
+        ru: 'Хинкали ручной лепки с пряным мясом и горячим бульоном.',
       },
       priceGEL: 18,
       image: '/images/dishes/mtis khinkali.webp',
@@ -107,7 +107,11 @@ const sufraOldTown = {
       categoryId: 'grill',
       type: 'meat',
       name: { en: 'Steak', ka: 'Steak', ru: 'Steak' },
-      description: { en: 'Grilled steak served with herbs and rich sauce.', ka: 'Grilled steak served with herbs and rich sauce.', ru: 'Grilled steak served with herbs and rich sauce.' },
+      description: {
+        en: 'Grilled steak served with herbs and sauce.',
+        ka: 'გრილზე შემწვარი სტეიკი მწვანილებით და სოუსით.',
+        ru: 'Стейк на гриле с зеленью и соусом.',
+      },
       priceGEL: 42,
       image: '/images/dishes/steak.jpg',
       model: '/models/dishes/steak.glb',
@@ -132,7 +136,11 @@ const sufraOldTown = {
       categoryId: 'starters',
       type: 'veg',
       name: { en: 'Bruschetta', ka: 'Bruschetta', ru: 'Bruschetta' },
-      description: { en: 'Toasted bread with tomato, basil, and olive oil.', ka: 'Toasted bread with tomato, basil, and olive oil.', ru: 'Toasted bread with tomato, basil, and olive oil.' },
+      description: {
+        en: 'Toasted bread with tomato, basil, and olive oil.',
+        ka: 'მოხალული პური პომიდვრით, ბაზილიკით და ზეითუნის ზეთით.',
+        ru: 'Поджаренный хлеб с помидором, базиликом и оливковым маслом.',
+      },
       priceGEL: 16,
       image: '/images/dishes/Bruschetta.jpg',
       model: '/models/dishes/Bruschetta.glb',
@@ -157,7 +165,11 @@ const sufraOldTown = {
       categoryId: 'salads',
       type: 'meat',
       name: { en: 'Chicken Salad', ka: 'Chicken Salad', ru: 'Chicken Salad' },
-      description: { en: 'Fresh salad with chicken, lettuce, tomato, and cucumber.', ka: 'Fresh salad with chicken, lettuce, tomato, and cucumber.', ru: 'Fresh salad with chicken, lettuce, tomato, and cucumber.' },
+      description: {
+        en: 'Fresh salad with chicken, lettuce, tomato, and cucumber.',
+        ka: 'ახალი სალათი ქათმით, სალათის ფურცლით, პომიდვრით და კიტრით.',
+        ru: 'Свежий салат с курицей, листьями салата, помидором и огурцом.',
+      },
       priceGEL: 22,
       image: '/images/dishes/Chicken Salad.jpg',
       model: '/models/dishes/Chicken Salad.glb',
@@ -182,7 +194,11 @@ const sufraOldTown = {
       categoryId: 'main-course',
       type: 'meat',
       name: { en: 'Chicken Alfredo', ka: 'Chicken Alfredo', ru: 'Chicken Alfredo' },
-      description: { en: 'Creamy pasta with chicken and parmesan.', ka: 'Creamy pasta with chicken and parmesan.', ru: 'Creamy pasta with chicken and parmesan.' },
+      description: {
+        en: 'Creamy pasta with chicken, parmesan, and Alfredo sauce.',
+        ka: 'ნაღების პასტა ქათმით, პარმეზანით და ალფრედოს სოუსით.',
+        ru: 'Сливочная паста с курицей, пармезаном и соусом Альфредо.',
+      },
       priceGEL: 28,
       image: '/images/dishes/Chicken Alfredo.jpg',
       model: '/models/dishes/Chicken Alfredo.glb',
@@ -207,7 +223,11 @@ const sufraOldTown = {
       categoryId: 'desserts',
       type: 'veg',
       name: { en: 'Tiramisu', ka: 'Tiramisu', ru: 'Tiramisu' },
-      description: { en: 'Classic coffee dessert with mascarpone and cocoa.', ka: 'Classic coffee dessert with mascarpone and cocoa.', ru: 'Classic coffee dessert with mascarpone and cocoa.' },
+      description: {
+        en: 'Classic Italian dessert with coffee, mascarpone, and cocoa.',
+        ka: 'კლასიკური იტალიური დესერტი ყავით, მასკარპონეთი და კაკაოთი.',
+        ru: 'Классический итальянский десерт с кофе, маскарпоне и какао.',
+      },
       priceGEL: 15,
       image: '/images/dishes/Tiramisu.jpg',
       model: '/models/dishes/tiramisu.glb',
@@ -232,7 +252,11 @@ const sufraOldTown = {
       categoryId: 'drinks',
       type: 'veg',
       name: { en: 'Orange Juice', ka: 'Orange Juice', ru: 'Orange Juice' },
-      description: { en: 'Fresh orange juice with bright citrus notes.', ka: 'Fresh orange juice with bright citrus notes.', ru: 'Fresh orange juice with bright citrus notes.' },
+      description: {
+        en: 'Fresh orange juice with bright citrus flavor.',
+        ka: 'ახალი ფორთოხლის წვენი ციტრუსის ნათელი გემოთი.',
+        ru: 'Свежий апельсиновый сок с ярким цитрусовым вкусом.',
+      },
       priceGEL: 9,
       image: '/images/dishes/orange juice.jpg',
       model: '/models/dishes/orange juice.glb',
@@ -255,7 +279,11 @@ const sufraOldTown = {
       categoryId: 'grill',
       type: 'meat',
       name: { en: 'Mtsvadi', ka: 'Mtsvadi', ru: 'Mtsvadi' },
-      description: { en: 'Grilled meat with onion, herbs, and smoke.', ka: 'Grilled meat with onion, herbs, and smoke.', ru: 'Grilled meat with onion, herbs, and smoke.' },
+      description: {
+        en: 'Georgian grilled skewers served with onion and herbs.',
+        ka: 'ქართული მწვადი ხახვით და მწვანილებით.',
+        ru: 'Грузинский шашлык с луком и зеленью.',
+      },
       priceGEL: 30,
       image: '/images/dishes/mtsvadi.jfif',
       // No dedicated Mtsvadi model exists yet. Placeholder keeps AR flow working.
