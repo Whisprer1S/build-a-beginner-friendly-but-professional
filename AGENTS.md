@@ -118,11 +118,14 @@ desserts
 drinks
 ```
 
+Dessert categories hide Veg/Meat filters and badges. Drink categories use Alcoholic / Non-alcoholic filters and badges.
+
 Each dish should have:
 
 - `id`
 - `categoryId`
-- `type`
+- `type` (`veg`/`meat` for food, `drink` for drinks)
+- `drinkType` for drinks, such as `alcoholic` or `non-alcoholic`
 - translated `name`
 - translated `description`
 - `priceGEL`
@@ -190,7 +193,7 @@ Selector labels:
 - `GEO`
 - `RUS`
 
-Visible UI translations live in `src/data/translations.js`.
+Visible UI translations live in `src/data/translations.js`. Site language/currency and menu language/currency state are separate; do not collapse them back into one shared state.
 
 Do not translate:
 
@@ -225,10 +228,22 @@ Handle:
 @sufraar
 ```
 
+TikTok:
+
+```text
+https://www.tiktok.com/@sufra.ar
+```
+
+Facebook:
+
+```text
+https://www.facebook.com/share/199UTeER2Z/?mibextid=wwXIfr
+```
+
 Contact link rules:
 
 - Email links must be real `mailto:` anchors.
-- Instagram links must use `target="_blank"` and `rel="noreferrer"`.
+- Instagram/TikTok/Facebook links must use `target="_blank"` and `rel="noreferrer"`.
 - Do not use `href="#"` for contact actions.
 
 Current mailto subjects in `src/App.jsx`:
