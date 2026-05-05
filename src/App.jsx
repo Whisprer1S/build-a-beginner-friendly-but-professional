@@ -35,7 +35,6 @@ import {
 } from './data/restaurants/index.js';
 
 const demoRequestHref = `mailto:${brand.email}?subject=Sufra%20AR%20Demo%20Request`;
-const customPlanHref = `mailto:${brand.email}?subject=Sufra%20AR%20Custom%20Plan%20Inquiry`;
 const inquiryHref = `mailto:${brand.email}?subject=Sufra%20AR%20Inquiry`;
 
 function t(language, key) {
@@ -52,7 +51,6 @@ function getPlanTitle(plan, language) {
     basic: 'pricingBasic',
     pro: 'pricingPro',
     vip: 'pricingVip',
-    custom: 'pricingCustom',
   };
   return t(language, titleKeys[plan.id]) || plan.title;
 }
@@ -62,14 +60,12 @@ function getPlanFeatures(plan, language) {
     basic: 'pricingBasicFeatures',
     pro: 'pricingProFeatures',
     vip: 'pricingVipFeatures',
-    custom: 'pricingCustomFeatures',
   };
   const translatedFeatures = tArray(language, featureKeys[plan.id]);
   return translatedFeatures.length ? translatedFeatures : plan.features;
 }
 
 function getPlanPrice(plan, language) {
-  if (plan.id === 'custom') return t(language, 'pricingCustomPrice');
   return `${plan.price.split(' / ')[0]} / ${t(language, 'pricingMonth')}`;
 }
 
@@ -615,9 +611,9 @@ function PricingSection({ compact = false, language }) {
                 <strong>{getPlanPrice(plan, language)}</strong>
                 <a
                   className={plan.id === 'pro' ? 'primary-link' : 'secondary-link'}
-                  href={plan.id === 'custom' ? customPlanHref : demoRequestHref}
+                  href={demoRequestHref}
                 >
-                  {plan.id === 'custom' ? t(language, 'contactSales') : t(language, 'getStarted')}
+                  {t(language, 'getStarted')}
                 </a>
               </div>
             </article>
@@ -656,15 +652,20 @@ function MenuExperience({ controls, currency, isPreview = false, language, menuT
 
   const activeCategory = restaurant.categories.find((category) => category.id === activeCategoryId) || restaurant.categories[0];
   const filterOptions = getFilterOptionsForCategory(activeCategory?.id);
-  const filteredDishes = restaurant.dishes.filter((dish) => {
-    const matchesCategory = getDishCategoryId(dish) === activeCategory?.id;
+  const normalizedQuery = query.trim().toLowerCase();
+  const baseDishes = normalizedQuery
+    ? restaurant.dishes
+    : restaurant.dishes.filter((dish) => getDishCategoryId(dish) === activeCategory?.id);
+  const filteredDishes = baseDishes.filter((dish) => {
     const matchesType = !filterOptions.length || filter === 'all' || getDishFilterValue(dish) === filter;
     const searchable = [
       text(dish.name, language),
+      text(dish.name, 'en'),
       text(dish.description, language),
+      text(dish.description, 'en'),
       ...(dish.ingredients || []).map((ingredient) => ingredient.name),
     ].join(' ').toLowerCase();
-    return matchesCategory && matchesType && searchable.includes(query.toLowerCase());
+    return matchesType && searchable.includes(normalizedQuery);
   });
 
   function chooseCategory(categoryId) {

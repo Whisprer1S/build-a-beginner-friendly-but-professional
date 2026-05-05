@@ -10,6 +10,8 @@ const menuCategories = [
   { id: 'grill', label: { en: 'Grill', ka: 'გრილი', ru: 'Гриль' } },
   { id: 'desserts', label: { en: 'Desserts', ka: 'დესერტები', ru: 'Десерты' } },
   { id: 'drinks', label: { en: 'Drinks', ka: 'სასმელები', ru: 'Напитки' } },
+  // Temporary GLB testing category. Remove after the test model has been verified.
+  { id: 'test', label: { en: 'Test', ka: 'ტესტი', ru: 'Тест' } },
 ];
 
 const sufraOldTown = {
@@ -301,6 +303,27 @@ const sufraOldTown = {
         { id: 'meat', name: 'Pork or Beef', position: '0m 0.08m 0m', normal: '0m 1m 0m', benefits: ['Protein', 'Iron'] },
       ],
       arScale: '0.24 0.24 0.24',
+      arPlacement: 'floor',
+      cameraOrbit: '35deg 70deg 2.4m',
+      fieldOfView: '30deg',
+    },
+    {
+      id: 'test',
+      categoryId: 'test',
+      type: 'veg',
+      name: { en: 'Test', ka: 'ტესტი', ru: 'Тест' },
+      description: {
+        en: 'Temporary GLB test dish.',
+        ka: 'დროებითი GLB სატესტო კერძი.',
+        ru: 'Временное тестовое блюдо GLB.',
+      },
+      priceGEL: 1,
+      image: '/images/dishes/steak.jpg',
+      model: '/models/dishes/test.glb',
+      hasModel: true,
+      ingredients: [],
+      ingredientHotspots: [],
+      arScale: '0.25 0.25 0.25',
       arPlacement: 'floor',
       cameraOrbit: '35deg 70deg 2.4m',
       fieldOfView: '30deg',
