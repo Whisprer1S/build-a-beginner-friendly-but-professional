@@ -7,6 +7,10 @@ export const brand = {
   email: 'sufraar@gmail.com',
   instagramHandle: '@sufraar',
   instagramUrl: 'https://www.instagram.com/sufraar/',
+  tiktokHandle: '@sufra.ar',
+  tiktokUrl: 'https://www.tiktok.com/@sufra.ar',
+  facebookLabel: 'Facebook',
+  facebookUrl: 'https://www.facebook.com/share/199UTeER2Z/?mibextid=wwXIfr',
   shortDescription: {
     en: 'Premium WebAR menu experiences for restaurants and cafes.',
     ka: 'პრემიუმ WebAR მენიუები რესტორნებისა და კაფეებისთვის.',

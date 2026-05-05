@@ -31,7 +31,7 @@ npm run build
 /pricing           -> full pricing page
 /experience        -> upcoming Virtual Restaurant Experience page
 /about             -> about Sufra AR
-/contact           -> contact placeholder page
+/contact           -> contact page
 ```
 
 ## Project Structure
@@ -39,7 +39,7 @@ npm run build
 ```text
 src/App.jsx                       -> app layout, routing, menu UI, modal, AR viewer
 src/styles.css                    -> global styling and responsive UI
-src/data/brand.js                 -> Sufra AR brand placeholders
+src/data/brand.js                 -> Sufra AR brand identity and contact links
 src/data/currencies.js            -> static GEL / USD / EUR conversion
 src/data/plans.js                 -> pricing plan content
 src/data/siteContent.js           -> landing, about, contact, experience copy
@@ -97,7 +97,8 @@ Each dish can control:
 
 - `id`
 - `categoryId`
-- `type` as `veg` or `meat`
+- `type` as `veg` or `meat` for food, or `drink` for drinks
+- `drinkType` for drinks, such as `alcoholic` or `non-alcoholic`
 - translated `name`
 - translated `description`
 - `priceGEL`
@@ -128,6 +129,8 @@ Example:
   fieldOfView: '28deg',
 }
 ```
+
+Dessert categories hide Veg/Meat filters and badges. Drink categories use Alcoholic / Non-alcoholic filters and badges.
 
 If a custom 3D model is not ready, use:
 

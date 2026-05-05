@@ -18,7 +18,7 @@ export const pricingPlans = [
     id: 'pro',
     title: 'Pro',
     price: '199 GEL / month',
-    badge: 'Recommended',
+    badge: 'Best value',
     cta: 'Get started',
     features: [
       'Everything in Basic',

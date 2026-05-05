@@ -11,7 +11,7 @@ Core value:
 
 - Guests scan a QR code for a restaurant.
 - The website opens a mobile-first menu experience.
-- Guests browse categories, search dishes, filter by veg/meat, inspect ingredients, and switch language/currency.
+- Guests browse categories, search dishes, filter by food or drink type, inspect ingredients, and switch language/currency.
 - Guests open a dish detail modal and launch a 3D/AR viewer.
 - The AR viewer uses `<model-viewer>` so guests can preview dishes in 3D and view them on their table before ordering.
 
@@ -200,7 +200,7 @@ desserts
 drinks
 ```
 
-Every dish should reference one of those ids with `categoryId`.
+Every dish should reference one of those ids with `categoryId`. Dessert categories intentionally hide Veg/Meat filters and badges. Drink categories use `drinkType` values such as `alcoholic` and `non-alcoholic` instead of Veg/Meat labels.
 
 Each dish should include:
 
@@ -208,7 +208,7 @@ Each dish should include:
 {
   id: 'steak',
   categoryId: 'grill',
-  type: 'meat',
+  type: 'meat', // food items use 'veg' or 'meat'; drinks use type: 'drink' plus drinkType
   name: { en: 'Steak', ka: 'Steak', ru: 'Steak' },
   description: {
     en: 'Grilled steak served with herbs and sauce.',
@@ -247,7 +247,7 @@ Current category mapping in `sufra-old-town.js`:
 - `main-course`: Mountain Khinkali, Chicken Alfredo
 - `grill`: Steak, Mtsvadi
 - `desserts`: Tiramisu
-- `drinks`: Orange Juice
+- `drinks`: Orange Juice (`drinkType: non-alcoholic`)
 
 If a dish does not have a real model yet:
 
@@ -413,7 +413,7 @@ Current static rates:
 
 There is no exchange-rate API.
 
-The currency selector is rendered by `HeaderControls` in `src/App.jsx`. It is used in both the site header and the mobile menu top area. The selected currency is stored in `localStorage` under `sufra-currency`.
+The currency selector is rendered by `HeaderControls` in `src/App.jsx`. It is used in both the site header and the mobile menu top area. Site and menu currency state are intentionally separate. Site currency is stored under `sufra-site-currency`; menu currency is stored under `sufra-menu-currency`. Older `sufra-currency` values are used only as a fallback.
 
 Dish prices are rendered with:
 
@@ -485,7 +485,7 @@ Must stay English:
 - Instagram handle
 - Currency codes/symbols
 
-Current language state is stored in `localStorage` under `sufra-language`. Viewer URLs can also include `lang=<code>`.
+Site and menu language state are intentionally separate. Site language is stored under `sufra-site-language`; menu language is stored under `sufra-menu-language`. Older `sufra-language` values are used only as a fallback. Viewer URLs can also include `lang=<code>`, which applies to the menu/viewer context.
 
 ## 13. Theme System
 
@@ -533,7 +533,7 @@ src/data/plans.js
 The current plan ids and prices:
 
 - Basic - 99 GEL / month
-- Pro - 199 GEL / month
+- Pro - 199 GEL / month, shown with the translated `Best value` badge
 - VIP - 299 GEL / month
 - Custom - Contact Sales
 
@@ -603,6 +603,9 @@ Current contact info:
 - Email: `sufraar@gmail.com`
 - Instagram: `https://www.instagram.com/sufraar/`
 - Instagram handle: `@sufraar`
+- TikTok: `https://www.tiktok.com/@sufra.ar`
+- TikTok handle: `@sufra.ar`
+- Facebook: `https://www.facebook.com/share/199UTeER2Z/?mibextid=wwXIfr`
 
 Current mailto links in `src/App.jsx`:
 
@@ -636,11 +639,13 @@ Footer must include:
 - Nav links: Home, About, Contact
 - Email link
 - Instagram link
+- TikTok link
+- Facebook link
 - `Powered by Sufra AR`
 
 Rules:
 
-- Instagram should appear only once in the footer contact area.
+- Instagram, TikTok, and Facebook should appear only in the footer contact/social area, not in the footer nav.
 - Logo text stays `Sufra AR`.
 - Slogan stays `Dining, Before It Arrives.`
 - Powered text stays `Powered by Sufra AR`.
@@ -684,7 +689,7 @@ Rules:
 
 - Menu UI must be thumb-friendly.
 - Category slider must be horizontally swipeable.
-- Category changes reset veg/meat filter to All.
+- Category changes reset the active type filter to All. Desserts hide type filters/badges; Drinks use Alcoholic / Non-alcoholic filters and badges.
 - Search must remain usable on mobile.
 - Details modal must fit mobile screens.
 - AR button must be obvious and reachable.

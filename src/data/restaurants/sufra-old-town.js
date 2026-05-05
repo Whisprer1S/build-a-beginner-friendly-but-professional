@@ -49,7 +49,7 @@ const sufraOldTown = {
       id: 'adjaruli-khachapuri',
       categoryId: 'starters',
       type: 'veg',
-      name: { en: 'Adjaruli Khachapuri', ka: 'Adjaruli Khachapuri', ru: 'Adjaruli Khachapuri' },
+      name: { en: 'Adjaruli Khachapuri', ka: 'აჭარული ხაჭაპური', ru: 'Аджарский хачапури' },
       description: {
         en: 'Boat-shaped Georgian cheese bread with egg yolk and butter.',
         ka: 'ნავის ფორმის ქართული ყველიანი პური კვერცხის გულით და კარაქით.',
@@ -78,7 +78,7 @@ const sufraOldTown = {
       id: 'mountain-khinkali',
       categoryId: 'main-course',
       type: 'meat',
-      name: { en: 'Mountain Khinkali', ka: 'Mountain Khinkali', ru: 'Mountain Khinkali' },
+      name: { en: 'Mountain Khinkali', ka: 'მთის ხინკალი', ru: 'Горные хинкали' },
       description: {
         en: 'Hand-folded dumplings filled with spiced meat and warm broth.',
         ka: 'ხელით შეკრული ხინკალი სანელებლებიანი ხორცით და ცხელი წვენით.',
@@ -107,7 +107,7 @@ const sufraOldTown = {
       id: 'steak',
       categoryId: 'grill',
       type: 'meat',
-      name: { en: 'Steak', ka: 'Steak', ru: 'Steak' },
+      name: { en: 'Steak', ka: 'სტეიკი', ru: 'Стейк' },
       description: {
         en: 'Grilled steak served with herbs and sauce.',
         ka: 'გრილზე შემწვარი სტეიკი მწვანილებით და სოუსით.',
@@ -136,7 +136,7 @@ const sufraOldTown = {
       id: 'bruschetta',
       categoryId: 'starters',
       type: 'veg',
-      name: { en: 'Bruschetta', ka: 'Bruschetta', ru: 'Bruschetta' },
+      name: { en: 'Bruschetta', ka: 'ბრუსკეტა', ru: 'Брускетта' },
       description: {
         en: 'Toasted bread with tomato, basil, and olive oil.',
         ka: 'მოხალული პური პომიდვრით, ბაზილიკით და ზეითუნის ზეთით.',
@@ -165,7 +165,7 @@ const sufraOldTown = {
       id: 'chicken-salad',
       categoryId: 'salads',
       type: 'meat',
-      name: { en: 'Chicken Salad', ka: 'Chicken Salad', ru: 'Chicken Salad' },
+      name: { en: 'Chicken Salad', ka: 'ქათმის სალათი', ru: 'Салат с курицей' },
       description: {
         en: 'Fresh salad with chicken, lettuce, tomato, and cucumber.',
         ka: 'ახალი სალათი ქათმით, სალათის ფურცლით, პომიდვრით და კიტრით.',
@@ -194,7 +194,7 @@ const sufraOldTown = {
       id: 'chicken-alfredo',
       categoryId: 'main-course',
       type: 'meat',
-      name: { en: 'Chicken Alfredo', ka: 'Chicken Alfredo', ru: 'Chicken Alfredo' },
+      name: { en: 'Chicken Alfredo', ka: 'ქათმის ალფრედო', ru: 'Паста Альфредо с курицей' },
       description: {
         en: 'Creamy pasta with chicken, parmesan, and Alfredo sauce.',
         ka: 'ნაღების პასტა ქათმით, პარმეზანით და ალფრედოს სოუსით.',
@@ -223,7 +223,7 @@ const sufraOldTown = {
       id: 'tiramisu',
       categoryId: 'desserts',
       type: 'veg',
-      name: { en: 'Tiramisu', ka: 'Tiramisu', ru: 'Tiramisu' },
+      name: { en: 'Tiramisu', ka: 'ტირამისუ', ru: 'Тирамису' },
       description: {
         en: 'Classic Italian dessert with coffee, mascarpone, and cocoa.',
         ka: 'კლასიკური იტალიური დესერტი ყავით, მასკარპონეთი და კაკაოთი.',
@@ -251,8 +251,9 @@ const sufraOldTown = {
     {
       id: 'orange-juice',
       categoryId: 'drinks',
-      type: 'veg',
-      name: { en: 'Orange Juice', ka: 'Orange Juice', ru: 'Orange Juice' },
+      type: 'drink',
+      drinkType: 'non-alcoholic',
+      name: { en: 'Orange Juice', ka: 'ფორთოხლის წვენი', ru: 'Апельсиновый сок' },
       description: {
         en: 'Fresh orange juice with bright citrus flavor.',
         ka: 'ახალი ფორთოხლის წვენი ციტრუსის ნათელი გემოთი.',
@@ -279,7 +280,7 @@ const sufraOldTown = {
       id: 'mtsvadi',
       categoryId: 'grill',
       type: 'meat',
-      name: { en: 'Mtsvadi', ka: 'Mtsvadi', ru: 'Mtsvadi' },
+      name: { en: 'Mtsvadi', ka: 'მწვადი', ru: 'Мцвади' },
       description: {
         en: 'Georgian grilled skewers served with onion and herbs.',
         ka: 'ქართული მწვადი ხახვით და მწვანილებით.',

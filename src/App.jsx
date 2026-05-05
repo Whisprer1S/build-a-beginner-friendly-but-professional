@@ -2,14 +2,19 @@
 import {
   Beef,
   CircleDollarSign,
+  ExternalLink,
   Flame,
+  GlassWater,
   Globe,
   Grid,
   Leaf,
   List,
+  Mail,
   Moon,
+  Music2,
   Search,
   Sun,
+  Wine,
 } from 'lucide-react';
 import { brand } from './data/brand.js';
 import { currencies, defaultCurrencyCode, formatPrice } from './data/currencies.js';
@@ -141,20 +146,69 @@ function getDishCategoryId(dish) {
   return dish.categoryId || dish.category;
 }
 
+const FOOD_FILTER_OPTIONS = ['all', 'veg', 'meat'];
+const DRINK_FILTER_OPTIONS = ['all', 'alcoholic', 'non-alcoholic'];
+
+function isSupportedLanguage(language) {
+  return languages.some((item) => item.code === language);
+}
+
+function isSupportedCurrency(currencyCode) {
+  return currencies.some((item) => item.code === currencyCode);
+}
+
+function getSavedLanguage(keys, fallback = 'en') {
+  const saved = keys.map((key) => localStorage.getItem(key)).find(isSupportedLanguage);
+  return saved || fallback;
+}
+
+function getSavedCurrency(keys, fallback = defaultCurrencyCode) {
+  const saved = keys.map((key) => localStorage.getItem(key)).find(isSupportedCurrency);
+  return saved || fallback;
+}
+
+function getFilterOptionsForCategory(categoryId) {
+  if (categoryId === 'desserts') return [];
+  if (categoryId === 'drinks') return DRINK_FILTER_OPTIONS;
+  return FOOD_FILTER_OPTIONS;
+}
+
+function getDishFilterValue(dish) {
+  if (getDishCategoryId(dish) === 'drinks') return dish.drinkType;
+  return dish.type;
+}
+
+function getDishBadgeType(dish) {
+  const categoryId = getDishCategoryId(dish);
+  if (categoryId === 'desserts') return null;
+  if (categoryId === 'drinks') return dish.drinkType || null;
+  return dish.type || null;
+}
+
+function BadgeIcon({ size = 14, type }) {
+  if (type === 'veg') return <Leaf size={size} />;
+  if (type === 'meat') return <Beef size={size} />;
+  if (type === 'alcoholic') return <Wine size={size} />;
+  if (type === 'non-alcoholic') return <GlassWater size={size} />;
+  return null;
+}
+
 function App() {
-  const [language, setLanguage] = useState(() => {
-    const requestedLanguage = getParams().get('lang');
-    if (languages.some((item) => item.code === requestedLanguage)) return requestedLanguage;
-    return localStorage.getItem('sufra-language') || 'en';
-  });
-  const [currency, setCurrency] = useState(() => localStorage.getItem('sufra-currency') || defaultCurrencyCode);
+  const requestedLanguage = getParams().get('lang');
+  const routeLanguage = isSupportedLanguage(requestedLanguage) ? requestedLanguage : null;
+  const [siteLanguage, setSiteLanguage] = useState(() => getSavedLanguage(['sufra-site-language', 'sufra-language']));
+  const [menuLanguage, setMenuLanguage] = useState(() => routeLanguage || getSavedLanguage(['sufra-menu-language', 'sufra-language']));
+  const [siteCurrency, setSiteCurrency] = useState(() => getSavedCurrency(['sufra-site-currency', 'sufra-currency']));
+  const [menuCurrency, setMenuCurrency] = useState(() => getSavedCurrency(['sufra-menu-currency', 'sufra-currency']));
   const [themeMode, setThemeMode] = useState(() => localStorage.getItem('sufra-theme') || 'light');
   const [menuTheme, setMenuTheme] = useState(() => localStorage.getItem('sufra-menu-theme') || 'dark');
   const [route, setRoute] = useState(() => getRouteFromPath());
   const [selectedDish, setSelectedDish] = useState(null);
 
-  useEffect(() => localStorage.setItem('sufra-language', language), [language]);
-  useEffect(() => localStorage.setItem('sufra-currency', currency), [currency]);
+  useEffect(() => localStorage.setItem('sufra-site-language', siteLanguage), [siteLanguage]);
+  useEffect(() => localStorage.setItem('sufra-menu-language', menuLanguage), [menuLanguage]);
+  useEffect(() => localStorage.setItem('sufra-site-currency', siteCurrency), [siteCurrency]);
+  useEffect(() => localStorage.setItem('sufra-menu-currency', menuCurrency), [menuCurrency]);
   useEffect(() => localStorage.setItem('sufra-theme', themeMode), [themeMode]);
   useEffect(() => localStorage.setItem('sufra-menu-theme', menuTheme), [menuTheme]);
 
@@ -167,6 +221,11 @@ function App() {
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
+
+  useEffect(() => {
+    const requestedMenuLanguage = route.params.get('lang');
+    if (isSupportedLanguage(requestedMenuLanguage)) setMenuLanguage(requestedMenuLanguage);
+  }, [route]);
 
   const activeRestaurant = findRestaurantBySlug(route.slug);
   const restaurant = activeRestaurant || defaultRestaurant;
@@ -183,24 +242,24 @@ function App() {
 
   function openViewer(dish) {
     setSelectedDish(null);
-    navigateToMenu(restaurant.slug, { dish: dish.id, view: 'viewer', lang: language });
+    navigateToMenu(restaurant.slug, { dish: dish.id, view: 'viewer', lang: menuLanguage });
   }
 
   function backToMenu() {
     setSelectedDish(null);
-    navigateToMenu(restaurant.slug, { lang: language });
+    navigateToMenu(restaurant.slug, { lang: menuLanguage });
   }
 
   if (!activeRestaurant && route.page === 'menu') {
-    return <NotFoundPage language={language} controls={{ language, setLanguage, currency, setCurrency, themeMode, setThemeMode }} style={themeStyle} />;
+    return <NotFoundPage language={siteLanguage} controls={{ language: siteLanguage, setLanguage: setSiteLanguage, currency: siteCurrency, setCurrency: setSiteCurrency, themeMode, setThemeMode }} style={themeStyle} />;
   }
 
-  const controls = { language, setLanguage, currency, setCurrency, themeMode, setThemeMode };
+  const controls = { language: siteLanguage, setLanguage: setSiteLanguage, currency: siteCurrency, setCurrency: setSiteCurrency, themeMode, setThemeMode };
   const menuControls = {
-    language,
-    setLanguage,
-    currency,
-    setCurrency,
+    language: menuLanguage,
+    setLanguage: setMenuLanguage,
+    currency: menuCurrency,
+    setCurrency: setMenuCurrency,
     themeMode: menuTheme,
     setThemeMode: setMenuTheme,
   };
@@ -209,9 +268,9 @@ function App() {
     return (
       <ModelViewerPage
         controls={menuControls}
-        currency={currency}
+        currency={menuCurrency}
         dish={activeDish}
-        language={language}
+        language={menuLanguage}
         menuTheme={menuTheme}
         onBack={backToMenu}
         restaurant={restaurant}
@@ -220,27 +279,27 @@ function App() {
     );
   }
 
-  if (route.page === 'pricing') return <PricingPage controls={controls} language={language} style={themeStyle} />;
-  if (route.page === 'experience') return <ExperiencePage controls={controls} language={language} style={themeStyle} />;
-  if (route.page === 'about') return <AboutPage controls={controls} language={language} style={themeStyle} />;
-  if (route.page === 'contact') return <ContactPage controls={controls} language={language} style={themeStyle} />;
+  if (route.page === 'pricing') return <PricingPage controls={controls} language={siteLanguage} style={themeStyle} />;
+  if (route.page === 'experience') return <ExperiencePage controls={controls} language={siteLanguage} style={themeStyle} />;
+  if (route.page === 'about') return <AboutPage controls={controls} language={siteLanguage} style={themeStyle} />;
+  if (route.page === 'contact') return <ContactPage controls={controls} language={siteLanguage} style={themeStyle} />;
 
   if (route.page === 'menu') {
     return (
-      <Shell controls={controls} language={language} restaurant={restaurant} style={themeStyle}>
+      <Shell controls={controls} language={siteLanguage} restaurant={restaurant} style={themeStyle}>
         <MenuExperience
           controls={menuControls}
-          currency={currency}
-          language={language}
+          currency={menuCurrency}
+          language={menuLanguage}
           menuTheme={menuTheme}
           onDishSelect={setSelectedDish}
           restaurant={restaurant}
         />
         {selectedDish && (
           <DishModal
-            currency={currency}
+            currency={menuCurrency}
             dish={selectedDish}
-            language={language}
+            language={menuLanguage}
             menuTheme={menuTheme}
             onClose={() => setSelectedDish(null)}
             onViewer={() => openViewer(selectedDish)}
@@ -252,10 +311,11 @@ function App() {
   }
 
   return (
-    <Shell controls={controls} language={language} restaurant={restaurant} style={themeStyle}>
+    <Shell controls={controls} language={siteLanguage} restaurant={restaurant} style={themeStyle}>
       <LandingPage
-        currency={currency}
-        language={language}
+        menuCurrency={menuCurrency}
+        menuLanguage={menuLanguage}
+        language={siteLanguage}
         menuControls={menuControls}
         menuTheme={menuTheme}
         onDishSelect={setSelectedDish}
@@ -263,9 +323,9 @@ function App() {
       />
       {selectedDish && (
         <DishModal
-          currency={currency}
+          currency={menuCurrency}
           dish={selectedDish}
-          language={language}
+          language={menuLanguage}
           menuTheme={menuTheme}
           onClose={() => setSelectedDish(null)}
           onViewer={() => openViewer(selectedDish)}
@@ -350,7 +410,7 @@ function SiteHeader({ controls, restaurant }) {
   );
 }
 
-function LandingPage({ currency, language, menuControls, menuTheme, onDishSelect, restaurant }) {
+function LandingPage({ language, menuControls, menuCurrency, menuLanguage, menuTheme, onDishSelect, restaurant }) {
   return (
     <main className="landing-page">
       <section className="product-hero">
@@ -376,9 +436,9 @@ function LandingPage({ currency, language, menuControls, menuTheme, onDishSelect
         </div>
         <MenuExperience
           controls={menuControls}
-          currency={currency}
+          currency={menuCurrency}
           isPreview
-          language={language}
+          language={menuLanguage}
           menuTheme={menuTheme}
           onDishSelect={onDishSelect}
           restaurant={restaurant}
@@ -470,9 +530,10 @@ function MenuExperience({ controls, currency, isPreview = false, language, menuT
   }, [restaurant.slug]);
 
   const activeCategory = restaurant.categories.find((category) => category.id === activeCategoryId) || restaurant.categories[0];
+  const filterOptions = getFilterOptionsForCategory(activeCategory?.id);
   const filteredDishes = restaurant.dishes.filter((dish) => {
     const matchesCategory = getDishCategoryId(dish) === activeCategory?.id;
-    const matchesType = filter === 'all' || dish.type === filter;
+    const matchesType = !filterOptions.length || filter === 'all' || getDishFilterValue(dish) === filter;
     const searchable = [
       text(dish.name, language),
       text(dish.description, language),
@@ -521,10 +582,9 @@ function MenuExperience({ controls, currency, isPreview = false, language, menuT
           <h2>{text(activeCategory?.label || activeCategory?.name, language)}</h2>
         </div>
         <div className="toolbar-actions">
-          {['all', 'veg', 'meat'].map((item) => (
+          {filterOptions.map((item) => (
             <button className={filter === item ? 'active' : ''} key={item} onClick={() => setFilter(item)} type="button">
-              {item === 'veg' && <Leaf size={14} />}
-              {item === 'meat' && <Beef size={14} />}
+              <BadgeIcon type={item} />
               {t(language, item)}
             </button>
           ))}
@@ -557,16 +617,19 @@ function MenuExperience({ controls, currency, isPreview = false, language, menuT
 }
 
 function TypeBadge({ language, type }) {
-  const Icon = type === 'veg' ? Leaf : Beef;
+  if (!type) return null;
+
   return (
     <span className={`type-badge ${type}`}>
-      <Icon size={14} />
+      <BadgeIcon type={type} />
       {t(language, type)}
     </span>
   );
 }
 
 function DishCard({ currency, dish, language, onDetails }) {
+  const badgeType = getDishBadgeType(dish);
+
   return (
     <article className="dish-card" onClick={onDetails}>
       <img src={dish.image} alt={text(dish.name, language)} />
@@ -576,8 +639,8 @@ function DishCard({ currency, dish, language, onDetails }) {
           <span>{formatPrice(dish.priceGEL, currency)}</span>
         </div>
         <p>{text(dish.description, language)}</p>
-        <div className="dish-meta-row">
-          <TypeBadge language={language} type={dish.type} />
+        <div className={`dish-meta-row ${badgeType ? '' : 'no-badge'}`}>
+          {badgeType && <TypeBadge language={language} type={badgeType} />}
           <button
             className="secondary-button"
             onClick={(event) => {
@@ -605,6 +668,8 @@ function IngredientTags({ ingredients, language }) {
 }
 
 function DishModal({ currency, dish, language, menuTheme, onClose, onViewer }) {
+  const badgeType = getDishBadgeType(dish);
+
   return (
     <div className={`modal-backdrop menu-theme-${menuTheme}`} role="presentation" onClick={onClose}>
       <section className="dish-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
@@ -614,7 +679,7 @@ function DishModal({ currency, dish, language, menuTheme, onClose, onViewer }) {
             <h2>{text(dish.name, language)}</h2>
             <span>{formatPrice(dish.priceGEL, currency)}</span>
           </div>
-          <TypeBadge language={language} type={dish.type} />
+          {badgeType && <TypeBadge language={language} type={badgeType} />}
           <p>{text(dish.description, language)}</p>
           <IngredientTags ingredients={dish.ingredients} language={language} />
           <div className="dish-actions">
@@ -795,7 +860,22 @@ function NotFoundPage({ controls, language, style }) {
   );
 }
 
+function FooterContactIcon({ kind }) {
+  if (kind === 'email') return <Mail size={16} />;
+  if (kind === 'instagram') return <span className="social-glyph">IG</span>;
+  if (kind === 'tiktok') return <Music2 size={16} />;
+  if (kind === 'facebook') return <ExternalLink size={16} />;
+  return null;
+}
+
 function Footer({ language, restaurant }) {
+  const footerContacts = [
+    { key: 'email', href: 'mailto:' + brand.email, label: brand.email, ariaLabel: t(language, 'email') + ': ' + brand.email },
+    { key: 'instagram', href: brand.instagramUrl, label: brand.instagramHandle, ariaLabel: t(language, 'instagram') + ': ' + brand.instagramHandle, external: true },
+    { key: 'tiktok', href: brand.tiktokUrl, label: brand.tiktokHandle, ariaLabel: 'TikTok: ' + brand.tiktokHandle, external: true },
+    { key: 'facebook', href: brand.facebookUrl, label: brand.facebookLabel, ariaLabel: brand.facebookLabel, external: true },
+  ];
+
   return (
     <footer className="site-footer">
       <div className="footer-inner">
@@ -809,10 +889,18 @@ function Footer({ language, restaurant }) {
           <a href="/contact">{t(language, 'contact')}</a>
         </nav>
         <div className="footer-contact">
-          <a href={`mailto:${brand.email}`}>{t(language, 'email')}: {brand.email}</a>
-          <a href={brand.instagramUrl} rel="noreferrer" target="_blank">
-            {t(language, 'instagram')}: {brand.instagramHandle}
-          </a>
+          {footerContacts.map((item) => (
+            <a
+              aria-label={item.ariaLabel}
+              href={item.href}
+              key={item.key}
+              rel={item.external ? 'noreferrer' : undefined}
+              target={item.external ? '_blank' : undefined}
+            >
+              <FooterContactIcon kind={item.key} />
+              <span>{item.label}</span>
+            </a>
+          ))}
         </div>
       </div>
       <p className="powered">{t(language, 'powered')}</p>
