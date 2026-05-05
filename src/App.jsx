@@ -1,6 +1,7 @@
 ﻿import { useEffect, useRef, useState } from 'react';
 import {
   Beef,
+  Bookmark,
   CircleDollarSign,
   ExternalLink,
   Flame,
@@ -8,13 +9,18 @@ import {
   Globe,
   Grid,
   Leaf,
+  ListChecks,
   List,
   Mail,
+  Minus,
   Moon,
   Music2,
+  Plus,
   Search,
   Sun,
+  Trash2,
   Wine,
+  X,
 } from 'lucide-react';
 import { brand } from './data/brand.js';
 import { currencies, defaultCurrencyCode, formatPrice } from './data/currencies.js';
@@ -73,6 +79,25 @@ function translateIngredientName(name, language) {
 
 function translateIngredientBenefit(benefit, language) {
   return translations[language]?.ingredientBenefits?.[benefit] ?? translations.en.ingredientBenefits?.[benefit] ?? benefit;
+}
+
+function getIngredientKey(name) {
+  return String(name || '').trim().toLowerCase();
+}
+
+function getIngredientInfo(dish, ingredientName) {
+  const ingredientKey = getIngredientKey(ingredientName);
+  const ingredient = (dish.ingredients || []).find((item) => getIngredientKey(item.name) === ingredientKey);
+  const hotspot = (dish.ingredientHotspots || []).find((item) => getIngredientKey(item.name) === ingredientKey);
+
+  return {
+    name: ingredient?.name || hotspot?.name || ingredientName,
+    benefits: ingredient?.benefits?.length ? ingredient.benefits : hotspot?.benefits || [],
+  };
+}
+
+function getIngredientInfos(dish) {
+  return (dish.ingredients || []).map((ingredient) => getIngredientInfo(dish, ingredient.name));
 }
 
 function text(value, language) {
@@ -185,6 +210,68 @@ function getDishBadgeType(dish) {
   return dish.type || null;
 }
 
+function getSelectionStorageKey(slug) {
+  return `sufra-selection-${slug}`;
+}
+
+function normalizeSelection(selection) {
+  if (!Array.isArray(selection)) return [];
+
+  const quantitiesByDish = new Map();
+  selection.forEach((item) => {
+    const dishId = item?.dishId || item?.id;
+    const quantity = Math.floor(Number(item?.quantity));
+    if (!dishId || quantity < 1) return;
+    quantitiesByDish.set(dishId, (quantitiesByDish.get(dishId) || 0) + quantity);
+  });
+
+  return Array.from(quantitiesByDish, ([dishId, quantity]) => ({ dishId, quantity }));
+}
+
+function readSelection(slug) {
+  try {
+    return normalizeSelection(JSON.parse(localStorage.getItem(getSelectionStorageKey(slug)) || '[]'));
+  } catch {
+    return [];
+  }
+}
+
+function writeSelection(slug, selection) {
+  localStorage.setItem(getSelectionStorageKey(slug), JSON.stringify(normalizeSelection(selection)));
+}
+
+function sanitizeSelectionForRestaurant(selection, restaurant) {
+  const dishIds = new Set(restaurant.dishes.map((dish) => dish.id));
+  return normalizeSelection(selection).filter((item) => dishIds.has(item.dishId));
+}
+
+function getSelectionItems(selection, restaurant) {
+  return sanitizeSelectionForRestaurant(selection, restaurant)
+    .map((item) => ({
+      ...item,
+      dish: restaurant.dishes.find((dish) => dish.id === item.dishId),
+    }))
+    .filter((item) => item.dish);
+}
+
+function getSelectionItemCount(selectionItems) {
+  return selectionItems.reduce((total, item) => total + item.quantity, 0);
+}
+
+function getSelectionTotal(selectionItems) {
+  return selectionItems.reduce((total, item) => total + item.dish.priceGEL * item.quantity, 0);
+}
+
+function getSelectionQuantity(selection, dishId) {
+  return normalizeSelection(selection).find((item) => item.dishId === dishId)?.quantity || 0;
+}
+
+function setSelectionQuantity(selection, dishId, quantity) {
+  const nextQuantity = Math.max(0, Math.floor(Number(quantity)));
+  const withoutDish = normalizeSelection(selection).filter((item) => item.dishId !== dishId);
+  return nextQuantity > 0 ? [...withoutDish, { dishId, quantity: nextQuantity }] : withoutDish;
+}
+
 function BadgeIcon({ size = 14, type }) {
   if (type === 'veg') return <Leaf size={size} />;
   if (type === 'meat') return <Beef size={size} />;
@@ -204,6 +291,10 @@ function App() {
   const [menuTheme, setMenuTheme] = useState(() => localStorage.getItem('sufra-menu-theme') || 'dark');
   const [route, setRoute] = useState(() => getRouteFromPath());
   const [selectedDish, setSelectedDish] = useState(null);
+  const activeRestaurant = findRestaurantBySlug(route.slug);
+  const restaurant = activeRestaurant || defaultRestaurant;
+  const [selection, setSelection] = useState(() => sanitizeSelectionForRestaurant(readSelection(restaurant.slug), restaurant));
+  const [isSelectionOpen, setIsSelectionOpen] = useState(false);
 
   useEffect(() => localStorage.setItem('sufra-site-language', siteLanguage), [siteLanguage]);
   useEffect(() => localStorage.setItem('sufra-menu-language', menuLanguage), [menuLanguage]);
@@ -211,6 +302,11 @@ function App() {
   useEffect(() => localStorage.setItem('sufra-menu-currency', menuCurrency), [menuCurrency]);
   useEffect(() => localStorage.setItem('sufra-theme', themeMode), [themeMode]);
   useEffect(() => localStorage.setItem('sufra-menu-theme', menuTheme), [menuTheme]);
+
+  useEffect(() => {
+    setSelection(sanitizeSelectionForRestaurant(readSelection(restaurant.slug), restaurant));
+    setIsSelectionOpen(false);
+  }, [restaurant.slug]);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -227,8 +323,6 @@ function App() {
     if (isSupportedLanguage(requestedMenuLanguage)) setMenuLanguage(requestedMenuLanguage);
   }, [route]);
 
-  const activeRestaurant = findRestaurantBySlug(route.slug);
-  const restaurant = activeRestaurant || defaultRestaurant;
   const themeStyle = getThemeStyle(restaurant, themeMode);
   const activeDish = restaurant.dishes.find((dish) => dish.id === route.params.get('dish'));
   const isViewer = route.params.get('view') === 'viewer' && activeDish;
@@ -249,6 +343,55 @@ function App() {
     setSelectedDish(null);
     navigateToMenu(restaurant.slug, { lang: menuLanguage });
   }
+
+  function updateSelection(updater) {
+    setSelection((currentSelection) => {
+      const nextSelection = sanitizeSelectionForRestaurant(updater(currentSelection), restaurant);
+      writeSelection(restaurant.slug, nextSelection);
+      return nextSelection;
+    });
+  }
+
+  function addToSelection(dish) {
+    incrementSelection(dish.id);
+  }
+
+  function incrementSelection(dishId) {
+    updateSelection((currentSelection) => (
+      setSelectionQuantity(currentSelection, dishId, getSelectionQuantity(currentSelection, dishId) + 1)
+    ));
+  }
+
+  function decrementSelection(dishId) {
+    updateSelection((currentSelection) => (
+      setSelectionQuantity(currentSelection, dishId, getSelectionQuantity(currentSelection, dishId) - 1)
+    ));
+  }
+
+  function removeFromSelection(dishId) {
+    updateSelection((currentSelection) => setSelectionQuantity(currentSelection, dishId, 0));
+  }
+
+  function clearSelection() {
+    writeSelection(restaurant.slug, []);
+    setSelection([]);
+  }
+
+  const selectionItems = getSelectionItems(selection, restaurant);
+  const selectionControls = {
+    addToSelection,
+    clearSelection,
+    closeSelection: () => setIsSelectionOpen(false),
+    decrementSelection,
+    getQuantity: (dishId) => getSelectionQuantity(selection, dishId),
+    incrementSelection,
+    isOpen: isSelectionOpen,
+    itemCount: getSelectionItemCount(selectionItems),
+    items: selectionItems,
+    openSelection: () => setIsSelectionOpen(true),
+    removeFromSelection,
+    total: getSelectionTotal(selectionItems),
+  };
 
   if (!activeRestaurant && route.page === 'menu') {
     return <NotFoundPage language={siteLanguage} controls={{ language: siteLanguage, setLanguage: setSiteLanguage, currency: siteCurrency, setCurrency: setSiteCurrency, themeMode, setThemeMode }} style={themeStyle} />;
@@ -294,6 +437,7 @@ function App() {
           menuTheme={menuTheme}
           onDishSelect={setSelectedDish}
           restaurant={restaurant}
+          selectionControls={selectionControls}
         />
         {selectedDish && (
           <DishModal
@@ -304,6 +448,7 @@ function App() {
             onClose={() => setSelectedDish(null)}
             onViewer={() => openViewer(selectedDish)}
             restaurant={restaurant}
+            selectionControls={selectionControls}
           />
         )}
       </Shell>
@@ -518,11 +663,12 @@ function ExperiencePreview({ language }) {
   );
 }
 
-function MenuExperience({ controls, currency, isPreview = false, language, menuTheme, onDishSelect, restaurant }) {
+function MenuExperience({ controls, currency, isPreview = false, language, menuTheme, onDishSelect, restaurant, selectionControls }) {
   const [activeCategoryId, setActiveCategoryId] = useState(restaurant.categories[0]?.id || '');
   const [filter, setFilter] = useState('all');
   const [viewMode, setViewMode] = useState('list');
   const [query, setQuery] = useState('');
+  const selectionEnabled = Boolean(selectionControls) && !isPreview;
 
   useEffect(() => {
     setActiveCategoryId(restaurant.categories[0]?.id || '');
@@ -604,14 +750,39 @@ function MenuExperience({ controls, currency, isPreview = false, language, menuT
             dish={dish}
             key={dish.id}
             language={language}
+            onDecrementSelection={selectionEnabled ? () => selectionControls.decrementSelection(dish.id) : null}
             onDetails={() => onDishSelect(dish)}
-            restaurant={restaurant}
+            onIncrementSelection={selectionEnabled ? () => selectionControls.addToSelection(dish) : null}
+            selectionQuantity={selectionEnabled ? selectionControls.getQuantity(dish.id) : 0}
           />
         ))}
         {!filteredDishes.length && (
           <div className="empty-menu-state">{t(language, 'moreDishes')}</div>
         )}
       </div>
+      {selectionEnabled && selectionControls.itemCount > 0 && (
+        <button className="selection-floating-button" onClick={selectionControls.openSelection} type="button">
+          <ListChecks size={18} />
+          <span>
+            {t(language, 'viewSelection')} · {selectionControls.itemCount}{' '}
+            {t(language, selectionControls.itemCount === 1 ? 'item' : 'items')}
+          </span>
+        </button>
+      )}
+      {selectionEnabled && selectionControls.isOpen && (
+        <SelectionSheet
+          currency={currency}
+          language={language}
+          menuTheme={menuTheme || controls.themeMode}
+          onClear={selectionControls.clearSelection}
+          onClose={selectionControls.closeSelection}
+          onDecrement={selectionControls.decrementSelection}
+          onIncrement={selectionControls.incrementSelection}
+          onRemove={selectionControls.removeFromSelection}
+          items={selectionControls.items}
+          total={selectionControls.total}
+        />
+      )}
     </section>
   );
 }
@@ -627,7 +798,52 @@ function TypeBadge({ language, type }) {
   );
 }
 
-function DishCard({ currency, dish, language, onDetails }) {
+function QuantityControls({ compact = false, language, onDecrease, onIncrease, quantity }) {
+  return (
+    <div className={`quantity-controls ${compact ? 'compact' : ''}`} aria-label={`${t(language, 'quantity')}: ${quantity}`}>
+      <button aria-label={t(language, 'decreaseQuantity')} onClick={(event) => {
+        event.stopPropagation();
+        onDecrease();
+      }} type="button">
+        <Minus size={14} />
+      </button>
+      <span>{quantity}</span>
+      <button aria-label={t(language, 'increaseQuantity')} onClick={(event) => {
+        event.stopPropagation();
+        onIncrease();
+      }} type="button">
+        <Plus size={14} />
+      </button>
+    </div>
+  );
+}
+
+function SelectionDishControl({ addLabel, language, onDecrease, onIncrease, quantity }) {
+  if (!onIncrease) return null;
+
+  if (quantity > 0) {
+    return (
+      <QuantityControls
+        language={language}
+        onDecrease={onDecrease}
+        onIncrease={onIncrease}
+        quantity={quantity}
+      />
+    );
+  }
+
+  return (
+    <button className="selection-add-button" onClick={(event) => {
+      event.stopPropagation();
+      onIncrease();
+    }} type="button">
+      <Bookmark size={14} />
+      <span>{addLabel}</span>
+    </button>
+  );
+}
+
+function DishCard({ currency, dish, language, onDecrementSelection, onDetails, onIncrementSelection, selectionQuantity = 0 }) {
   const badgeType = getDishBadgeType(dish);
 
   return (
@@ -641,34 +857,59 @@ function DishCard({ currency, dish, language, onDetails }) {
         <p>{text(dish.description, language)}</p>
         <div className={`dish-meta-row ${badgeType ? '' : 'no-badge'}`}>
           {badgeType && <TypeBadge language={language} type={badgeType} />}
-          <button
-            className="secondary-button"
-            onClick={(event) => {
-              event.stopPropagation();
-              onDetails();
-            }}
-            type="button"
-          >
-            {t(language, 'details')}
-          </button>
+          <div className="dish-card-actions">
+            <SelectionDishControl
+              addLabel={t(language, 'save')}
+              language={language}
+              onDecrease={onDecrementSelection}
+              onIncrease={onIncrementSelection}
+              quantity={selectionQuantity}
+            />
+            <button
+              className="secondary-button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onDetails();
+              }}
+              type="button"
+            >
+              {t(language, 'details')}
+            </button>
+          </div>
         </div>
       </div>
     </article>
   );
 }
 
-function IngredientTags({ ingredients, language }) {
+function IngredientTags({ ingredients, language, onIngredientSelect, selectedIngredientName }) {
   return (
     <div className="ingredient-tags">
-      {(ingredients || []).map((ingredient) => (
-        <span key={ingredient.name}>{translateIngredientName(ingredient.name, language)}</span>
-      ))}
+      {(ingredients || []).map((ingredient) => {
+        const isActive = getIngredientKey(ingredient.name) === getIngredientKey(selectedIngredientName);
+        if (onIngredientSelect) {
+          return (
+            <button
+              aria-pressed={isActive}
+              className={isActive ? 'active' : ''}
+              key={ingredient.name}
+              onClick={() => onIngredientSelect(ingredient.name)}
+              type="button"
+            >
+              {translateIngredientName(ingredient.name, language)}
+            </button>
+          );
+        }
+
+        return <span key={ingredient.name}>{translateIngredientName(ingredient.name, language)}</span>;
+      })}
     </div>
   );
 }
 
-function DishModal({ currency, dish, language, menuTheme, onClose, onViewer }) {
+function DishModal({ currency, dish, language, menuTheme, onClose, onViewer, selectionControls }) {
   const badgeType = getDishBadgeType(dish);
+  const selectionQuantity = selectionControls?.getQuantity(dish.id) || 0;
 
   return (
     <div className={`modal-backdrop menu-theme-${menuTheme}`} role="presentation" onClick={onClose}>
@@ -682,6 +923,17 @@ function DishModal({ currency, dish, language, menuTheme, onClose, onViewer }) {
           {badgeType && <TypeBadge language={language} type={badgeType} />}
           <p>{text(dish.description, language)}</p>
           <IngredientTags ingredients={dish.ingredients} language={language} />
+          {selectionControls && (
+            <div className="modal-selection-row">
+              <SelectionDishControl
+                addLabel={t(language, 'addToSelection')}
+                language={language}
+                onDecrease={() => selectionControls.decrementSelection(dish.id)}
+                onIncrease={() => selectionControls.addToSelection(dish)}
+                quantity={selectionQuantity}
+              />
+            </div>
+          )}
           <div className="dish-actions">
             <button className="secondary-button" onClick={onClose} type="button">{t(language, 'backToMenu')}</button>
             <button className="primary-button" onClick={onViewer} type="button">
@@ -694,14 +946,94 @@ function DishModal({ currency, dish, language, menuTheme, onClose, onViewer }) {
   );
 }
 
+function SelectionSheet({ currency, items, language, menuTheme, onClear, onClose, onDecrement, onIncrement, onRemove, total }) {
+  return (
+    <div className={`selection-backdrop menu-theme-${menuTheme}`} role="presentation" onClick={onClose}>
+      <section className="selection-sheet" role="dialog" aria-modal="true" aria-labelledby="selection-title" onClick={(event) => event.stopPropagation()}>
+        <div className="selection-sheet-header">
+          <div>
+            <p className="eyebrow">{t(language, 'viewSelection')}</p>
+            <h2 id="selection-title">{t(language, 'mySelection')}</h2>
+          </div>
+          <button aria-label={t(language, 'close')} className="sheet-icon-button" onClick={onClose} type="button">
+            <X size={18} />
+          </button>
+        </div>
+
+        {items.length > 0 ? (
+          <div className="selection-list">
+            {items.map(({ dish, dishId, quantity }) => (
+              <article className="selection-item" key={dishId}>
+                <img src={dish.image} alt={text(dish.name, language)} />
+                <div className="selection-item-copy">
+                  <h3>{text(dish.name, language)}</h3>
+                  <p>{formatPrice(dish.priceGEL * quantity, currency)}</p>
+                </div>
+                <QuantityControls
+                  compact
+                  language={language}
+                  onDecrease={() => onDecrement(dishId)}
+                  onIncrease={() => onIncrement(dishId)}
+                  quantity={quantity}
+                />
+                <button className="selection-remove-button" onClick={() => onRemove(dishId)} type="button">
+                  <Trash2 size={14} />
+                  <span>{t(language, 'remove')}</span>
+                </button>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="selection-empty">{t(language, 'emptySelection')}</p>
+        )}
+
+        <div className="selection-summary">
+          <div>
+            <span>{t(language, 'estimatedTotal')}</span>
+            <strong>{formatPrice(total, currency)}</strong>
+          </div>
+          <p>{t(language, 'selectionWaiterHint')}</p>
+        </div>
+
+        <div className="selection-sheet-actions">
+          <button className="secondary-button" disabled={!items.length} onClick={onClear} type="button">
+            <Trash2 size={15} />
+            {t(language, 'clearSelection')}
+          </button>
+          <button className="primary-button" onClick={onClose} type="button">
+            <span className="wipe-label" data-text={t(language, 'close')}>{t(language, 'close')}</span>
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function IngredientInfoCard({ ingredient, language, onClose }) {
+  if (!ingredient) return null;
+
+  return (
+    <aside className="ingredient-info-card" key={ingredient.name}>
+      <button aria-label={t(language, 'close')} className="ingredient-info-close" onClick={onClose} type="button">
+        <X size={14} />
+      </button>
+      <strong>{translateIngredientName(ingredient.name, language)}</strong>
+      {ingredient.benefits.length > 0 && (
+        <small>{ingredient.benefits.map((benefit) => translateIngredientBenefit(benefit, language)).join(' / ')}</small>
+      )}
+    </aside>
+  );
+}
+
 function ModelViewerPage({ controls, currency, dish, language, menuTheme, onBack, restaurant, style }) {
   const modelViewerRef = useRef(null);
   const modelScale = dish.arScale || '0.25 0.25 0.25';
-  const [showHotspots, setShowHotspots] = useState(false);
+  const [selectedIngredientName, setSelectedIngredientName] = useState(null);
+  const ingredientInfos = getIngredientInfos(dish);
+  const selectedIngredient = selectedIngredientName ? getIngredientInfo(dish, selectedIngredientName) : null;
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setShowHotspots(true), 2400);
-    return () => window.clearTimeout(timer);
+    setSelectedIngredientName(null);
   }, [dish.id]);
 
   useEffect(() => {
@@ -716,50 +1048,50 @@ function ModelViewerPage({ controls, currency, dish, language, menuTheme, onBack
         <section className="viewer-layout">
           {/* The scale value controls the model-viewer preview plus WebXR/Scene Viewer AR.
              iOS Quick Look may ignore this and use dimensions baked into the USDZ/GLB conversion. */}
-          <model-viewer
-            ref={modelViewerRef}
-            alt={text(dish.name, language)}
-            ar
-            ar-modes="webxr scene-viewer quick-look"
-            ar-placement={dish.arPlacement}
-            ar-scale="fixed"
-            auto-rotate
-            camera-controls
-            camera-orbit={dish.cameraOrbit}
-            disable-zoom
-            exposure="0.95"
-            field-of-view={dish.fieldOfView}
-            poster={dish.image}
-            data-ar-scale={modelScale}
-            scale={modelScale}
-            shadow-intensity="1"
-            src={dish.model}
-            touch-action="pan-y"
-          >
-            {showHotspots && (dish.ingredientHotspots || []).map((hotspot) => (
-              <button
-                className="ingredient-hotspot"
-                key={hotspot.id}
-                slot={`hotspot-${hotspot.id}`}
-                data-position={hotspot.position}
-                data-normal={hotspot.normal}
-                type="button"
-              >
-                <span>{translateIngredientName(hotspot.name, language)}</span>
-                <small>{hotspot.benefits.map((benefit) => translateIngredientBenefit(benefit, language)).join(' / ')}</small>
+          <div className="viewer-model-area">
+            <model-viewer
+              ref={modelViewerRef}
+              alt={text(dish.name, language)}
+              ar
+              ar-modes="webxr scene-viewer quick-look"
+              ar-placement={dish.arPlacement}
+              ar-scale="fixed"
+              auto-rotate
+              camera-controls
+              camera-orbit={dish.cameraOrbit}
+              disable-zoom
+              exposure="0.95"
+              field-of-view={dish.fieldOfView}
+              poster={dish.image}
+              data-ar-scale={modelScale}
+              scale={modelScale}
+              shadow-intensity="1"
+              src={dish.model}
+              touch-action="pan-y"
+            >
+              <button className="ar-button" slot="ar-button" type="button">
+                <span className="wipe-label" data-text={t(language, 'viewOnTable')}>{t(language, 'viewOnTable')}</span>
               </button>
-            ))}
-            <button className="ar-button" slot="ar-button" type="button">
-              <span className="wipe-label" data-text={t(language, 'viewOnTable')}>{t(language, 'viewOnTable')}</span>
-            </button>
-          </model-viewer>
+            </model-viewer>
+            <IngredientInfoCard
+              ingredient={selectedIngredient}
+              key={selectedIngredient?.name || 'empty-ingredient-info'}
+              language={language}
+              onClose={() => setSelectedIngredientName(null)}
+            />
+          </div>
           <div className="viewer-info-card">
             <div>
               <p className="eyebrow">{restaurant.brandName}</p>
               <h1>{text(dish.name, language)}</h1>
             </div>
             <p>{text(dish.description, language)}</p>
-            <IngredientTags ingredients={dish.ingredients} language={language} />
+            <IngredientTags
+              ingredients={ingredientInfos}
+              language={language}
+              onIngredientSelect={setSelectedIngredientName}
+              selectedIngredientName={selectedIngredientName}
+            />
             <div className="viewer-meta-row">
               <strong>{formatPrice(dish.priceGEL, currency)}</strong>
               <span>{dish.hasModel === false ? t(language, 'placeholderModel') : t(language, 'modelHint')}</span>

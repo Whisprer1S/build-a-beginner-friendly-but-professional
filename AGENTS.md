@@ -172,6 +172,8 @@ Preserve:
 
 Do not re-enable unrealistic free scaling unless explicitly requested. Users should be able to rotate/orbit in preview and launch AR on mobile. iOS Quick Look may handle scale differently than WebXR/Scene Viewer.
 
+Visible ingredient info in the viewer should come from clickable ingredient chips and a normal UI info card. Do not render floating `<model-viewer>` hotspot labels over the 3D model unless a future task explicitly asks for spatial callouts again. `ingredientHotspots` may remain in dish data as metadata/future positioning data.
+
 Mtsvadi currently uses:
 
 ```js
@@ -207,6 +209,8 @@ Do not translate:
 When adding visible UI text, add it to `translations.js` and use `t(language, key)` or `tArray(language, key)` from `src/App.jsx`.
 
 Dish descriptions and category labels live in restaurant configs.
+
+`My selection` is frontend-only and local-only. It stores minimal dish id/quantity data per restaurant with `sufra-selection-${restaurant.slug}` and must not become checkout, payment, order submission, table submission, login, admin, backend, or database behavior.
 
 ## Contact Info
 
