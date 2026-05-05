@@ -353,7 +353,7 @@ Rules:
 
 ## 10. Ingredient Callouts / Hotspots
 
-Ingredient callouts are implemented as model-viewer hotspots in `ModelViewerPage`.
+Ingredient callouts are now shown as normal UI, not as visible `<model-viewer>` hotspot labels.
 
 Data lives in each dish config under `ingredientHotspots`:
 
@@ -371,22 +371,41 @@ ingredientHotspots: [
 
 Rendering behavior:
 
-- `ModelViewerPage` starts with `showHotspots` false.
-- A timer enables hotspots after about 2400ms.
-- Each hotspot renders a `<button>` with `slot={`hotspot-${hotspot.id}`}`.
-- `data-position` and `data-normal` are approximate positions.
+- `ingredientHotspots` can remain in dish configs as ingredient metadata and future positioning data.
+- Visible floating hotspot labels are no longer rendered over the 3D model.
+- Viewer ingredient chips are rendered from `dish.ingredients` as clickable buttons.
+- Tapping a chip opens a small white `IngredientInfoCard` overlay inside the black viewer preview area.
+- Benefits are matched by ingredient name, using `dish.ingredients` first and `ingredientHotspots` as a fallback.
 - Visible name/benefits are translated through `translateIngredientName` and `translateIngredientBenefit`.
+- The real AR launch remains clean and should not show ingredient labels.
 
 Important limitation:
 
-This is not real 3D ingredient detection. Hotspots are manually estimated per model. They may need tuning for each GLB file.
+This is not real 3D ingredient detection. Ingredient benefits are static menu metadata. Any `position` and `normal` values in `ingredientHotspots` are currently not used for visible UI.
 
 Future improvements:
 
-- Tune hotspot positions per actual model geometry.
 - Add richer ingredient/nutrition metadata.
-- Improve hotspot layout for small screens.
-- Consider per-dish hotspot visibility controls if some models do not align well.
+- Tune or repurpose hotspot positions only if a future task explicitly brings back spatial callouts.
+
+### My Selection
+
+The mobile menu includes a frontend-only saved dishes feature called `My selection`.
+
+Behavior:
+
+- Guests can save dishes from menu cards and dish detail modals.
+- Saved dishes store only dish ids and quantities in `localStorage`.
+- Storage is per restaurant slug using `sufra-selection-${restaurant.slug}`.
+- Rendering resolves dish details from the current restaurant config and ignores saved ids that no longer exist.
+- Prices and estimated totals use `formatPrice` with the current menu currency.
+- Dish names follow the current menu language.
+- The bottom sheet says `Show this list to your waiter.`
+
+Rules:
+
+- This is not a cart, checkout, order submission, payment flow, table-number flow, or backend feature.
+- Do not add backend/database/login/admin/payment/order behavior to this feature.
 
 ## 11. Currency System
 
@@ -465,6 +484,7 @@ What should translate:
 - Filters
 - Dish descriptions when translations exist
 - Detail modal labels
+- My selection labels, helper text, quantity labels, and empty states
 - Back/viewer buttons
 - AR helper text
 - Ingredient labels/benefits
@@ -677,8 +697,8 @@ Important CSS areas:
 - Hero: `.product-hero`
 - Pricing: `.pricing-section`, `.pricing-carousel-shell`, `.pricing-grid`, `.pricing-card`
 - Menu app: `.menu-app`, `.menu-theme-dark`, `.menu-theme-light`
-- Dish UI: `.dish-card`, `.dish-modal`, `.viewer-info-card`
-- AR viewer: `model-viewer`, `.ingredient-hotspot`, `.ar-button`
+- Dish UI: `.dish-card`, `.dish-modal`, `.viewer-info-card`, `.selection-sheet`
+- AR viewer: `model-viewer`, `.ingredient-info-card`, `.ar-button`
 - Footer: `.site-footer`
 
 ## 18. Mobile-First Rules
@@ -826,7 +846,7 @@ Known issues/cleanup notes from inspection:
 - `public/models/dishes/khinkali.glb.glb` appears to duplicate `khinkali.glb`. The app currently uses `/models/dishes/khinkali.glb`. Do not delete or move it unless doing an explicit asset cleanup.
 - Several asset filenames include spaces and uppercase letters. This is supported if paths are exact, but future assets should prefer lowercase kebab-case.
 - Mtsvadi uses `placeholder-dish.glb` and `hasModel: false`.
-- Hotspot positions are approximate and may need per-model tuning.
+- `ingredientHotspots` positions are retained as data but are not currently rendered as visible model-viewer hotspot labels.
 - iOS Quick Look may handle scale differently than WebXR/Scene Viewer.
 
 Planned/future improvements:
@@ -834,7 +854,7 @@ Planned/future improvements:
 - Better 3D capture/model pipeline for real restaurant dishes.
 - More real restaurant dish content and client configs.
 - 360/virtual restaurant walkthrough experience.
-- Better ingredient hotspot calibration and nutrition metadata.
+- Better ingredient nutrition metadata and optional future spatial callout calibration.
 - Asset folder cleanup and naming normalization.
 - Component extraction from `App.jsx` once product behavior is stable.
 - Optional test coverage for routing/data helpers.

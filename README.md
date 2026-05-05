@@ -54,6 +54,12 @@ public/images/dishes
 public/models/dishes
 ```
 
+## Menu Features
+
+- Viewer ingredient chips are clickable and open a small normal UI info card. `ingredientHotspots` may remain in menu data, but visible labels no longer float over the 3D model.
+- `My selection` is a local-only saved dishes list. It stores dish ids and quantities per restaurant in `localStorage` with `sufra-selection-${restaurant.slug}`.
+- `My selection` is not checkout, ordering, payment, table submission, or a backend feature.
+
 ## Add A New Restaurant
 
 1. Copy an existing config:
