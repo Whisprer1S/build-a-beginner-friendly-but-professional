@@ -51,7 +51,6 @@ Important components/functions in `src/App.jsx`:
 - `backToMenu`
 - `LandingPage`
 - `MenuExperience`
-- `DishModal`
 - `ModelViewerPage`
 - `PricingSection`
 - `ExperiencePage`
