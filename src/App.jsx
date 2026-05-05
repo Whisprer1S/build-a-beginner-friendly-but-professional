@@ -290,7 +290,6 @@ function App() {
   const [themeMode, setThemeMode] = useState(() => localStorage.getItem('sufra-theme') || 'light');
   const [menuTheme, setMenuTheme] = useState(() => localStorage.getItem('sufra-menu-theme') || 'dark');
   const [route, setRoute] = useState(() => getRouteFromPath());
-  const [selectedDish, setSelectedDish] = useState(null);
   const activeRestaurant = findRestaurantBySlug(route.slug);
   const restaurant = activeRestaurant || defaultRestaurant;
   const [selection, setSelection] = useState(() => sanitizeSelectionForRestaurant(readSelection(restaurant.slug), restaurant));
@@ -310,7 +309,6 @@ function App() {
 
   useEffect(() => {
     const handlePopState = () => {
-      setSelectedDish(null);
       setRoute(getRouteFromPath());
     };
 
@@ -335,12 +333,10 @@ function App() {
   }
 
   function openViewer(dish) {
-    setSelectedDish(null);
     navigateToMenu(restaurant.slug, { dish: dish.id, view: 'viewer', lang: menuLanguage });
   }
 
   function backToMenu() {
-    setSelectedDish(null);
     navigateToMenu(restaurant.slug, { lang: menuLanguage });
   }
 
@@ -417,6 +413,7 @@ function App() {
         menuTheme={menuTheme}
         onBack={backToMenu}
         restaurant={restaurant}
+        selectionControls={selectionControls}
         style={themeStyle}
       />
     );
@@ -435,22 +432,10 @@ function App() {
           currency={menuCurrency}
           language={menuLanguage}
           menuTheme={menuTheme}
-          onDishSelect={setSelectedDish}
+          onDishSelect={openViewer}
           restaurant={restaurant}
           selectionControls={selectionControls}
         />
-        {selectedDish && (
-          <DishModal
-            currency={menuCurrency}
-            dish={selectedDish}
-            language={menuLanguage}
-            menuTheme={menuTheme}
-            onClose={() => setSelectedDish(null)}
-            onViewer={() => openViewer(selectedDish)}
-            restaurant={restaurant}
-            selectionControls={selectionControls}
-          />
-        )}
       </Shell>
     );
   }
@@ -463,20 +448,10 @@ function App() {
         language={siteLanguage}
         menuControls={menuControls}
         menuTheme={menuTheme}
-        onDishSelect={setSelectedDish}
+        onDishSelect={openViewer}
         restaurant={restaurant}
+        selectionControls={selectionControls}
       />
-      {selectedDish && (
-        <DishModal
-          currency={menuCurrency}
-          dish={selectedDish}
-          language={menuLanguage}
-          menuTheme={menuTheme}
-          onClose={() => setSelectedDish(null)}
-          onViewer={() => openViewer(selectedDish)}
-          restaurant={restaurant}
-        />
-      )}
     </Shell>
   );
 }
@@ -555,7 +530,7 @@ function SiteHeader({ controls, restaurant }) {
   );
 }
 
-function LandingPage({ language, menuControls, menuCurrency, menuLanguage, menuTheme, onDishSelect, restaurant }) {
+function LandingPage({ language, menuControls, menuCurrency, menuLanguage, menuTheme, onDishSelect, restaurant, selectionControls }) {
   return (
     <main className="landing-page">
       <section className="product-hero">
@@ -587,6 +562,7 @@ function LandingPage({ language, menuControls, menuCurrency, menuLanguage, menuT
           menuTheme={menuTheme}
           onDishSelect={onDishSelect}
           restaurant={restaurant}
+          selectionControls={selectionControls}
         />
       </section>
 
@@ -668,7 +644,10 @@ function MenuExperience({ controls, currency, isPreview = false, language, menuT
   const [filter, setFilter] = useState('all');
   const [viewMode, setViewMode] = useState('list');
   const [query, setQuery] = useState('');
-  const selectionEnabled = Boolean(selectionControls) && !isPreview;
+  const selectionEnabled = Boolean(selectionControls);
+  const selectionLabel = selectionControls?.itemCount > 0
+    ? `${t(language, 'viewSelection')} · ${selectionControls.itemCount} ${t(language, selectionControls.itemCount === 1 ? 'item' : 'items')}`
+    : t(language, 'mySelection');
 
   useEffect(() => {
     setActiveCategoryId(restaurant.categories[0]?.id || '');
@@ -763,10 +742,7 @@ function MenuExperience({ controls, currency, isPreview = false, language, menuT
       {selectionEnabled && selectionControls.itemCount > 0 && (
         <button className="selection-floating-button" onClick={selectionControls.openSelection} type="button">
           <ListChecks size={18} />
-          <span>
-            {t(language, 'viewSelection')} · {selectionControls.itemCount}{' '}
-            {t(language, selectionControls.itemCount === 1 ? 'item' : 'items')}
-          </span>
+          <span>{selectionLabel}</span>
         </button>
       )}
       {selectionEnabled && selectionControls.isOpen && (
@@ -907,45 +883,6 @@ function IngredientTags({ ingredients, language, onIngredientSelect, selectedIng
   );
 }
 
-function DishModal({ currency, dish, language, menuTheme, onClose, onViewer, selectionControls }) {
-  const badgeType = getDishBadgeType(dish);
-  const selectionQuantity = selectionControls?.getQuantity(dish.id) || 0;
-
-  return (
-    <div className={`modal-backdrop menu-theme-${menuTheme}`} role="presentation" onClick={onClose}>
-      <section className="dish-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
-        <img src={dish.image} alt={text(dish.name, language)} />
-        <div>
-          <div className="dish-title-row">
-            <h2>{text(dish.name, language)}</h2>
-            <span>{formatPrice(dish.priceGEL, currency)}</span>
-          </div>
-          {badgeType && <TypeBadge language={language} type={badgeType} />}
-          <p>{text(dish.description, language)}</p>
-          <IngredientTags ingredients={dish.ingredients} language={language} />
-          {selectionControls && (
-            <div className="modal-selection-row">
-              <SelectionDishControl
-                addLabel={t(language, 'addToSelection')}
-                language={language}
-                onDecrease={() => selectionControls.decrementSelection(dish.id)}
-                onIncrease={() => selectionControls.addToSelection(dish)}
-                quantity={selectionQuantity}
-              />
-            </div>
-          )}
-          <div className="dish-actions">
-            <button className="secondary-button" onClick={onClose} type="button">{t(language, 'backToMenu')}</button>
-            <button className="primary-button" onClick={onViewer} type="button">
-              <span className="wipe-label" data-text={t(language, 'viewOnTable')}>{t(language, 'viewOnTable')}</span>
-            </button>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-}
-
 function SelectionSheet({ currency, items, language, menuTheme, onClear, onClose, onDecrement, onIncrement, onRemove, total }) {
   return (
     <div className={`selection-backdrop menu-theme-${menuTheme}`} role="presentation" onClick={onClose}>
@@ -1025,12 +962,13 @@ function IngredientInfoCard({ ingredient, language, onClose }) {
   );
 }
 
-function ModelViewerPage({ controls, currency, dish, language, menuTheme, onBack, restaurant, style }) {
+function ModelViewerPage({ controls, currency, dish, language, menuTheme, onBack, restaurant, selectionControls, style }) {
   const modelViewerRef = useRef(null);
   const modelScale = dish.arScale || '0.25 0.25 0.25';
   const [selectedIngredientName, setSelectedIngredientName] = useState(null);
   const ingredientInfos = getIngredientInfos(dish);
   const selectedIngredient = selectedIngredientName ? getIngredientInfo(dish, selectedIngredientName) : null;
+  const selectionQuantity = selectionControls?.getQuantity(dish.id) || 0;
 
   useEffect(() => {
     setSelectedIngredientName(null);
@@ -1092,6 +1030,17 @@ function ModelViewerPage({ controls, currency, dish, language, menuTheme, onBack
               onIngredientSelect={setSelectedIngredientName}
               selectedIngredientName={selectedIngredientName}
             />
+            {selectionControls && (
+              <div className="viewer-selection-row">
+                <SelectionDishControl
+                  addLabel={t(language, 'addToSelection')}
+                  language={language}
+                  onDecrease={() => selectionControls.decrementSelection(dish.id)}
+                  onIncrease={() => selectionControls.addToSelection(dish)}
+                  quantity={selectionQuantity}
+                />
+              </div>
+            )}
             <div className="viewer-meta-row">
               <strong>{formatPrice(dish.priceGEL, currency)}</strong>
               <span>{dish.hasModel === false ? t(language, 'placeholderModel') : t(language, 'modelHint')}</span>

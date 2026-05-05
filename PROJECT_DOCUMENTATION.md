@@ -12,7 +12,7 @@ Core value:
 - Guests scan a QR code for a restaurant.
 - The website opens a mobile-first menu experience.
 - Guests browse categories, search dishes, filter by food or drink type, inspect ingredients, and switch language/currency.
-- Guests open a dish detail modal and launch a 3D/AR viewer.
+- Guests open dish Details directly into the full 3D/AR viewer page.
 - The AR viewer uses `<model-viewer>` so guests can preview dishes in 3D and view them on their table before ordering.
 
 Sufra AR is also positioning toward a future Virtual Restaurant Experience: a coming-soon concept where guests can explore a restaurant before visiting, move from entrance to table, preview seating, switch day/night atmosphere, open the AR menu inside the virtual space, and view dishes on the selected table.
@@ -310,16 +310,15 @@ The AR viewer is implemented in `ModelViewerPage` in `src/App.jsx`.
 Flow:
 
 1. User opens a dish card or Details button.
-2. `DishModal` displays dish details.
-3. `View on your table` calls `openViewer(dish)`.
-4. `openViewer(dish)` clears modal state and navigates to:
+2. `openViewer(dish)` navigates directly to:
 
 ```text
 /menu/demo?dish=<dish-id>&view=viewer&lang=<language>
 ```
 
-5. `App` detects `view=viewer` and renders `ModelViewerPage`.
-6. `ModelViewerPage` passes `dish.model`, `dish.image`, `dish.arScale`, `dish.arPlacement`, `dish.cameraOrbit`, and `dish.fieldOfView` into `<model-viewer>`.
+3. `App` detects `view=viewer` and renders `ModelViewerPage`.
+4. `ModelViewerPage` shows dish info, clickable ingredient chips/info, a small `Add to selection` or quantity control, and the AR launch button.
+5. `ModelViewerPage` passes `dish.model`, `dish.image`, `dish.arScale`, `dish.arPlacement`, `dish.cameraOrbit`, and `dish.fieldOfView` into `<model-viewer>`.
 
 Current model-viewer realism settings:
 
@@ -394,7 +393,9 @@ The mobile menu includes a frontend-only saved dishes feature called `My selecti
 
 Behavior:
 
-- Guests can save dishes from menu cards and dish detail modals.
+- Guests can save dishes from menu cards and the full dish viewer page.
+- When saved dishes exist, the menu shows a subtle bottom `View selection` access button.
+- With no saved dishes, the top menu/header stays clean and selection access can remain hidden.
 - Saved dishes store only dish ids and quantities in `localStorage`.
 - Storage is per restaurant slug using `sufra-selection-${restaurant.slug}`.
 - Rendering resolves dish details from the current restaurant config and ignores saved ids that no longer exist.
@@ -483,7 +484,7 @@ What should translate:
 - Search placeholder
 - Filters
 - Dish descriptions when translations exist
-- Detail modal labels
+- Dish detail/viewer action labels
 - My selection labels, helper text, quantity labels, and empty states
 - Back/viewer buttons
 - AR helper text
@@ -697,7 +698,7 @@ Important CSS areas:
 - Hero: `.product-hero`
 - Pricing: `.pricing-section`, `.pricing-carousel-shell`, `.pricing-grid`, `.pricing-card`
 - Menu app: `.menu-app`, `.menu-theme-dark`, `.menu-theme-light`
-- Dish UI: `.dish-card`, `.dish-modal`, `.viewer-info-card`, `.selection-sheet`
+- Dish UI: `.dish-card`, `.viewer-info-card`, `.selection-sheet`
 - AR viewer: `model-viewer`, `.ingredient-info-card`, `.ar-button`
 - Footer: `.site-footer`
 
@@ -711,7 +712,7 @@ Rules:
 - Category slider must be horizontally swipeable.
 - Category changes reset the active type filter to All. Desserts hide type filters/badges; Drinks use Alcoholic / Non-alcoholic filters and badges.
 - Search must remain usable on mobile.
-- Details modal must fit mobile screens.
+- Dish viewer details and selection controls must fit mobile screens.
 - AR button must be obvious and reachable.
 - Pricing cards should swipe horizontally on mobile using CSS scroll-snap.
 - Desktop can show the mobile app-style menu centered inside the page.
