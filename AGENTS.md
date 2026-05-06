@@ -253,7 +253,6 @@ Current mailto subjects in `src/App.jsx`:
 
 - Inquiry: `Sufra AR Inquiry`
 - Demo request: `Sufra AR Demo Request`
-- Custom plan inquiry: `Sufra AR Custom Plan Inquiry`
 
 ## Deployment Notes
 

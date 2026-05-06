@@ -45,19 +45,4 @@ export const pricingPlans = [
       'Early access to virtual restaurant experience',
     ],
   },
-  {
-    id: 'custom',
-    title: 'Custom',
-    price: 'Contact Sales',
-    cta: 'Contact sales',
-    features: [
-      'Custom restaurant experience',
-      'Multiple branches or locations',
-      'Custom 3D/AR model package',
-      'Virtual restaurant walkthrough planning',
-      'Brand-specific UI direction',
-      'Custom feature requests',
-      'Meeting required',
-    ],
-  },
 ];

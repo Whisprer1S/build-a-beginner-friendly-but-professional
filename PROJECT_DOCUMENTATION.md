@@ -556,7 +556,6 @@ The current plan ids and prices:
 - Basic - 99 GEL / month
 - Pro - 199 GEL / month, shown with the translated `Best value` badge
 - VIP - 299 GEL / month
-- Custom - Contact Sales
 
 Pricing display is rendered by `PricingSection` in `src/App.jsx`.
 
@@ -565,7 +564,6 @@ Plan feature text is translated through `src/data/translations.js` with keys:
 - `pricingBasicFeatures`
 - `pricingProFeatures`
 - `pricingVipFeatures`
-- `pricingCustomFeatures`
 
 Current English feature bullets:
 
@@ -599,16 +597,6 @@ VIP:
 - Advanced menu presentation
 - Early access to virtual restaurant experience
 
-Custom:
-
-- Custom restaurant experience
-- Multiple branches or locations
-- Custom 3D/AR model package
-- Virtual restaurant walkthrough planning
-- Brand-specific UI direction
-- Custom feature requests
-- Meeting required
-
 There is no payment integration. CTAs are mailto links.
 
 ## 15. Contact Links
@@ -632,14 +620,12 @@ Current mailto links in `src/App.jsx`:
 
 ```js
 const demoRequestHref = `mailto:${brand.email}?subject=Sufra%20AR%20Demo%20Request`;
-const customPlanHref = `mailto:${brand.email}?subject=Sufra%20AR%20Custom%20Plan%20Inquiry`;
 const inquiryHref = `mailto:${brand.email}?subject=Sufra%20AR%20Inquiry`;
 ```
 
 Usage:
 
 - Pricing Basic/Pro/VIP CTAs use demo request mailto.
-- Pricing Custom CTA uses custom plan inquiry mailto.
 - Experience page Email us uses inquiry mailto.
 - Contact page email uses `mailto:sufraar@gmail.com`.
 - Footer email uses `mailto:sufraar@gmail.com`.
@@ -711,7 +697,7 @@ Rules:
 - Menu UI must be thumb-friendly.
 - Category slider must be horizontally swipeable.
 - Category changes reset the active type filter to All. Desserts hide type filters/badges; Drinks use Alcoholic / Non-alcoholic filters and badges.
-- Search must remain usable on mobile.
+- Search must remain usable on mobile. When a query is active, search runs across all dishes in the current restaurant, not only the selected category.
 - Dish viewer details and selection controls must fit mobile screens.
 - AR button must be obvious and reachable.
 - Pricing cards should swipe horizontally on mobile using CSS scroll-snap.
@@ -849,6 +835,7 @@ Known issues/cleanup notes from inspection:
 - Mtsvadi uses `placeholder-dish.glb` and `hasModel: false`.
 - `ingredientHotspots` positions are retained as data but are not currently rendered as visible model-viewer hotspot labels.
 - iOS Quick Look may handle scale differently than WebXR/Scene Viewer.
+- Temporary `Test` category/dish exists in the demo menu for GLB testing and should be removed after testing.
 
 Planned/future improvements:
 
