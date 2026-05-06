@@ -319,7 +319,7 @@ const sufraOldTown = {
       },
       priceGEL: 1,
       image: '/images/dishes/steak.jpg',
-      model: '/models/dishes/test.glb',
+      model: '/models/dishes/tst.glb',
       hasModel: true,
       ingredients: [],
       ingredientHotspots: [],
