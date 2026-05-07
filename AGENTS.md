@@ -28,7 +28,6 @@ Current routes:
 
 - `/`
 - `/pricing`
-- `/experience`
 - `/about`
 - `/contact`
 - `/menu/demo`
@@ -53,7 +52,6 @@ Important components/functions in `src/App.jsx`:
 - `MenuExperience`
 - `ModelViewerPage`
 - `PricingSection`
-- `ExperiencePage`
 - `AboutPage`
 - `ContactPage`
 - `Footer`

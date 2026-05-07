@@ -4,7 +4,6 @@ import {
   Bookmark,
   CircleDollarSign,
   ExternalLink,
-  Flame,
   GlassWater,
   Globe,
   Grid,
@@ -35,7 +34,6 @@ import {
 } from './data/restaurants/index.js';
 
 const demoRequestHref = `mailto:${brand.email}?subject=Sufra%20AR%20Demo%20Request`;
-const inquiryHref = `mailto:${brand.email}?subject=Sufra%20AR%20Inquiry`;
 
 function t(language, key) {
   return getTranslation(language, key);
@@ -67,6 +65,10 @@ function getPlanFeatures(plan, language) {
 
 function getPlanPrice(plan, language) {
   return `${plan.price.split(' / ')[0]} / ${t(language, 'pricingMonth')}`;
+}
+
+function getPlanSetupNote(plan, language) {
+  return plan.id === 'vip' ? t(language, 'pricingSetupIncluded') : t(language, 'pricingSetupFee');
 }
 
 function translateIngredientName(name, language) {
@@ -107,7 +109,7 @@ function getParams() {
 
 function getRouteFromPath() {
   const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
-  const staticPages = ['about', 'contact', 'pricing', 'experience'];
+  const staticPages = ['about', 'contact', 'pricing'];
   const pathParts = path.split('/');
 
   if (!path) return { page: 'home', slug: defaultRestaurantSlug, params: getParams() };
@@ -152,9 +154,6 @@ function getThemeStyle(restaurant, themeMode) {
     '--dropdown-selected-text': isDark ? '#121212' : '#FFFFFF',
     '--badge-bg': isDark ? '#F7F7F5' : '#121212',
     '--badge-text': isDark ? '#121212' : '#FFFFFF',
-    '--experience-cta-bg': isDark ? '#F7F7F5' : '#FFFFFF',
-    '--experience-cta-text': '#121212',
-    '--experience-cta-border': isDark ? '#F7F7F5' : '#CFCFC8',
     '--recommended-cta-bg': isDark ? '#F7F7F5' : '#121212',
     '--recommended-cta-text': isDark ? '#121212' : '#FFFFFF',
     '--recommended-cta-border': isDark ? '#F7F7F5' : '#121212',
@@ -416,7 +415,6 @@ function App() {
   }
 
   if (route.page === 'pricing') return <PricingPage controls={controls} language={siteLanguage} style={themeStyle} />;
-  if (route.page === 'experience') return <ExperiencePage controls={controls} language={siteLanguage} style={themeStyle} />;
   if (route.page === 'about') return <AboutPage controls={controls} language={siteLanguage} style={themeStyle} />;
   if (route.page === 'contact') return <ContactPage controls={controls} language={siteLanguage} style={themeStyle} />;
 
@@ -562,7 +560,6 @@ function LandingPage({ language, menuControls, menuCurrency, menuLanguage, menuT
         />
       </section>
 
-      <ExperiencePreview language={language} />
       <PricingSection compact language={language} />
     </main>
   );
@@ -608,7 +605,10 @@ function PricingSection({ compact = false, language }) {
                 ))}
               </ul>
               <div className="plan-bottom">
-                <strong>{getPlanPrice(plan, language)}</strong>
+                <div className="plan-price">
+                  <strong>{getPlanPrice(plan, language)}</strong>
+                  <span className="plan-setup-note">{getPlanSetupNote(plan, language)}</span>
+                </div>
                 <a
                   className={plan.id === 'pro' ? 'primary-link' : 'secondary-link'}
                   href={demoRequestHref}
@@ -620,17 +620,6 @@ function PricingSection({ compact = false, language }) {
           ))}
         </div>
       </div>
-    </section>
-  );
-}
-
-function ExperiencePreview({ language }) {
-  return (
-    <section className="experience-preview">
-      <p className="eyebrow">{t(language, 'experienceLabel')}</p>
-      <h2>{t(language, 'experienceTitle')}</h2>
-      <p>{t(language, 'experienceSubtitle')}</p>
-      <a className="secondary-link" href="/experience">{t(language, 'learnExperience')}</a>
     </section>
   );
 }
@@ -1064,36 +1053,20 @@ function PricingPage({ controls, language, style }) {
   );
 }
 
-function ExperiencePage({ controls, language, style }) {
-  return (
-    <Shell controls={controls} language={language} restaurant={defaultRestaurant} style={style}>
-      <main className="page-content">
-        <section className="experience-page">
-          <p className="eyebrow">{t(language, 'experienceLabel')}</p>
-          <h1>{t(language, 'experienceTitle')}</h1>
-          <p>{t(language, 'experienceSubtitle')}</p>
-          <div className="experience-list">
-            {tArray(language, 'experienceFeatures').map((item) => (
-              <span key={item}><Flame size={16} />{item}</span>
-            ))}
-          </div>
-          <div className="contact-actions centered">
-            <a className="primary-link" href={inquiryHref}>{t(language, 'emailUs')}</a>
-            <a className="secondary-link" href={brand.instagramUrl} rel="noreferrer" target="_blank">
-              {brand.instagramHandle}
-            </a>
-          </div>
-        </section>
-      </main>
-    </Shell>
-  );
-}
-
 function AboutPage({ controls, language, style }) {
   return (
     <Shell controls={controls} language={language} restaurant={defaultRestaurant} style={style}>
       <main className="page-content">
-        <InfoPage title={t(language, 'aboutTitle')} paragraphs={tArray(language, 'aboutParagraphs')} eyebrow={t(language, 'aboutLabel')} />
+        <InfoPage
+          title={t(language, 'aboutTitle')}
+          paragraphs={tArray(language, 'aboutParagraphs')}
+          eyebrow={t(language, 'aboutLabel')}
+          variant="about"
+        >
+          <div className="about-highlights">
+            {tArray(language, 'aboutHighlights').map((item) => <span key={item}>{item}</span>)}
+          </div>
+        </InfoPage>
       </main>
     </Shell>
   );
@@ -1118,9 +1091,11 @@ function ContactPage({ controls, language, style }) {
   );
 }
 
-function InfoPage({ children, eyebrow, paragraphs, title }) {
+function InfoPage({ children, eyebrow, paragraphs, title, variant }) {
+  const className = variant ? `info-page ${variant}-page` : 'info-page';
+
   return (
-    <section className="info-page">
+    <section className={className}>
       <p className="eyebrow">{eyebrow}</p>
       <h1>{title}</h1>
       <div className="section-copy">
