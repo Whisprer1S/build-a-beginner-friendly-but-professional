@@ -274,7 +274,6 @@ h2 {
 
 .product-hero-copy p:not(.eyebrow),
 .section-heading p,
-.experience-preview p,
 .info-page p,
 .pricing-card li,
 .footer-brand p,
@@ -421,7 +420,6 @@ h2 {
 }
 
 .pricing-section,
-.experience-preview,
 .menu-section,
 .value-section,
 .page-content {
@@ -537,18 +535,19 @@ h2 {
   padding-top: 0.8rem;
 }
 
-.experience-preview {
+.plan-price {
   display: grid;
-  gap: 1rem;
-  max-width: 760px;
-  margin: 0 auto;
-  text-align: center;
+  gap: 0.18rem;
 }
 
-.experience-preview .secondary-link {
-  color: var(--experience-cta-text);
-  background: var(--experience-cta-bg);
-  border-color: var(--experience-cta-border);
+.plan-price strong {
+  font-size: 1.03rem;
+}
+
+.plan-setup-note {
+  color: var(--secondary-text);
+  font-size: 0.76rem;
+  font-weight: 700;
 }
 
 .pricing-card.recommended .primary-link {
@@ -1328,8 +1327,7 @@ model-viewer {
   padding: 3rem 1rem 4rem;
 }
 
-.info-page,
-.experience-page {
+.info-page {
   display: grid;
   gap: 1.2rem;
   max-width: 820px;
@@ -1337,26 +1335,38 @@ model-viewer {
   text-align: center;
 }
 
-.section-copy,
-.experience-list {
+.section-copy {
   display: grid;
   gap: 0.85rem;
 }
 
-.experience-list {
-  grid-template-columns: 1fr;
-  margin-top: 1rem;
+.about-page {
+  max-width: 900px;
+  gap: 1.35rem;
 }
 
-.experience-list span {
+.about-page .section-copy {
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+.about-highlights {
   display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0.9rem 1rem;
-  border: 1px solid var(--border);
-  border-radius: 18px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-top: 0.25rem;
+}
+
+.about-highlights span {
+  padding: 0.62rem 0.82rem;
+  color: var(--text);
   background: var(--card);
-  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .empty-state {
@@ -1464,10 +1474,6 @@ model-viewer {
 
   .value-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .experience-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .footer-inner {

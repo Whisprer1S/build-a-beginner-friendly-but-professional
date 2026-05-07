@@ -15,8 +15,6 @@ Core value:
 - Guests open dish Details directly into the full 3D/AR viewer page.
 - The AR viewer uses `<model-viewer>` so guests can preview dishes in 3D and view them on their table before ordering.
 
-Sufra AR is also positioning toward a future Virtual Restaurant Experience: a coming-soon concept where guests can explore a restaurant before visiting, move from entrance to table, preview seating, switch day/night atmosphere, open the AR menu inside the virtual space, and view dishes on the selected table.
-
 This is a frontend-only MVP/product shell. There is no backend, no database, no login system, no dashboard, and no payments.
 
 ## 2. Tech Stack
@@ -73,9 +71,8 @@ Routes:
 
 | Route | Displays | Handler/component | Notes |
 | --- | --- | --- | --- |
-| `/` | Product landing page with hero, value section, embedded mobile AR menu, virtual experience teaser, pricing preview, footer | `LandingPage` inside `Shell` | Uses default restaurant config for the embedded menu. Default slug is `demo`. |
+| `/` | Product landing page with hero, value section, embedded mobile AR menu, pricing preview, footer | `LandingPage` inside `Shell` | Uses default restaurant config for the embedded menu. Default slug is `demo`. |
 | `/pricing` | Full pricing page | `PricingPage` -> `PricingSection` | Pricing data comes from `src/data/plans.js`; visible translated text/features come from `src/data/translations.js`. |
-| `/experience` | Virtual Restaurant Experience coming-soon page | `ExperiencePage` | Uses translated content and real email/Instagram contact links. |
 | `/about` | About page | `AboutPage` -> `InfoPage` | Uses translated text from `src/data/translations.js`. |
 | `/contact` | Contact page | `ContactPage` -> `InfoPage` | Uses real email and Instagram links from `src/data/brand.js`. |
 | `/menu/demo` | Primary public demo menu page | `MenuExperience` inside `Shell` | Loads `src/data/restaurants/sufra-old-town.js`; the file name is legacy, but the public slug is `demo`. |
@@ -489,7 +486,6 @@ What should translate:
 - Back/viewer buttons
 - AR helper text
 - Ingredient labels/benefits
-- Virtual Restaurant Experience section/page
 - Pricing section/page
 - Pricing features and buttons
 - About page
@@ -569,33 +565,32 @@ Current English feature bullets:
 
 Basic:
 
-- WebAR menu
-- QR code access
-- Mobile-first digital menu
-- 3D dish preview
-- View dishes on table
-- EN / GEO / RUS language support
+- Veg / meat / drink indicators
+- Ingredient tags
+- Up to 3 AR dishes per category
+- Standard menu layout
 - Basic restaurant branding
 
 Pro:
 
 - Everything in Basic
-- Currency switcher: GEL / USD / EUR
-- Search and category filters
-- Veg / meat indicators
-- List and grid menu views
-- Ingredient tags
-- Enhanced dish detail pages
-- Priority design polish
+- Up to 5 AR dishes per category
+- Full mobile AR menu customization
+- Custom colors, typography, and visual style
+- Enhanced restaurant branding
+- Premium dish detail presentation
 
 VIP:
 
-- Everything in Pro
-- AR ingredient callouts
-- Ingredient nutrition highlights
-- Premium interactive AR dish experience
-- Advanced menu presentation
-- Early access to virtual restaurant experience
+- Unlimited AR dishes
+- Full restaurant menu coverage
+- Multi-location-ready menu structure
+- Dedicated launch support
+- Ongoing menu refinement support
+- Highest customization flexibility
+- Setup fee included
+
+Basic and Pro cards show a subtle `+ setup fee` note near the monthly price. VIP shows `Setup fee included` near the price and in the feature list. No setup fee amount is displayed.
 
 There is no payment integration. CTAs are mailto links.
 
@@ -620,13 +615,11 @@ Current mailto links in `src/App.jsx`:
 
 ```js
 const demoRequestHref = `mailto:${brand.email}?subject=Sufra%20AR%20Demo%20Request`;
-const inquiryHref = `mailto:${brand.email}?subject=Sufra%20AR%20Inquiry`;
 ```
 
 Usage:
 
 - Pricing Basic/Pro/VIP CTAs use demo request mailto.
-- Experience page Email us uses inquiry mailto.
 - Contact page email uses `mailto:sufraar@gmail.com`.
 - Footer email uses `mailto:sufraar@gmail.com`.
 - Instagram links use `target="_blank"` and `rel="noreferrer"`.
@@ -841,7 +834,6 @@ Planned/future improvements:
 
 - Better 3D capture/model pipeline for real restaurant dishes.
 - More real restaurant dish content and client configs.
-- 360/virtual restaurant walkthrough experience.
 - Better ingredient nutrition metadata and optional future spatial callout calibration.
 - Asset folder cleanup and naming normalization.
 - Component extraction from `App.jsx` once product behavior is stable.
@@ -865,4 +857,4 @@ Checklist:
 12. Test affected local routes.
 13. Avoid duplicate assets.
 14. Preserve mobile-first behavior.
-15. Preserve `/`, `/pricing`, `/experience`, `/about`, `/contact`, `/menu/demo`, `/menu/demo-cafe`, and the legacy `/sufra-old-town` redirect.
+15. Preserve `/`, `/pricing`, `/about`, `/contact`, `/menu/demo`, `/menu/demo-cafe`, and the legacy `/sufra-old-town` redirect.

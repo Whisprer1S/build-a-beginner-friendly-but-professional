@@ -16,27 +16,13 @@ export const siteContent = {
       'Language and currency controls for international guests',
     ],
   },
-  virtualExperience: {
-    eyebrow: 'Coming Soon',
-    title: 'Virtual Restaurant Experience',
-    summary:
-      'A future Sufra AR experience where guests can explore the restaurant before visiting, move from entrance to table, preview seating, switch day/night atmosphere, open the AR menu inside the space, and view dishes on the selected table.',
-    details: [
-      'Restaurant walkthrough from entrance to tables',
-      'Table and seating preview',
-      'Day/night atmosphere switching',
-      'AR menu opened inside the space',
-      'Dish preview on the selected table',
-      'Designed for premium restaurants, hotels, and lounges',
-    ],
-  },
   about: {
-    title: 'A modern visual layer for hospitality.',
+    title: 'A clearer way to choose.',
     paragraphs: [
-      'Sufra AR creates premium WebAR menu experiences for restaurants and cafes.',
-      'Guests scan a QR code, browse the menu, view dishes in 3D/AR, and see dishes on their table before ordering.',
-      'The platform is designed for hospitality, visual confidence, and modern dining.',
-      'The upcoming virtual restaurant experience will let guests preview a venue, choose a table atmosphere, and open the AR menu inside the space.',
+      'Sufra AR creates premium WebAR menu experiences for restaurants, cafés, and hospitality venues.',
+      'Guests scan a QR code, browse the menu, view dishes in 3D/AR, and save their favorite choices before ordering.',
+      'For restaurants, Sufra AR turns a standard menu into a more visual, modern, and memorable dining experience.',
+      'The product is built to be mobile-first, simple to use, and elegant enough for premium hospitality brands.',
     ],
   },
   contact: {

@@ -29,7 +29,6 @@ npm run build
 /sufra-old-town    -> legacy route that redirects to /menu/demo
 /demo-cafe         -> legacy direct route kept for compatibility
 /pricing           -> full pricing page
-/experience        -> upcoming Virtual Restaurant Experience page
 /about             -> about Sufra AR
 /contact           -> contact page
 ```
@@ -42,7 +41,7 @@ src/styles.css                    -> global styling and responsive UI
 src/data/brand.js                 -> Sufra AR brand identity and contact links
 src/data/currencies.js            -> static GEL / USD / EUR conversion
 src/data/plans.js                 -> pricing plan content
-src/data/siteContent.js           -> landing, about, contact, experience copy
+src/data/siteContent.js           -> landing, about, and contact copy
 src/data/restaurants/index.js     -> restaurant registry and default restaurant
 src/data/restaurants/*.js         -> restaurant menu configs
 ```
@@ -182,4 +181,4 @@ Use the default Vite settings:
 - Build command: `npm run build`
 - Output directory: `dist`
 
-The included `vercel.json` rewrites direct URLs like `/menu/demo`, `/menu/demo-cafe`, `/pricing`, and `/experience` back to the React app, so QR-code visits and page refreshes work on Vercel.
+The included `vercel.json` rewrites direct URLs like `/menu/demo`, `/menu/demo-cafe`, `/pricing`, `/about`, and `/contact` back to the React app, so QR-code visits and page refreshes work on Vercel.
