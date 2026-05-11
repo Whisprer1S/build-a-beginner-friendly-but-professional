@@ -14,6 +14,7 @@ import {
   Minus,
   Moon,
   Music2,
+  Phone,
   Plus,
   Search,
   Sun,
@@ -48,7 +49,7 @@ function getPlanTitle(plan, language) {
   const titleKeys = {
     basic: 'pricingBasic',
     pro: 'pricingPro',
-    vip: 'pricingVip',
+    custom: 'pricingCustom',
   };
   return t(language, titleKeys[plan.id]) || plan.title;
 }
@@ -57,18 +58,23 @@ function getPlanFeatures(plan, language) {
   const featureKeys = {
     basic: 'pricingBasicFeatures',
     pro: 'pricingProFeatures',
-    vip: 'pricingVipFeatures',
+    custom: 'pricingCustomFeatures',
   };
   const translatedFeatures = tArray(language, featureKeys[plan.id]);
   return translatedFeatures.length ? translatedFeatures : plan.features;
 }
 
 function getPlanPrice(plan, language) {
+  if (plan.id === 'custom') return t(language, 'pricingCustomPrice');
   return `${plan.price.split(' / ')[0]} / ${t(language, 'pricingMonth')}`;
 }
 
 function getPlanSetupNote(plan, language) {
-  return plan.id === 'vip' ? t(language, 'pricingSetupIncluded') : t(language, 'pricingSetupFee');
+  return plan.id === 'custom' ? '' : t(language, 'pricingSetupFee');
+}
+
+function getPlanCta(plan, language) {
+  return plan.id === 'custom' ? t(language, 'pricingContactUs') : t(language, 'getStarted');
 }
 
 function translateIngredientName(name, language) {
@@ -109,7 +115,7 @@ function getParams() {
 
 function getRouteFromPath() {
   const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
-  const staticPages = ['about', 'contact', 'pricing'];
+  const staticPages = ['about', 'pricing'];
   const pathParts = path.split('/');
 
   if (!path) return { page: 'home', slug: defaultRestaurantSlug, params: getParams() };
@@ -416,8 +422,6 @@ function App() {
 
   if (route.page === 'pricing') return <PricingPage controls={controls} language={siteLanguage} style={themeStyle} />;
   if (route.page === 'about') return <AboutPage controls={controls} language={siteLanguage} style={themeStyle} />;
-  if (route.page === 'contact') return <ContactPage controls={controls} language={siteLanguage} style={themeStyle} />;
-
   if (route.page === 'menu') {
     return (
       <Shell controls={controls} language={siteLanguage} restaurant={restaurant} style={themeStyle}>
@@ -453,14 +457,16 @@ function App() {
 function Shell({ children, controls, language, restaurant, style }) {
   return (
     <div className="app-shell" style={style}>
-      <SiteHeader controls={controls} restaurant={restaurant} />
+      <SiteHeader controls={controls} language={language} restaurant={restaurant} />
       {children}
       <Footer language={language} restaurant={restaurant} />
     </div>
   );
 }
 
-function Logo() {
+function Logo({ language = 'en' }) {
+  const slogan = text(brand.slogan, language);
+
   return (
     <span className="logo">
       <span className="logo-icon" aria-hidden="true">
@@ -472,7 +478,7 @@ function Logo() {
       </span>
       <span className="logo-lockup">
         <span className="logo-text">{brand.name}</span>
-        <span className="logo-slogan">{brand.slogan}</span>
+        <span className="logo-slogan">{slogan}</span>
       </span>
     </span>
   );
@@ -513,11 +519,11 @@ function HeaderControls({ controls }) {
   );
 }
 
-function SiteHeader({ controls, restaurant }) {
+function SiteHeader({ controls, language, restaurant }) {
   return (
     <header className="site-header">
       <a className="brand" href={restaurant.slug === defaultRestaurantSlug ? '/' : buildRestaurantUrl(restaurant.slug)}>
-        <Logo />
+        <Logo language={language || controls.language} />
       </a>
       <HeaderControls controls={controls} />
     </header>
@@ -607,13 +613,15 @@ function PricingSection({ compact = false, language }) {
               <div className="plan-bottom">
                 <div className="plan-price">
                   <strong>{getPlanPrice(plan, language)}</strong>
-                  <span className="plan-setup-note">{getPlanSetupNote(plan, language)}</span>
+                  {getPlanSetupNote(plan, language) && (
+                    <span className="plan-setup-note">{getPlanSetupNote(plan, language)}</span>
+                  )}
                 </div>
                 <a
                   className={plan.id === 'pro' ? 'primary-link' : 'secondary-link'}
                   href={demoRequestHref}
                 >
-                  {t(language, 'getStarted')}
+                  {getPlanCta(plan, language)}
                 </a>
               </div>
             </article>
@@ -665,7 +673,7 @@ function MenuExperience({ controls, currency, isPreview = false, language, menuT
   return (
     <section className={`menu-app menu-theme-${menuTheme || controls.themeMode} ${isPreview ? 'preview' : ''}`}>
       <div className="menu-app-top">
-        <Logo />
+        <Logo language={language} />
         <HeaderControls controls={controls} />
       </div>
       <p className="menu-restaurant-label">{text(restaurant.restaurantName, language)}</p>
@@ -1062,30 +1070,7 @@ function AboutPage({ controls, language, style }) {
           paragraphs={tArray(language, 'aboutParagraphs')}
           eyebrow={t(language, 'aboutLabel')}
           variant="about"
-        >
-          <div className="about-highlights">
-            {tArray(language, 'aboutHighlights').map((item) => <span key={item}>{item}</span>)}
-          </div>
-        </InfoPage>
-      </main>
-    </Shell>
-  );
-}
-
-function ContactPage({ controls, language, style }) {
-  return (
-    <Shell controls={controls} language={language} restaurant={defaultRestaurant} style={style}>
-      <main className="page-content">
-        <InfoPage title={t(language, 'contactTitle')} paragraphs={[t(language, 'contactText')]} eyebrow={t(language, 'contactLabel')}>
-          <div className="contact-actions">
-            <a className="primary-link" href={`mailto:${brand.email}`}>
-              {t(language, 'email')}: {brand.email}
-            </a>
-            <a className="secondary-link" href={brand.instagramUrl} rel="noreferrer" target="_blank">
-              {t(language, 'instagram')}: {brand.instagramHandle}
-            </a>
-          </div>
-        </InfoPage>
+        />
       </main>
     </Shell>
   );
@@ -1122,6 +1107,7 @@ function FooterContactIcon({ kind }) {
   if (kind === 'instagram') return <span className="social-glyph">IG</span>;
   if (kind === 'tiktok') return <Music2 size={16} />;
   if (kind === 'facebook') return <ExternalLink size={16} />;
+  if (kind === 'whatsapp') return <Phone size={16} />;
   return null;
 }
 
@@ -1131,21 +1117,22 @@ function Footer({ language, restaurant }) {
     { key: 'instagram', href: brand.instagramUrl, label: brand.instagramHandle, ariaLabel: t(language, 'instagram') + ': ' + brand.instagramHandle, external: true },
     { key: 'tiktok', href: brand.tiktokUrl, label: brand.tiktokHandle, ariaLabel: 'TikTok: ' + brand.tiktokHandle, external: true },
     { key: 'facebook', href: brand.facebookUrl, label: brand.facebookLabel, ariaLabel: brand.facebookLabel, external: true },
+    { key: 'whatsapp', href: brand.whatsappUrl, label: `${t(language, 'whatsapp')}: ${brand.phoneDisplay}`, ariaLabel: `${t(language, 'whatsapp')}: ${brand.phoneDisplay}`, external: true },
   ];
 
   return (
     <footer className="site-footer">
       <div className="footer-inner">
         <div className="footer-brand">
-          <Logo />
+          <Logo language={language} />
           <p>{t(language, 'footerDescription')}</p>
         </div>
         <nav className="footer-nav" aria-label={t(language, 'footerNavigation')}>
           <a href="/">{t(language, 'home')}</a>
           <a href="/about">{t(language, 'about')}</a>
-          <a href="/contact">{t(language, 'contact')}</a>
         </nav>
         <div className="footer-contact">
+          <p className="footer-section-label">{t(language, 'contact')}</p>
           {footerContacts.map((item) => (
             <a
               aria-label={item.ariaLabel}

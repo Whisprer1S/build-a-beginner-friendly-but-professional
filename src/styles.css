@@ -1350,25 +1350,6 @@ model-viewer {
   margin-inline: auto;
 }
 
-.about-highlights {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.65rem;
-  margin-top: 0.25rem;
-}
-
-.about-highlights span {
-  padding: 0.62rem 0.82rem;
-  color: var(--text);
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
 .empty-state {
   display: grid;
   min-height: 70vh;
@@ -1424,6 +1405,15 @@ model-viewer {
   gap: 0.72rem;
   align-content: start;
   font-size: 0.9rem;
+}
+
+.footer-section-label {
+  margin: 0 0 0.15rem;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .footer-nav a,
