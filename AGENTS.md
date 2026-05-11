@@ -29,7 +29,6 @@ Current routes:
 - `/`
 - `/pricing`
 - `/about`
-- `/contact`
 - `/menu/demo`
 - `/menu/demo-cafe`
 - `/sufra-old-town` redirects to `/menu/demo` as a legacy route
@@ -53,7 +52,6 @@ Important components/functions in `src/App.jsx`:
 - `ModelViewerPage`
 - `PricingSection`
 - `AboutPage`
-- `ContactPage`
 - `Footer`
 
 ## Commands
@@ -197,11 +195,16 @@ Visible UI translations live in `src/data/translations.js`. Site language/curren
 Do not translate:
 
 - `Sufra AR`
-- `Dining, Before It Arrives.`
 - `Powered by Sufra AR`
 - email address
 - Instagram handle
 - currency codes/symbols
+
+The brand slogan is translated by language:
+
+- English: `See It Before You Order`
+- Georgian: `ნახე, სანამ შეუკვეთავ`
+- Russian: `Увидь перед заказом`
 
 When adding visible UI text, add it to `translations.js` and use `t(language, key)` or `tArray(language, key)` from `src/App.jsx`.
 
@@ -241,15 +244,22 @@ Facebook:
 https://www.facebook.com/share/199UTeER2Z/?mibextid=wwXIfr
 ```
 
+WhatsApp / phone:
+
+```text
+(+995) 598 11 99 81
+https://wa.me/message/BMXAZDQRTUXEG1
+```
+
 Contact link rules:
 
 - Email links must be real `mailto:` anchors.
 - Instagram/TikTok/Facebook links must use `target="_blank"` and `rel="noreferrer"`.
+- WhatsApp links must use `target="_blank"` and `rel="noreferrer"`.
 - Do not use `href="#"` for contact actions.
 
 Current mailto subjects in `src/App.jsx`:
 
-- Inquiry: `Sufra AR Inquiry`
 - Demo request: `Sufra AR Demo Request`
 
 ## Deployment Notes

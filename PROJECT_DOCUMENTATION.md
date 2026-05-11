@@ -74,7 +74,6 @@ Routes:
 | `/` | Product landing page with hero, value section, embedded mobile AR menu, pricing preview, footer | `LandingPage` inside `Shell` | Uses default restaurant config for the embedded menu. Default slug is `demo`. |
 | `/pricing` | Full pricing page | `PricingPage` -> `PricingSection` | Pricing data comes from `src/data/plans.js`; visible translated text/features come from `src/data/translations.js`. |
 | `/about` | About page | `AboutPage` -> `InfoPage` | Uses translated text from `src/data/translations.js`. |
-| `/contact` | Contact page | `ContactPage` -> `InfoPage` | Uses real email and Instagram links from `src/data/brand.js`. |
 | `/menu/demo` | Primary public demo menu page | `MenuExperience` inside `Shell` | Loads `src/data/restaurants/sufra-old-town.js`; the file name is legacy, but the public slug is `demo`. |
 | `/menu/demo-cafe` | Second sample restaurant menu page | `MenuExperience` inside `Shell` | Loads `src/data/restaurants/demo-cafe.js`, which currently reuses most of the demo config with a different slug/name/subtitle. |
 | `/sufra-old-town` | Legacy redirect | `getRouteFromPath` | Old public route. Do not use for new links; it is immediately normalized to `/menu/demo`. |
@@ -171,9 +170,9 @@ Main data files:
   - Main visible UI translation dictionary for `en`, `ka`, `ru`.
   - Exports `translations` and `getTranslation(language, key)`.
 - `src/data/brand.js`
-  - Brand-level contact and identity data: name, slogan, email, Instagram handle/URL.
+  - Brand-level contact and identity data: name, translated slogan, email, phone/WhatsApp, and social links.
 - `src/data/siteContent.js`
-  - Currently still contains older content objects.
+  - Contains supporting landing/about copy objects.
   - Current `App.jsx` only uses `siteContent.hero.image` for the landing hero image. Most visible copy now comes from `translations.js`.
 
 Important helper functions in `src/App.jsx`:
@@ -489,18 +488,23 @@ What should translate:
 - Pricing section/page
 - Pricing features and buttons
 - About page
-- Contact page
+- Footer contact label
 - Footer nav/contact labels
 - Empty states
 
 Must stay English:
 
 - `Sufra AR`
-- `Dining, Before It Arrives.`
 - `Powered by Sufra AR`
 - Email address
 - Instagram handle
 - Currency codes/symbols
+
+Brand slogan translations:
+
+- English: `See It Before You Order`
+- Georgian: `ნახე, სანამ შეუკვეთავ`
+- Russian: `Увидь перед заказом`
 
 Site and menu language state are intentionally separate. Site language is stored under `sufra-site-language`; menu language is stored under `sufra-menu-language`. Older `sufra-language` values are used only as a fallback. Viewer URLs can also include `lang=<code>`, which applies to the menu/viewer context.
 
@@ -550,8 +554,8 @@ src/data/plans.js
 The current plan ids and prices:
 
 - Basic - 99 GEL / month
-- Pro - 199 GEL / month, shown with the translated `Best value` badge
-- VIP - 299 GEL / month
+- Pro - 149 GEL / month, shown with the translated `Best value` badge
+- Custom - Prices may vary
 
 Pricing display is rendered by `PricingSection` in `src/App.jsx`.
 
@@ -559,38 +563,34 @@ Plan feature text is translated through `src/data/translations.js` with keys:
 
 - `pricingBasicFeatures`
 - `pricingProFeatures`
-- `pricingVipFeatures`
+- `pricingCustomFeatures`
 
 Current English feature bullets:
 
 Basic:
 
-- Veg / meat / drink indicators
+- Maximum AR quantity: 20
+- Full text and photo menu
 - Ingredient tags
-- Up to 3 AR dishes per category
-- Standard menu layout
 - Basic restaurant branding
 
 Pro:
 
 - Everything in Basic
-- Up to 5 AR dishes per category
-- Full mobile AR menu customization
-- Custom colors, typography, and visual style
-- Enhanced restaurant branding
-- Premium dish detail presentation
-
-VIP:
-
 - Unlimited AR dishes
-- Full restaurant menu coverage
-- Multi-location-ready menu structure
-- Dedicated launch support
-- Ongoing menu refinement support
-- Highest customization flexibility
-- Setup fee included
+- 1 free AR dish change per month
+- Custom restaurant branding
+- Priority menu updates
+- Multi-location-ready structure
 
-Basic and Pro cards show a subtle `+ setup fee` note near the monthly price. VIP shows `Setup fee included` near the price and in the feature list. No setup fee amount is displayed.
+Custom:
+
+- Custom solution for larger or special projects
+- Flexible AR menu structure
+- Custom scope based on restaurant needs
+- Contact us for pricing
+
+Basic and Pro cards show a subtle `+ setup fee` note near the monthly price. Custom shows `Prices may vary` and `Please contact us`; it does not show a fixed setup fee.
 
 There is no payment integration. CTAs are mailto links.
 
@@ -610,6 +610,8 @@ Current contact info:
 - TikTok: `https://www.tiktok.com/@sufra.ar`
 - TikTok handle: `@sufra.ar`
 - Facebook: `https://www.facebook.com/share/199UTeER2Z/?mibextid=wwXIfr`
+- WhatsApp / phone: `(+995) 598 11 99 81`
+- WhatsApp link: `https://wa.me/message/BMXAZDQRTUXEG1`
 
 Current mailto links in `src/App.jsx`:
 
@@ -619,10 +621,9 @@ const demoRequestHref = `mailto:${brand.email}?subject=Sufra%20AR%20Demo%20Reque
 
 Usage:
 
-- Pricing Basic/Pro/VIP CTAs use demo request mailto.
-- Contact page email uses `mailto:sufraar@gmail.com`.
+- Pricing Basic/Pro/Custom CTAs use demo request mailto.
 - Footer email uses `mailto:sufraar@gmail.com`.
-- Instagram links use `target="_blank"` and `rel="noreferrer"`.
+- Instagram, TikTok, Facebook, and WhatsApp links use `target="_blank"` and `rel="noreferrer"`.
 
 Desktop note:
 
@@ -636,21 +637,23 @@ Footer must include:
 
 - Logo + slogan
 - Short Sufra AR description
-- Nav links: Home, About, Contact
+- Nav links: Home, About
+- Contact section label above contact/social links
 - Email link
 - Instagram link
 - TikTok link
 - Facebook link
+- WhatsApp / phone link
 - `Powered by Sufra AR`
 
 Rules:
 
-- Instagram, TikTok, and Facebook should appear only in the footer contact/social area, not in the footer nav.
+- Instagram, TikTok, Facebook, and WhatsApp should appear only in the footer contact/social area, not in the footer nav.
 - Logo text stays `Sufra AR`.
-- Slogan stays `Dining, Before It Arrives.`
+- Slogan uses the language-specific text from `brand.slogan`.
 - Powered text stays `Powered by Sufra AR`.
 - Footer nav labels should translate.
-- Email address and Instagram handle should not translate.
+- Email address, phone number, social handles, and URLs should not translate.
 
 ## 17. Design Direction
 
@@ -820,9 +823,9 @@ Current dish-to-asset mapping in `sufra-old-town.js`:
 Known issues/cleanup notes from inspection:
 
 - `src/App.jsx` currently contains many component functions. This works, but future cleanup could extract reusable components into `src/components`.
-- `src/data/siteContent.js` still contains older English content objects. Current visible copy mostly comes from `src/data/translations.js`; `App.jsx` currently uses only `siteContent.hero.image`.
+- `src/data/siteContent.js` contains supporting English content objects, while current visible copy mostly comes from `src/data/translations.js`; `App.jsx` currently uses only `siteContent.hero.image`.
 - `src/data/restaurants/sufra-old-town.js` still has a legacy filename. The current public route is `/menu/demo`; `/sufra-old-town` redirects to `/menu/demo` and should not be used for new public links.
-- `src/data/brand.js` contains some translated about/contact/description copy, but current visible page copy comes from `src/data/translations.js`; contact identity still comes from `brand.js`.
+- `src/data/brand.js` contains some translated about/description copy, but current visible page copy mostly comes from `src/data/translations.js`; contact identity still comes from `brand.js`.
 - `public/models/dishes/khinkali.glb.glb` appears to duplicate `khinkali.glb`. The app currently uses `/models/dishes/khinkali.glb`. Do not delete or move it unless doing an explicit asset cleanup.
 - Several asset filenames include spaces and uppercase letters. This is supported if paths are exact, but future assets should prefer lowercase kebab-case.
 - Mtsvadi uses `placeholder-dish.glb` and `hasModel: false`.
@@ -857,4 +860,4 @@ Checklist:
 12. Test affected local routes.
 13. Avoid duplicate assets.
 14. Preserve mobile-first behavior.
-15. Preserve `/`, `/pricing`, `/about`, `/contact`, `/menu/demo`, `/menu/demo-cafe`, and the legacy `/sufra-old-town` redirect.
+15. Preserve `/`, `/pricing`, `/about`, `/menu/demo`, `/menu/demo-cafe`, and the legacy `/sufra-old-town` redirect.
