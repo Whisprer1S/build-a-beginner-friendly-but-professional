@@ -104,6 +104,47 @@ function getIngredientInfos(dish) {
   return (dish.ingredients || []).map((ingredient) => getIngredientInfo(dish, ingredient.name));
 }
 
+function getArPlatform() {
+  if (typeof navigator === 'undefined') return 'default';
+
+  const userAgent = navigator.userAgent || '';
+  const platform = navigator.platform || '';
+  const isIPadOSDesktopMode = platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+
+  if (/iPad|iPhone|iPod/i.test(userAgent) || isIPadOSDesktopMode) return 'ios';
+  if (/Android/i.test(userAgent)) return 'android';
+  return 'default';
+}
+
+function getArModesForPlatform(platform) {
+  if (platform === 'ios') return 'quick-look';
+  if (platform === 'android') return 'webxr scene-viewer';
+  return 'webxr scene-viewer quick-look';
+}
+
+function getPlatformScaleMultiplier(dish, platform) {
+  const platformScale = dish.platformScale || {};
+  const multiplier = Number(platformScale[platform] ?? platformScale.default ?? 1);
+  return Number.isFinite(multiplier) && multiplier > 0 ? multiplier : 1;
+}
+
+function formatScaleValue(value) {
+  return Number(value.toFixed(6)).toString();
+}
+
+function getModelScaleForPlatform(dish, platform) {
+  const baseScale = String(dish.arScale || '1 1 1')
+    .trim()
+    .split(/\s+/)
+    .map(Number);
+  const safeBaseScale = baseScale.length === 3 && baseScale.every((value) => Number.isFinite(value) && value > 0)
+    ? baseScale
+    : [1, 1, 1];
+  const multiplier = getPlatformScaleMultiplier(dish, platform);
+
+  return safeBaseScale.map((value) => formatScaleValue(value * multiplier)).join(' ');
+}
+
 function text(value, language) {
   if (Array.isArray(value)) return value;
   return value?.[language] || value?.en || '';
@@ -962,7 +1003,10 @@ function IngredientInfoCard({ ingredient, language, onClose }) {
 
 function ModelViewerPage({ controls, currency, dish, language, menuTheme, onBack, restaurant, selectionControls, style }) {
   const modelViewerRef = useRef(null);
-  const modelScale = dish.arScale || '0.25 0.25 0.25';
+  const [arPlatform] = useState(() => getArPlatform());
+  const arModes = getArModesForPlatform(arPlatform);
+  const platformScaleMultiplier = getPlatformScaleMultiplier(dish, arPlatform);
+  const modelScale = getModelScaleForPlatform(dish, arPlatform);
   const [selectedIngredientName, setSelectedIngredientName] = useState(null);
   const ingredientInfos = getIngredientInfos(dish);
   const selectedIngredient = selectedIngredientName ? getIngredientInfo(dish, selectedIngredientName) : null;
@@ -982,14 +1026,14 @@ function ModelViewerPage({ controls, currency, dish, language, menuTheme, onBack
       <main className="viewer-page">
         <button className="back-button" onClick={onBack} type="button">{t(language, 'backToMenu')}</button>
         <section className="viewer-layout">
-          {/* The scale value controls the model-viewer preview plus WebXR/Scene Viewer AR.
-             iOS Quick Look may ignore this and use dimensions baked into the USDZ/GLB conversion. */}
+          {/* Base dish arScale is multiplied by optional platformScale values.
+             Multipliers default to 1; iOS Quick Look may still use dimensions baked into the USDZ/GLB conversion. */}
           <div className="viewer-model-area">
             <model-viewer
               ref={modelViewerRef}
               alt={text(dish.name, language)}
               ar
-              ar-modes="webxr scene-viewer quick-look"
+              ar-modes={arModes}
               ar-placement={dish.arPlacement}
               ar-scale="fixed"
               auto-rotate
@@ -999,7 +1043,9 @@ function ModelViewerPage({ controls, currency, dish, language, menuTheme, onBack
               exposure="0.95"
               field-of-view={dish.fieldOfView}
               poster={dish.image}
+              data-ar-platform={arPlatform}
               data-ar-scale={modelScale}
+              data-platform-scale={platformScaleMultiplier}
               scale={modelScale}
               shadow-intensity="1"
               src={dish.model}

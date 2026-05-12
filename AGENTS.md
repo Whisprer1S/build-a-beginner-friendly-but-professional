@@ -134,6 +134,8 @@ Each dish should have:
 - `cameraOrbit`
 - `fieldOfView`
 
+`platformScale` is optional future calibration metadata and should be omitted unless platform-specific AR testing proves it is needed.
+
 Asset folders:
 
 - Images: `public/images/dishes`
@@ -157,15 +159,17 @@ AR viewer is implemented in `ModelViewerPage` in `src/App.jsx`.
 Preserve:
 
 - `ar`
-- `ar-modes="webxr scene-viewer quick-look"`
+- platform-specific `ar-modes` (`quick-look` for iOS, `webxr scene-viewer` for Android, combined fallback for desktop/default)
 - `ar-scale="fixed"`
 - `disable-zoom`
 - `camera-controls`
-- dish-specific `scale={dish.arScale}`
+- dish-specific `scale={modelScale}` derived from `dish.arScale` and optional `platformScale`
 - dish-specific `src={dish.model}`
 - AR slot button text/action
 
 Do not re-enable unrealistic free scaling unless explicitly requested. Users should be able to rotate/orbit in preview and launch AR on mobile. iOS Quick Look may handle scale differently than WebXR/Scene Viewer.
+
+Optional `platformScale` values default to `1` for all platforms. Do not add Android scale overrides unless real Android testing proves a specific model needs calibration. Keep one shared GLB per dish instead of duplicating iOS/Android model files.
 
 Visible ingredient info in the viewer should come from clickable ingredient chips and a normal UI info card. Do not render floating `<model-viewer>` hotspot labels over the 3D model unless a future task explicitly asks for spatial callouts again. `ingredientHotspots` may remain in dish data as metadata/future positioning data.
 
