@@ -349,7 +349,7 @@ platformScale: {
 }
 ```
 
-If `platformScale` is omitted, all multipliers default to `1`. Android values should stay `1` unless real Android testing proves a specific model needs calibration. This keeps one shared GLB per dish and avoids duplicate iOS/Android model files. The temporary `test` dish using `/models/dishes/tst.glb` is currently the first Android calibration test: `default: 1`, `ios: 1`, `android: 1.8`, targeting an approximately 32 cm pizza diameter. That Android value may be adjusted after physical testing. There is a code comment in `ModelViewerPage` noting that iOS Quick Look may still use dimensions baked into the USDZ/GLB conversion.
+If `platformScale` is omitted, all multipliers default to `1`. Android values should stay `1` unless real Android testing proves a specific model needs calibration. This keeps one shared GLB per dish and avoids duplicate iOS/Android model files. The temporary `test` dish using `/models/dishes/tst.glb` has Android calibration reset for clean testing of the corrected GLB: `default: 1`, `ios: 1`, `android: 1`, targeting an approximately 32-33 cm pizza diameter. Android-specific calibration may be reintroduced later only if clean physical testing proves it is still needed. There is a code comment in `ModelViewerPage` noting that iOS Quick Look may still use dimensions baked into the USDZ/GLB conversion.
 
 Rules:
 
@@ -847,7 +847,7 @@ Known issues/cleanup notes from inspection:
 - Mtsvadi uses `placeholder-dish.glb` and `hasModel: false`.
 - `ingredientHotspots` positions are retained as data but are not currently rendered as visible model-viewer hotspot labels.
 - iOS Quick Look may handle scale differently than WebXR/Scene Viewer.
-- Temporary `Test` category/dish exists in the demo menu for GLB testing and should be removed after testing. It uses `/models/dishes/tst.glb` with an Android-only `platformScale.android` test value of `1.8`; default and iOS remain `1`.
+- Temporary `Test` category/dish exists in the demo menu for GLB testing and should be removed after testing. It uses `/models/dishes/tst.glb` with `platformScale` reset to `1` for default, iOS, and Android so the corrected GLB can be tested cleanly at its own exported scale.
 
 Planned/future improvements:
 
