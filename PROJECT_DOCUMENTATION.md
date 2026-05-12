@@ -349,7 +349,7 @@ platformScale: {
 }
 ```
 
-If `platformScale` is omitted, all multipliers default to `1`. Android values should stay `1` unless real Android testing proves a specific model needs calibration. This keeps one shared GLB per dish and avoids duplicate iOS/Android model files. There is a code comment in `ModelViewerPage` noting that iOS Quick Look may still use dimensions baked into the USDZ/GLB conversion.
+If `platformScale` is omitted, all multipliers default to `1`. Android values should stay `1` unless real Android testing proves a specific model needs calibration. This keeps one shared GLB per dish and avoids duplicate iOS/Android model files. The temporary `test` dish using `/models/dishes/tst.glb` is currently the first Android calibration test: `default: 1`, `ios: 1`, `android: 1.8`, targeting an approximately 32 cm pizza diameter. That Android value may be adjusted after physical testing. There is a code comment in `ModelViewerPage` noting that iOS Quick Look may still use dimensions baked into the USDZ/GLB conversion.
 
 Rules:
 
@@ -847,7 +847,7 @@ Known issues/cleanup notes from inspection:
 - Mtsvadi uses `placeholder-dish.glb` and `hasModel: false`.
 - `ingredientHotspots` positions are retained as data but are not currently rendered as visible model-viewer hotspot labels.
 - iOS Quick Look may handle scale differently than WebXR/Scene Viewer.
-- Temporary `Test` category/dish exists in the demo menu for GLB testing and should be removed after testing.
+- Temporary `Test` category/dish exists in the demo menu for GLB testing and should be removed after testing. It uses `/models/dishes/tst.glb` with an Android-only `platformScale.android` test value of `1.8`; default and iOS remain `1`.
 
 Planned/future improvements:
 

@@ -324,6 +324,7 @@ const sufraOldTown = {
       ingredients: [],
       ingredientHotspots: [],
       arScale: '0.25 0.25 0.25',
+      platformScale: { default: 1, ios: 1, android: 1.8 },
       arPlacement: 'floor',
       cameraOrbit: '35deg 70deg 2.4m',
       fieldOfView: '30deg',
