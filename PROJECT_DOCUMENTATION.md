@@ -319,27 +319,43 @@ Flow:
 Current model-viewer realism settings:
 
 - `ar`
-- `ar-modes="webxr scene-viewer quick-look"`
+- Platform-specific `ar-modes`
+  - iOS/iPadOS: `quick-look`
+  - Android: `webxr scene-viewer`
+  - Default/desktop fallback: `webxr scene-viewer quick-look`
 - `ar-scale="fixed"`
 - `disable-zoom`
 - `camera-controls`
 - `auto-rotate`
 - `scale={modelScale}`
+- `data-ar-platform={arPlatform}`
+- `data-platform-scale={platformScaleMultiplier}`
 - `data-ar-scale={modelScale}`
 - `touch-action="pan-y"`
 
-`modelScale` is derived from:
+`modelScale` is derived from the dish `arScale` multiplied by optional platform scale values:
 
 ```js
-const modelScale = dish.arScale || '0.25 0.25 0.25';
+const modelScale = getModelScaleForPlatform(dish, arPlatform);
 ```
 
-There is a code comment in `ModelViewerPage` noting that scale controls the model-viewer preview plus WebXR/Scene Viewer AR, but iOS Quick Look may ignore this and use dimensions baked into the USDZ/GLB conversion.
+Platform scale override support is optional:
+
+```js
+platformScale: {
+  default: 1,
+  ios: 1,
+  android: 1,
+}
+```
+
+If `platformScale` is omitted, all multipliers default to `1`. Android values should stay `1` unless real Android testing proves a specific model needs calibration. This keeps one shared GLB per dish and avoids duplicate iOS/Android model files. There is a code comment in `ModelViewerPage` noting that iOS Quick Look may still use dimensions baked into the USDZ/GLB conversion.
 
 Rules:
 
 - Keep `ar-scale="fixed"` where possible.
 - Keep default real-world table scale controlled per dish with `arScale`.
+- Keep platform scale multipliers at `1` by default.
 - Do not re-enable unrealistic free zoom/scale unless explicitly requested.
 - User should be able to rotate/orbit in 3D preview.
 - AR must keep launching normally on mobile.
