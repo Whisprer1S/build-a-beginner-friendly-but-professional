@@ -134,6 +134,8 @@ Each dish should have:
 - `cameraOrbit`
 - `fieldOfView`
 
+Use `arScale: '1 1 1'` by default. Dish real-world size should come from the correctly exported GLB unless a future task explicitly asks for a calibrated override.
+
 `platformScale` is optional future calibration metadata and should be omitted unless platform-specific AR testing proves it is needed.
 
 Asset folders:
