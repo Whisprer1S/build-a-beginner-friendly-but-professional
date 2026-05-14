@@ -227,7 +227,7 @@ Each dish should include:
       benefits: ['Protein', 'Iron'],
     },
   ],
-  arScale: '0.22 0.22 0.22',
+  arScale: '1 1 1',
   arPlacement: 'floor',
   cameraOrbit: '35deg 72deg 2.8m',
   fieldOfView: '28deg',
@@ -354,7 +354,7 @@ If `platformScale` is omitted, all multipliers default to `1`. Android values sh
 Rules:
 
 - Keep `ar-scale="fixed"` where possible.
-- Keep default real-world table scale controlled per dish with `arScale`.
+- Use `arScale: '1 1 1'` by default so real-world size comes from the correctly exported GLB.
 - Keep platform scale multipliers at `1` by default.
 - Do not re-enable unrealistic free zoom/scale unless explicitly requested.
 - User should be able to rotate/orbit in 3D preview.
