@@ -13,7 +13,7 @@ export const siteContent = {
     items: [
       'Mobile-first menus for real restaurant tables',
       '3D dish previews with fixed-scale AR placement',
-      'Language and currency controls for international guests',
+      'Multilingual menu for international guests',
     ],
   },
   about: {

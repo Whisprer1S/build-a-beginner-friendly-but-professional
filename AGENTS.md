@@ -2,7 +2,7 @@
 
 ## Project Summary
 
-Sufra AR is a premium WebAR restaurant menu product. Guests scan a QR code, browse a mobile-first menu, inspect dish details and ingredients, and view dishes in 3D/AR on their table before ordering.
+Sufra AR is a premium WebAR restaurant menu product. Guests scan a QR code, browse a mobile-first menu, inspect dish details and ingredients, and view model-backed dishes in 3D/AR on their table before ordering.
 
 The app is a React + Vite frontend deployed on Vercel. It uses static config files only. There is no backend, database, login, dashboard, or payment system.
 
@@ -96,7 +96,7 @@ Main files:
 - `src/data/restaurants/sufra-old-town.js` - default demo restaurant/menu config; legacy filename, public slug is `demo`
 - `src/data/restaurants/demo-cafe.js` - second sample config
 - `src/data/translations.js` - visible UI translations
-- `src/data/currencies.js` - static currency conversion
+- `src/data/currencies.js` - GEL-only price formatter
 - `src/data/plans.js` - pricing plan ids/prices/base features
 - `src/data/brand.js` - brand identity and contact info
 
@@ -113,7 +113,7 @@ desserts
 drinks
 ```
 
-Dessert categories hide Veg/Meat filters and badges. Drink categories use Alcoholic / Non-alcoholic filters and badges.
+Dessert categories hide Veg/Meat filters and badges. Drink categories use Alcoholic / Non-alcoholic filters and badges. Drinks are photo-only and should not render `model-viewer`, AR launch, or a Photo / 3D selector.
 
 Each dish should have:
 
@@ -137,6 +137,8 @@ Each dish should have:
 Use `arScale: '1 1 1'` by default. Dish real-world size should come from the correctly exported GLB unless a future task explicitly asks for a calibrated override.
 
 `platformScale` is optional future calibration metadata and should be omitted unless platform-specific AR testing proves it is needed.
+
+Dishes with real models can show the Photo / 3D selector in the viewer. Dishes without models, including drinks, should show the existing dish photo only.
 
 Asset folders:
 
@@ -196,7 +198,7 @@ Selector labels:
 - `GEO`
 - `RUS`
 
-Visible UI translations live in `src/data/translations.js`. Site language/currency and menu language/currency state are separate; do not collapse them back into one shared state.
+Visible UI translations live in `src/data/translations.js`. Site language and menu language state are separate; do not collapse them back into one shared state. Currency switching has been removed, and menu prices display in GEL only.
 
 Do not translate:
 

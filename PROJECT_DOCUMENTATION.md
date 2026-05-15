@@ -11,9 +11,10 @@ Core value:
 
 - Guests scan a QR code for a restaurant.
 - The website opens a mobile-first menu experience.
-- Guests browse categories, search dishes, filter by food or drink type, inspect ingredients, and switch language/currency.
-- Guests open dish Details directly into the full 3D/AR viewer page.
-- The AR viewer uses `<model-viewer>` so guests can preview dishes in 3D and view them on their table before ordering.
+- Guests browse categories, search dishes, filter by food or drink type, inspect ingredients, and switch language.
+- Guests open dish Details directly into the full viewer page.
+- Dishes with models can switch between Photo and 3D; photo-only dishes such as drinks do not show AR.
+- The AR viewer uses `<model-viewer>` for model-backed dishes so guests can preview dishes in 3D and view them on their table before ordering.
 
 This is a frontend-only MVP/product shell. There is no backend, no database, no login system, no dashboard, and no payments.
 
@@ -165,7 +166,7 @@ Main data files:
   - Base pricing plan ids, English titles, prices, CTA names, and feature lists.
   - `App.jsx` uses plan ids and pulls translated display text from `src/data/translations.js`.
 - `src/data/currencies.js`
-  - Static GEL/USD/EUR rates and `formatPrice(priceGEL, currencyCode)`.
+  - GEL-only `formatPrice(priceGEL)` helper.
 - `src/data/translations.js`
   - Main visible UI translation dictionary for `en`, `ka`, `ru`.
   - Exports `translations` and `getTranslation(language, key)`.
@@ -197,6 +198,8 @@ drinks
 ```
 
 Every dish should reference one of those ids with `categoryId`. Dessert categories intentionally hide Veg/Meat filters and badges. Drink categories use `drinkType` values such as `alcoholic` and `non-alcoholic` instead of Veg/Meat labels.
+
+Drinks are photo-only. They should use existing dish photos, set `hasModel: false`, and should not render `model-viewer`, the Photo / 3D selector, or `View on your table`.
 
 Each dish should include:
 
@@ -234,7 +237,7 @@ Each dish should include:
 }
 ```
 
-Base price is always `priceGEL`. Other currencies are converted from GEL by `formatPrice` in `src/data/currencies.js`.
+Base price is always `priceGEL`. Dish prices always display in GEL through `formatPrice` in `src/data/currencies.js`; there is no USD/EUR conversion or currency selector.
 
 Current category mapping in `sufra-old-town.js`:
 
@@ -243,7 +246,7 @@ Current category mapping in `sufra-old-town.js`:
 - `main-course`: Mountain Khinkali, Chicken Alfredo
 - `grill`: Steak, Mtsvadi
 - `desserts`: Tiramisu
-- `drinks`: Orange Juice (`drinkType: non-alcoholic`)
+- `drinks`: Orange Juice (`drinkType: non-alcoholic`, photo-only)
 
 If a dish does not have a real model yet:
 
@@ -313,8 +316,9 @@ Flow:
 ```
 
 3. `App` detects `view=viewer` and renders `ModelViewerPage`.
-4. `ModelViewerPage` shows dish info, clickable ingredient chips/info, a small `Add to selection` or quantity control, and the AR launch button.
-5. `ModelViewerPage` passes `dish.model`, `dish.image`, `dish.arScale`, `dish.arPlacement`, `dish.cameraOrbit`, and `dish.fieldOfView` into `<model-viewer>`.
+4. `ModelViewerPage` shows dish info, clickable ingredient chips/info, a small `Add to selection` or quantity control, and the media area.
+5. Model-backed dishes show a Photo / 3D selector. Photo uses `dish.image`; 3D passes `dish.model`, `dish.arScale`, `dish.arPlacement`, `dish.cameraOrbit`, and `dish.fieldOfView` into `<model-viewer>`.
+6. Dishes without models, including drinks, stay photo-only and do not render `<model-viewer>` or the AR launch button.
 
 Current model-viewer realism settings:
 
@@ -332,6 +336,8 @@ Current model-viewer realism settings:
 - `data-platform-scale={platformScaleMultiplier}`
 - `data-ar-scale={modelScale}`
 - `touch-action="pan-y"`
+
+These settings apply only when the dish has a real model and is not in the `drinks` category.
 
 `modelScale` is derived from the dish `arScale` multiplied by optional platform scale values:
 
@@ -358,7 +364,7 @@ Rules:
 - Keep platform scale multipliers at `1` by default.
 - Do not re-enable unrealistic free zoom/scale unless explicitly requested.
 - User should be able to rotate/orbit in 3D preview.
-- AR must keep launching normally on mobile.
+- AR must keep launching normally on mobile for model-backed food dishes.
 - Do not remove `<model-viewer>` or the AR slot button.
 - Test viewer routes after AR changes.
 
@@ -411,7 +417,7 @@ Behavior:
 - Saved dishes store only dish ids and quantities in `localStorage`.
 - Storage is per restaurant slug using `sufra-selection-${restaurant.slug}`.
 - Rendering resolves dish details from the current restaurant config and ignores saved ids that no longer exist.
-- Prices and estimated totals use `formatPrice` with the current menu currency.
+- Prices and estimated totals use `formatPrice` and display in GEL only.
 - Dish names follow the current menu language.
 - The bottom sheet says `Show this list to your waiter.`
 
@@ -420,40 +426,23 @@ Rules:
 - This is not a cart, checkout, order submission, payment flow, table-number flow, or backend feature.
 - Do not add backend/database/login/admin/payment/order behavior to this feature.
 
-## 11. Currency System
+## 11. Price Display
 
-Base currency is GEL.
+Base currency is GEL. Currency switching and USD/EUR conversion have been removed.
 
-Currency data and conversion logic live in:
+The GEL-only price formatter lives in:
 
 ```text
 src/data/currencies.js
 ```
 
-Current currencies:
+Dish and selection prices are rendered with:
 
 ```js
-{ code: 'GEL', symbol: '₾', rateFromGel: 1, decimals: 0 }
-{ code: 'USD', symbol: '$', rateFromGel: 0.37, decimals: 2 }
-{ code: 'EUR', symbol: '€', rateFromGel: 0.315, decimals: 2 }
+formatPrice(dish.priceGEL)
 ```
 
-Current static rates:
-
-- 1 GEL = 0.37 USD
-- 1 GEL = 0.315 EUR
-
-There is no exchange-rate API.
-
-The currency selector is rendered by `HeaderControls` in `src/App.jsx`. It is used in both the site header and the mobile menu top area. Site and menu currency state are intentionally separate. Site currency is stored under `sufra-site-currency`; menu currency is stored under `sufra-menu-currency`. Older `sufra-currency` values are used only as a fallback.
-
-Dish prices are rendered with:
-
-```js
-formatPrice(dish.priceGEL, currency)
-```
-
-Pricing plan prices are currently displayed in GEL only.
+Prices display as plain GEL text, for example `12 GEL`. Pricing plan prices are also displayed in GEL as static plan copy.
 
 ## 12. Language / Translation System
 
@@ -608,6 +597,8 @@ Custom:
 
 Basic and Pro cards show a subtle `+ setup fee` note near the monthly price. Custom shows `Prices may vary` and `Please contact us`; it does not show a fixed setup fee.
 
+Pricing sections also show a subtle note: monthly subscription starts 1 month after the setup fee payment.
+
 There is no payment integration. CTAs are mailto links.
 
 ## 15. Contact Links
@@ -697,7 +688,7 @@ Important CSS areas:
 - Pricing: `.pricing-section`, `.pricing-carousel-shell`, `.pricing-grid`, `.pricing-card`
 - Menu app: `.menu-app`, `.menu-theme-dark`, `.menu-theme-light`
 - Dish UI: `.dish-card`, `.viewer-info-card`, `.selection-sheet`
-- AR viewer: `model-viewer`, `.ingredient-info-card`, `.ar-button`
+- AR viewer: `model-viewer`, `.viewer-photo`, `.viewer-media-toggle`, `.ingredient-info-card`, `.ar-button`
 - Footer: `.site-footer`
 
 ## 18. Mobile-First Rules
@@ -708,10 +699,10 @@ Rules:
 
 - Menu UI must be thumb-friendly.
 - Category slider must be horizontally swipeable.
-- Category changes reset the active type filter to All. Desserts hide type filters/badges; Drinks use Alcoholic / Non-alcoholic filters and badges.
+- Category changes reset the active type filter to All. Desserts hide type filters/badges; Drinks use Alcoholic / Non-alcoholic filters and badges and remain photo-only.
 - Search must remain usable on mobile. When a query is active, search runs across all dishes in the current restaurant, not only the selected category.
 - Dish viewer details and selection controls must fit mobile screens.
-- AR button must be obvious and reachable.
+- AR button must be obvious and reachable for model-backed food dishes.
 - Pricing cards should swipe horizontally on mobile using CSS scroll-snap.
 - Desktop can show the mobile app-style menu centered inside the page.
 - Text must not overflow, especially Georgian and Russian.
@@ -831,7 +822,7 @@ Current dish-to-asset mapping in `sufra-old-town.js`:
 | `chicken-salad` | `/images/dishes/Chicken Salad.jpg` | `/models/dishes/Chicken Salad.glb` | Real model |
 | `chicken-alfredo` | `/images/dishes/Chicken Alfredo.jpg` | `/models/dishes/Chicken Alfredo.glb` | Real model |
 | `tiramisu` | `/images/dishes/Tiramisu.jpg` | `/models/dishes/tiramisu.glb` | Real model |
-| `orange-juice` | `/images/dishes/orange juice.jpg` | `/models/dishes/orange juice.glb` | Real model |
+| `orange-juice` | `/images/dishes/orange juice.jpg` | none configured | Photo-only drink; existing GLB asset is not referenced |
 | `mtsvadi` | `/images/dishes/mtsvadi.jfif` | `/models/dishes/placeholder-dish.glb` | `hasModel: false`; no dedicated Mtsvadi model yet |
 
 ## 22. Current Known Issues / Future Improvements
@@ -845,6 +836,7 @@ Known issues/cleanup notes from inspection:
 - `public/models/dishes/khinkali.glb.glb` appears to duplicate `khinkali.glb`. The app currently uses `/models/dishes/khinkali.glb`. Do not delete or move it unless doing an explicit asset cleanup.
 - Several asset filenames include spaces and uppercase letters. This is supported if paths are exact, but future assets should prefer lowercase kebab-case.
 - Mtsvadi uses `placeholder-dish.glb` and `hasModel: false`.
+- Drinks are photo-only; Orange Juice has `hasModel: false` and no configured model path.
 - `ingredientHotspots` positions are retained as data but are not currently rendered as visible model-viewer hotspot labels.
 - iOS Quick Look may handle scale differently than WebXR/Scene Viewer.
 - Temporary `Test` category/dish exists in the demo menu for GLB testing and should be removed after testing. It uses `/models/dishes/tst.glb` with `platformScale` reset to `1` for default, iOS, and Android so the corrected GLB can be tested cleanly at its own exported scale.

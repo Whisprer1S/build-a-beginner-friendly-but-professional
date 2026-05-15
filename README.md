@@ -38,7 +38,7 @@ npm run build
 src/App.jsx                       -> app layout, routing, menu UI, modal, AR viewer
 src/styles.css                    -> global styling and responsive UI
 src/data/brand.js                 -> Sufra AR brand identity and contact links
-src/data/currencies.js            -> static GEL / USD / EUR conversion
+src/data/currencies.js            -> GEL-only price formatter
 src/data/plans.js                 -> pricing plan content
 src/data/siteContent.js           -> landing and about copy
 src/data/restaurants/index.js     -> restaurant registry and default restaurant
@@ -134,7 +134,7 @@ Example:
 }
 ```
 
-Dessert categories hide Veg/Meat filters and badges. Drink categories use Alcoholic / Non-alcoholic filters and badges.
+Dessert categories hide Veg/Meat filters and badges. Drink categories use Alcoholic / Non-alcoholic filters and badges. Drinks are photo-only and should not show AR/model-viewer.
 
 If a custom 3D model is not ready, use:
 
@@ -143,20 +143,17 @@ model: '/models/dishes/placeholder-dish.glb',
 hasModel: false,
 ```
 
-## Currency
+## Price Display
 
 Base prices are always stored in GEL with `priceGEL`.
 
-Static conversion rates live in:
+GEL-only formatting lives in:
 
 ```text
 src/data/currencies.js
 ```
 
-Current rates:
-
-- 1 GEL = 0.37 USD
-- 1 GEL = 0.315 EUR
+Currency switching and USD/EUR conversion are not active. Dish prices display as plain GEL text, for example `12 GEL`.
 
 ## QR Codes
 
