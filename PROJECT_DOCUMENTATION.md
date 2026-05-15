@@ -331,6 +331,8 @@ Current model-viewer realism settings:
 - `ar-scale="fixed"`
 - `disable-zoom`
 - `camera-controls`
+- `min-camera-orbit="auto 35deg auto"`
+- `max-camera-orbit="auto 85deg auto"`
 - `auto-rotate`
 - `scale={modelScale}`
 - `data-ar-platform={arPlatform}`
@@ -364,7 +366,7 @@ Rules:
 - Use `arScale: '1 1 1'` by default so real-world size comes from the correctly exported GLB.
 - Keep platform scale multipliers at `1` by default.
 - Do not re-enable unrealistic free zoom/scale unless explicitly requested.
-- User should be able to rotate/orbit in 3D preview.
+- User should be able to rotate/orbit horizontally in 3D preview, but vertical orbit is limited to prevent viewing unfinished model undersides. This does not change AR placement behavior.
 - AR must keep launching normally on mobile for model-backed food dishes.
 - Do not remove `<model-viewer>` or the AR slot button.
 - Test viewer routes after AR changes.

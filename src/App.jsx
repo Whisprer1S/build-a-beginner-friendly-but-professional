@@ -1041,6 +1041,8 @@ function ModelViewerPage({ controls, dish, language, menuTheme, onBack, restaura
                 disable-zoom
                 exposure="0.95"
                 field-of-view={dish.fieldOfView}
+                max-camera-orbit="auto 85deg auto"
+                min-camera-orbit="auto 35deg auto"
                 poster={dish.image}
                 data-ar-platform={arPlatform}
                 data-ar-scale={modelScale}
