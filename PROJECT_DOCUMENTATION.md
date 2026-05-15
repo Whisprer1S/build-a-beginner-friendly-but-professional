@@ -503,7 +503,7 @@ What should translate:
 Must stay English:
 
 - `Sufra AR`
-- `Powered by Sufra AR`
+- `Designed with 🤍 by Sufra AR`
 - Email address
 - Instagram handle
 - Currency codes/symbols
@@ -654,14 +654,14 @@ Footer must include:
 - TikTok link
 - Facebook link
 - WhatsApp / phone link
-- `Powered by Sufra AR`
+- `Designed with 🤍 by Sufra AR`
 
 Rules:
 
 - Instagram, TikTok, Facebook, and WhatsApp should appear only in the footer contact/social area, not in the footer nav.
 - Logo text stays `Sufra AR`.
 - Slogan uses the language-specific text from `brand.slogan`.
-- Powered text stays `Powered by Sufra AR`.
+- Footer credit text stays `Designed with 🤍 by Sufra AR`.
 - Footer nav labels should translate.
 - Email address, phone number, social handles, and URLs should not translate.
 
