@@ -117,8 +117,8 @@ function getArPlatform() {
 
 function getArModesForPlatform(platform) {
   if (platform === 'ios') return 'quick-look';
-  if (platform === 'android') return 'webxr scene-viewer';
-  return 'webxr scene-viewer quick-look';
+  if (platform === 'android') return 'scene-viewer webxr';
+  return 'scene-viewer webxr quick-look';
 }
 
 function getPlatformScaleMultiplier(dish, platform) {
