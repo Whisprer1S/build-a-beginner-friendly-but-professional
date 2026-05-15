@@ -12,7 +12,7 @@ export const translations = {
     listView: 'List view',
     gridView: 'Grid view',
     notFound: 'Restaurant not found',
-    powered: 'Powered by Sufra AR',
+    powered: 'Designed with 🤍 by Sufra AR',
 
     heroTitle: 'See It Before You Order',
     heroSubtitle: 'Premium WebAR menus that let guests explore dishes in 3D and view them on their table before ordering.',
@@ -155,7 +155,7 @@ export const translations = {
     listView: 'სიის ხედი',
     gridView: 'ბადის ხედი',
     notFound: 'რესტორანი ვერ მოიძებნა',
-    powered: 'Powered by Sufra AR',
+    powered: 'Designed with 🤍 by Sufra AR',
 
     heroTitle: 'ნახე, სანამ შეუკვეთავ',
     heroSubtitle: 'პრემიუმ WebAR მენიუები, რომლებიც სტუმრებს აძლევს შესაძლებლობას დაათვალიერონ კერძები 3D-ში და ნახონ ისინი საკუთარ მაგიდაზე შეკვეთამდე.',
@@ -334,7 +334,7 @@ export const translations = {
     listView: 'Вид списком',
     gridView: 'Вид сеткой',
     notFound: 'Ресторан не найден',
-    powered: 'Powered by Sufra AR',
+    powered: 'Designed with 🤍 by Sufra AR',
 
     heroTitle: 'Увидь перед заказом',
     heroSubtitle: 'Премиальные WebAR-меню, которые позволяют гостям изучать блюда в 3D и видеть их на своём столе до заказа.',

@@ -203,7 +203,7 @@ Visible UI translations live in `src/data/translations.js`. Site language and me
 Do not translate:
 
 - `Sufra AR`
-- `Powered by Sufra AR`
+- `Designed with 🤍 by Sufra AR`
 - email address
 - Instagram handle
 - currency codes/symbols
