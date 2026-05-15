@@ -25,7 +25,7 @@ export const translations = {
     productPoints: [
       'Mobile-first menus for real restaurant tables',
       '3D dish previews with fixed-scale AR placement',
-      'Language and currency controls for international guests',
+      'Multilingual menu for international guests',
     ],
 
     menuLabel: 'Menu',
@@ -41,6 +41,9 @@ export const translations = {
     'non-alcoholic': 'Non-alcoholic',
     details: 'Details',
     backToMenu: 'Back to menu',
+    photo: 'Photo',
+    threeD: '3D',
+    viewerMediaToggle: 'Dish media view',
     viewOnTable: 'View on your table',
     modelHint: 'Rotate the dish. AR scale is fixed for a realistic table preview.',
     moreDishes: 'More dishes coming soon.',
@@ -71,6 +74,7 @@ export const translations = {
     pricingSetupFee: '+ setup fee',
     pricingCustomPrice: 'Prices may vary',
     pricingContactUs: 'Please contact us',
+    pricingSubscriptionNote: 'Monthly subscription starts 1 month after the setup fee payment.',
     getStarted: 'Get started',
     swipePlans: 'Swipe plans',
     pricingBasicFeatures: [
@@ -164,7 +168,7 @@ export const translations = {
     productPoints: [
       'მობილურზე მორგებული მენიუ რეალური რესტორნის მაგიდებისთვის',
       '3D კერძების წინასწარი ნახვა ფიქსირებული ზომის AR განთავსებით',
-      'ენისა და ვალუტის მართვა საერთაშორისო სტუმრებისთვის',
+      'მრავალენოვანი მენიუ საერთაშორისო სტუმრებისთვის',
     ],
 
     menuLabel: 'მენიუ',
@@ -180,6 +184,9 @@ export const translations = {
     'non-alcoholic': 'უალკოჰოლო',
     details: 'დეტალები',
     backToMenu: 'მენიუში დაბრუნება',
+    photo: 'ფოტო',
+    threeD: '3D',
+    viewerMediaToggle: 'კერძის მედიის ხედი',
     viewOnTable: 'მაგიდაზე ნახვა',
     modelHint: 'დაატრიალეთ კერძი. AR ზომა ფიქსირებულია რეალისტური მაგიდის ხედისთვის.',
     moreDishes: 'მეტი კერძი მალე დაემატება.',
@@ -210,6 +217,7 @@ export const translations = {
     pricingSetupFee: '+ დაყენების საფასური',
     pricingCustomPrice: 'ფასი შეიძლება განსხვავდებოდეს',
     pricingContactUs: 'გთხოვთ, დაგვიკავშირდეთ',
+    pricingSubscriptionNote: 'ყოველთვიური გამოწერა იწყება დაყენების საფასურის გადახდიდან 1 თვის შემდეგ.',
     getStarted: 'დაწყება',
     swipePlans: 'გადაფურცლეთ პაკეტები',
     pricingBasicFeatures: [
@@ -339,7 +347,7 @@ export const translations = {
     productPoints: [
       'Мобильное меню для реальных ресторанных столов',
       '3D-превью блюд с фиксированным масштабом AR',
-      'Управление языком и валютой для иностранных гостей',
+      'Многоязычное меню для иностранных гостей',
     ],
 
     menuLabel: 'Меню',
@@ -355,6 +363,9 @@ export const translations = {
     'non-alcoholic': 'Безалкогольный',
     details: 'Детали',
     backToMenu: 'Назад к меню',
+    photo: 'Фото',
+    threeD: '3D',
+    viewerMediaToggle: 'Вид медиа блюда',
     viewOnTable: 'Посмотреть на столе',
     modelHint: 'Поверните блюдо. Масштаб AR зафиксирован для реалистичного просмотра на столе.',
     moreDishes: 'Скоро появятся новые блюда.',
@@ -385,6 +396,7 @@ export const translations = {
     pricingSetupFee: '+ плата за настройку',
     pricingCustomPrice: 'Цены могут отличаться',
     pricingContactUs: 'Пожалуйста, свяжитесь с нами',
+    pricingSubscriptionNote: 'Ежемесячная подписка начинается через 1 месяц после оплаты setup fee.',
     getStarted: 'Начать',
     swipePlans: 'Проведите по планам',
     pricingBasicFeatures: [

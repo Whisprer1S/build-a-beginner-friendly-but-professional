@@ -367,8 +367,8 @@ const sufraOldTown = {
       },
       priceGEL: 9,
       image: "/images/dishes/orange juice.jpg",
-      model: "/models/dishes/orange juice.glb",
-      hasModel: true,
+      model: "",
+      hasModel: false,
       ingredients: [
         { name: "Orange", benefits: ["Vitamin C", "Citrus freshness"] },
         { name: "Vitamin C", benefits: ["Immune support", "Antioxidants"] },
