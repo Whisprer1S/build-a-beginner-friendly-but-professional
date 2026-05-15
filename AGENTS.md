@@ -163,7 +163,7 @@ AR viewer is implemented in `ModelViewerPage` in `src/App.jsx`.
 Preserve:
 
 - `ar`
-- platform-specific `ar-modes` (`quick-look` for iOS, `webxr scene-viewer` for Android, combined fallback for desktop/default)
+- platform-specific `ar-modes` (`quick-look` for iOS, `scene-viewer webxr` for Android, `scene-viewer webxr quick-look` for desktop/default). Android prioritizes Scene Viewer before WebXR because testing showed better placement behavior.
 - `ar-scale="fixed"`
 - `disable-zoom`
 - `camera-controls`

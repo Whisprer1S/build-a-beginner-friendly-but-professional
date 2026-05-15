@@ -325,8 +325,9 @@ Current model-viewer realism settings:
 - `ar`
 - Platform-specific `ar-modes`
   - iOS/iPadOS: `quick-look`
-  - Android: `webxr scene-viewer`
-  - Default/desktop fallback: `webxr scene-viewer quick-look`
+  - Android: `scene-viewer webxr`
+  - Default/desktop fallback: `scene-viewer webxr quick-look`
+  - Android prioritizes native Scene Viewer before WebXR because testing showed better placement behavior.
 - `ar-scale="fixed"`
 - `disable-zoom`
 - `camera-controls`
