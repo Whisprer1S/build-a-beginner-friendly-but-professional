@@ -783,6 +783,13 @@ Current `vercel.json`:
 }
 ```
 
+SEO/favicon notes:
+
+- Browser and Search favicon source is `public/favicon.svg`.
+- `index.html` references `/favicon.svg` in the head and also includes PNG fallbacks: `/favicon-48x48.png`, `/favicon-192x192.png`, and `/apple-touch-icon.png`.
+- The favicon SVG is square and uses the black/white Sufra AR icon.
+- Google Search may take days or weeks to refresh the displayed favicon after production deployment and recrawling.
+
 ## 21. Current Known Assets
 
 Images in `public/images/dishes`:
