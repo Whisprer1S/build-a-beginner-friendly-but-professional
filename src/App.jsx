@@ -153,6 +153,14 @@ function getParams() {
   return new URLSearchParams(window.location.search);
 }
 
+function scrollToTopInstant() {
+  try {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  } catch {
+    window.scrollTo(0, 0);
+  }
+}
+
 function getRouteFromPath() {
   const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
   const staticPages = ['about', 'pricing'];
@@ -355,17 +363,25 @@ function App() {
 
   const themeStyle = getThemeStyle(restaurant, themeMode);
   const activeDish = restaurant.dishes.find((dish) => dish.id === route.params.get('dish'));
-  const isViewer = route.params.get('view') === 'viewer' && activeDish;
+  const isViewer = route.params.get('view') === 'viewer' && Boolean(activeDish);
 
-  function navigateToMenu(slug, query = {}) {
+  useEffect(() => {
+    if (isViewer) scrollToTopInstant();
+  }, [activeDish?.id, isViewer, route.slug]);
+
+  function navigateToMenu(slug, query = {}, scrollMode = 'smooth') {
     const url = buildRestaurantUrl(slug, query);
     window.history.pushState({}, '', url);
     setRoute({ page: 'menu', slug, params: getParams() });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (scrollMode === 'instant') {
+      scrollToTopInstant();
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   function openViewer(dish) {
-    navigateToMenu(restaurant.slug, { dish: dish.id, view: 'viewer', lang: menuLanguage });
+    navigateToMenu(restaurant.slug, { dish: dish.id, view: 'viewer', lang: menuLanguage }, 'instant');
   }
 
   function backToMenu() {
@@ -607,6 +623,23 @@ function ProductValueSection({ language }) {
 }
 
 function PricingSection({ compact = false, language }) {
+  const pricingGridRef = useRef(null);
+  const hasSetInitialScroll = useRef(false);
+
+  useEffect(() => {
+    const grid = pricingGridRef.current;
+    if (!grid || hasSetInitialScroll.current || !window.matchMedia('(max-width: 719px)').matches) return;
+
+    const proCard = grid.querySelector('[data-plan-id="pro"]');
+    if (!proCard) return;
+
+    hasSetInitialScroll.current = true;
+    requestAnimationFrame(() => {
+      const left = proCard.offsetLeft - ((grid.clientWidth - proCard.clientWidth) / 2);
+      grid.scrollTo({ left: Math.max(0, left), behavior: 'auto' });
+    });
+  }, []);
+
   return (
     <section className={compact ? 'pricing-section compact' : 'pricing-section'}>
       <div className="section-heading">
@@ -615,9 +648,9 @@ function PricingSection({ compact = false, language }) {
       </div>
       <div className="pricing-carousel-shell">
         <p className="pricing-scroll-hint">{t(language, 'swipePlans')}</p>
-        <div className="pricing-grid">
+        <div className="pricing-grid" ref={pricingGridRef}>
           {pricingPlans.map((plan) => (
-            <article className={`pricing-card ${plan.badge ? 'recommended' : ''}`} key={plan.id}>
+            <article className={`pricing-card ${plan.badge ? 'recommended' : ''}`} data-plan-id={plan.id} key={plan.id}>
               {plan.badge && <span className="plan-badge">{t(language, 'pricingRecommended')}</span>}
               <h3>{getPlanTitle(plan, language)}</h3>
               <ul>
@@ -695,6 +728,7 @@ function MenuExperience({ controls, isPreview = false, language, menuTheme, onDi
       <p className="menu-restaurant-label">{text(restaurant.restaurantName, language)}</p>
 
       <div className="category-strip">
+        <span className="category-scroll-hint">{t(language, 'swipeCategories')}</span>
         <div className="category-rail" aria-label={t(language, 'menuLabel')}>
           {restaurant.categories.map((category) => (
             <button
@@ -707,7 +741,6 @@ function MenuExperience({ controls, isPreview = false, language, menuTheme, onDi
             </button>
           ))}
         </div>
-        <span className="category-scroll-hint">{t(language, 'swipeCategories')}</span>
       </div>
 
       <label className="search-box">

@@ -701,12 +701,12 @@ Phone experience is the priority.
 Rules:
 
 - Menu UI must be thumb-friendly.
-- Category slider must be horizontally swipeable.
+- Category slider must be horizontally swipeable, with the swipe hint above the category chips and a subtle edge fade.
 - Category changes reset the active type filter to All. Desserts hide type filters/badges; Drinks use Alcoholic / Non-alcoholic filters and badges and remain photo-only.
 - Search must remain usable on mobile. When a query is active, search runs across all dishes in the current restaurant, not only the selected category.
 - Dish viewer details and selection controls must fit mobile screens.
 - AR button must be obvious and reachable for model-backed food dishes.
-- Pricing cards should swipe horizontally on mobile using CSS scroll-snap.
+- Pricing cards should swipe horizontally on mobile using CSS scroll-snap and initially center the Pro plan.
 - Desktop can show the mobile app-style menu centered inside the page.
 - Text must not overflow, especially Georgian and Russian.
 
