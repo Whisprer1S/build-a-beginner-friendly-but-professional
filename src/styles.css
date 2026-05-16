@@ -463,27 +463,6 @@ h2 {
   margin-inline: auto;
 }
 
-.pricing-carousel-shell::before,
-.pricing-carousel-shell::after {
-  position: absolute;
-  top: 2rem;
-  bottom: 0.5rem;
-  width: 3.4rem;
-  z-index: 1;
-  pointer-events: none;
-  content: "";
-}
-
-.pricing-carousel-shell::before {
-  left: 0;
-  background: linear-gradient(270deg, transparent, var(--bg));
-}
-
-.pricing-carousel-shell::after {
-  right: 0;
-  background: linear-gradient(90deg, transparent, var(--bg));
-}
-
 .pricing-scroll-hint {
   margin: 0 0 0.65rem;
   padding-inline: 1rem;
@@ -706,12 +685,6 @@ h2 {
   background: var(--menu-active-bg);
 }
 
-.menu-restaurant-label {
-  margin: -0.45rem 0 0.9rem;
-  color: var(--menu-muted);
-  font-size: 0.8rem;
-}
-
 .category-strip {
   position: relative;
   display: grid;
@@ -743,8 +716,9 @@ h2 {
   color: var(--menu-muted);
   font-size: 0.72rem;
   font-weight: 600;
+  justify-self: end;
   letter-spacing: 0.02em;
-  text-align: left;
+  text-align: right;
 }
 
 .category-rail button,
@@ -1516,9 +1490,7 @@ model-viewer,
     scroll-snap-align: none;
   }
 
-  .pricing-scroll-hint,
-  .pricing-carousel-shell::before,
-  .pricing-carousel-shell::after {
+  .pricing-scroll-hint {
     display: none;
   }
 
