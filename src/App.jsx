@@ -725,7 +725,6 @@ function MenuExperience({ controls, isPreview = false, language, menuTheme, onDi
         <Logo language={language} />
         <HeaderControls controls={controls} />
       </div>
-      <p className="menu-restaurant-label">{text(restaurant.restaurantName, language)}</p>
 
       <div className="category-strip">
         <span className="category-scroll-hint">{t(language, 'swipeCategories')}</span>
