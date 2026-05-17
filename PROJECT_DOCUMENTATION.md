@@ -11,7 +11,7 @@ Core value:
 
 - Guests scan a QR code for a restaurant.
 - The website opens a mobile-first menu experience.
-- Guests browse categories, search dishes, filter by food or drink type, inspect ingredients, and switch language.
+- Guests browse a grouped menu, use category pills as scroll shortcuts, search dishes, filter by food or drink type, inspect ingredients, and switch language.
 - Guests open dish Details directly into the full viewer page.
 - Dishes with models can switch between Photo and 3D; photo-only dishes such as drinks do not show AR.
 - The AR viewer uses `<model-viewer>` for model-backed dishes so guests can preview dishes in 3D and view them on their table before ordering.
@@ -72,7 +72,7 @@ Routes:
 
 | Route | Displays | Handler/component | Notes |
 | --- | --- | --- | --- |
-| `/` | Product landing page with hero, value section, embedded mobile AR menu, pricing preview, footer | `LandingPage` inside `Shell` | Uses default restaurant config for the embedded menu. Default slug is `demo`. |
+| `/` | Product landing page with hero, value section, QR demo section, pricing preview, footer | `LandingPage` inside `Shell` | The QR demo section links to the real guest-facing `/menu/demo` route instead of embedding a duplicate interactive menu. |
 | `/pricing` | Full pricing page | `PricingPage` -> `PricingSection` | Pricing data comes from `src/data/plans.js`; visible translated text/features come from `src/data/translations.js`. |
 | `/about` | About page | `AboutPage` -> `InfoPage` | Uses translated text from `src/data/translations.js`. |
 | `/menu/demo` | Primary public demo menu page | `MenuExperience` inside `Shell` | Loads `src/data/restaurants/sufra-old-town.js`; the file name is legacy, but the public slug is `demo`. |
@@ -80,6 +80,8 @@ Routes:
 | `/sufra-old-town` | Legacy redirect | `getRouteFromPath` | Old public route. Do not use for new links; it is immediately normalized to `/menu/demo`. |
 | `/demo-cafe` | Legacy direct sample route | `MenuExperience` inside `Shell` | Kept for compatibility with the older top-level slug system. Prefer `/menu/demo-cafe` for new links. |
 | `/<invalid-slug>` | Not found page | `NotFoundPage` | Any non-static path is treated as a restaurant slug. If not found, a clean not-found page appears. |
+
+The homepage QR demo section is generated in React and encodes `https://sufraar.com/menu/demo` for client previews. `/menu/demo` remains the single real demo menu route and continues to reuse the existing demo restaurant config, images, and GLB models.
 
 Viewer query route:
 
@@ -159,6 +161,7 @@ Main data files:
   - Main default demo menu config.
   - This file keeps its legacy filename for safety, but its public slug is `demo` and its public route is `/menu/demo`.
   - Contains category definitions, dish data, image/model paths, ingredient tags, ingredient hotspots, AR scale/camera settings, and theme values.
+  - Can include a static `schedule` object for a translated open-status row and weekly hours modal.
 - `src/data/restaurants/demo-cafe.js`
   - Second sample restaurant config.
   - Imports and spreads `sufraOldTown`, then changes `slug`, `restaurantName`, and `subtitle`.
@@ -198,6 +201,8 @@ drinks
 Every active demo dish should reference one of those ids with `categoryId`. Food categories use All / Veg filters; Meat is not shown as a filter or badge in the demo UI. Drink categories use `drinkType` values such as `alcoholic` and `non-alcoholic` instead of Veg/Meat labels.
 
 Drinks are photo-only. They should use existing dish photos, set `hasModel: false`, and should not render `model-viewer`, the Photo / 3D selector, or `View on your table`.
+
+The menu renders these categories together as one continuous grouped menu. Category pills remain horizontally swipeable and scroll the page to the matching category section instead of permanently hiding the other sections. The active pill is updated from the visible section while the guest scrolls.
 
 Each dish should include:
 
@@ -257,6 +262,23 @@ hasModel: false,
 ```
 
 Calories are optional per dish. When present, `ModelViewerPage` shows them in the dish details card. Demo calorie values are estimates only; real client menus should use client-provided values.
+
+Restaurant configs can include static working hours:
+
+```js
+schedule: {
+  status: {
+    en: 'Open until 23:59 today.',
+    ka: 'დღეს ღიაა 23:59-მდე.',
+    ru: 'Сегодня открыто до 23:59.',
+  },
+  days: [
+    { day: { en: 'Monday', ka: 'ორშაბათი', ru: 'Понедельник' }, hours: '00:00 - 23:59' },
+  ],
+}
+```
+
+If `schedule` is missing, the schedule row/modal should not render.
 
 ## 8. Asset Rules
 
@@ -455,6 +477,8 @@ Supported languages:
 - `en` -> selector label `ENG`
 - `ka` -> selector label `GEO`
 - `ru` -> selector label `RUS`
+
+The first-time/default language is Georgian (`ka`). Saved user language values and explicit `lang=<code>` URL parameters still override the default.
 
 Language registration lives in:
 
@@ -702,7 +726,8 @@ Phone experience is the priority.
 Rules:
 
 - Menu UI must be thumb-friendly.
-- Category slider must be horizontally swipeable, with the swipe hint above the category chips and a subtle edge fade.
+- Category slider must be horizontally swipeable, with a subtle visual swipe indicator near the right edge of the category row.
+- Category pills scroll to their matching grouped menu sections, and the active pill updates as the user scrolls.
 - Category changes reset the active type filter to All. Food categories show All / Veg filters only; Drinks use Alcoholic / Non-alcoholic filters and badges and remain photo-only.
 - Search must remain usable on mobile. When a query is active, search runs across all dishes in the current restaurant, not only the selected category.
 - Dish viewer details and selection controls must fit mobile screens.

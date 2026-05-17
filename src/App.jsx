@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Bookmark,
   ExternalLink,
@@ -31,8 +31,11 @@ import {
   findRestaurantBySlug,
   languages,
 } from './data/restaurants/index.js';
+import { createQrModules } from './utils/qrCode.js';
 
 const demoRequestHref = `mailto:${brand.email}?subject=Sufra%20AR%20Demo%20Request`;
+const DEMO_MENU_QR_URL = 'https://sufraar.com/menu/demo';
+const DEFAULT_LANGUAGE = 'ka';
 
 function t(language, key) {
   return getTranslation(language, key);
@@ -230,7 +233,7 @@ function isSupportedLanguage(language) {
   return languages.some((item) => item.code === language);
 }
 
-function getSavedLanguage(keys, fallback = 'en') {
+function getSavedLanguage(keys, fallback = DEFAULT_LANGUAGE) {
   const saved = keys.map((key) => localStorage.getItem(key)).find(isSupportedLanguage);
   return saved || fallback;
 }
@@ -325,7 +328,7 @@ function BadgeIcon({ size = 14, type }) {
 function App() {
   const requestedLanguage = getParams().get('lang');
   const routeLanguage = isSupportedLanguage(requestedLanguage) ? requestedLanguage : null;
-  const [siteLanguage, setSiteLanguage] = useState(() => getSavedLanguage(['sufra-site-language', 'sufra-language']));
+  const [siteLanguage, setSiteLanguage] = useState(() => routeLanguage || getSavedLanguage(['sufra-site-language', 'sufra-language']));
   const [menuLanguage, setMenuLanguage] = useState(() => routeLanguage || getSavedLanguage(['sufra-menu-language', 'sufra-language']));
   const [themeMode, setThemeMode] = useState(() => localStorage.getItem('sufra-theme') || 'light');
   const [menuTheme, setMenuTheme] = useState(() => localStorage.getItem('sufra-menu-theme') || 'dark');
@@ -356,7 +359,10 @@ function App() {
 
   useEffect(() => {
     const requestedMenuLanguage = route.params.get('lang');
-    if (isSupportedLanguage(requestedMenuLanguage)) setMenuLanguage(requestedMenuLanguage);
+    if (isSupportedLanguage(requestedMenuLanguage)) {
+      setMenuLanguage(requestedMenuLanguage);
+      setSiteLanguage(requestedMenuLanguage);
+    }
   }, [route]);
 
   const themeStyle = getThemeStyle(restaurant, themeMode);
@@ -481,15 +487,7 @@ function App() {
 
   return (
     <Shell controls={controls} language={siteLanguage} restaurant={restaurant} style={themeStyle}>
-      <LandingPage
-        menuLanguage={menuLanguage}
-        language={siteLanguage}
-        menuControls={menuControls}
-        menuTheme={menuTheme}
-        onDishSelect={openViewer}
-        restaurant={restaurant}
-        selectionControls={selectionControls}
-      />
+      <LandingPage language={siteLanguage} />
     </Shell>
   );
 }
@@ -504,7 +502,7 @@ function Shell({ children, controls, language, restaurant, style }) {
   );
 }
 
-function Logo({ language = 'en' }) {
+function Logo({ language = DEFAULT_LANGUAGE }) {
   const slogan = text(brand.slogan, language);
 
   return (
@@ -560,7 +558,7 @@ function SiteHeader({ controls, language, restaurant }) {
   );
 }
 
-function LandingPage({ language, menuControls, menuLanguage, menuTheme, onDishSelect, restaurant, selectionControls }) {
+function LandingPage({ language }) {
   return (
     <main className="landing-page">
       <section className="product-hero">
@@ -571,32 +569,63 @@ function LandingPage({ language, menuControls, menuLanguage, menuTheme, onDishSe
           <p>{t(language, 'heroSubtitle')}</p>
           <div className="hero-actions">
             <a className="primary-link" href="#menu">{t(language, 'viewMenu')}</a>
-            <a className="secondary-link" href="/pricing">{t(language, 'seePricing')}</a>
+            <a className="secondary-link" href="#pricing">{t(language, 'seePricing')}</a>
           </div>
         </div>
       </section>
 
       <ProductValueSection language={language} />
 
-      <section className="menu-section" id="menu">
-        <div className="section-heading">
-          <p className="eyebrow">{t(language, 'menuLabel')}</p>
-          <h2>{t(language, 'menuTitle')}</h2>
-          <p>{t(language, 'menuSubtitle')}</p>
-        </div>
-        <MenuExperience
-          controls={menuControls}
-          isPreview
-          language={menuLanguage}
-          menuTheme={menuTheme}
-          onDishSelect={onDishSelect}
-          restaurant={restaurant}
-          selectionControls={selectionControls}
-        />
-      </section>
+      <DemoQrSection language={language} />
 
       <PricingSection compact language={language} />
     </main>
+  );
+}
+
+function DemoQrSection({ language }) {
+  return (
+    <section className="demo-qr-section" id="menu">
+      <div className="section-heading">
+        <p className="eyebrow">{t(language, 'menuLabel')}</p>
+        <h2>{t(language, 'demoQrTitle')}</h2>
+        <p>{t(language, 'demoQrBody')}</p>
+      </div>
+      <div className="demo-qr-panel">
+        <div className="demo-qr-copy">
+          <p>{t(language, 'demoQrSupport')}</p>
+          <a className="primary-link" href={buildRestaurantUrl(defaultRestaurantSlug)}>
+            <span className="wipe-label" data-text={t(language, 'openDemoMenu')}>{t(language, 'openDemoMenu')}</span>
+          </a>
+        </div>
+        <div className="demo-qr-card">
+          <DemoQrCode language={language} value={DEMO_MENU_QR_URL} />
+          <p>{DEMO_MENU_QR_URL}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DemoQrCode({ language, value }) {
+  const modules = useMemo(() => createQrModules(value), [value]);
+  const quietZone = 4;
+  const viewBoxSize = modules.length + (quietZone * 2);
+  const modulePath = modules.flatMap((row, y) => (
+    row.map((isDark, x) => (isDark ? `M${x + quietZone} ${y + quietZone}h1v1h-1z` : ''))
+  )).join('');
+
+  return (
+    <svg
+      aria-label={t(language, 'demoQrAria')}
+      className="demo-qr-svg"
+      role="img"
+      shapeRendering="crispEdges"
+      viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
+    >
+      <rect className="demo-qr-bg" height={viewBoxSize} width={viewBoxSize} />
+      <path className="demo-qr-modules" d={modulePath} />
+    </svg>
   );
 }
 
@@ -639,7 +668,7 @@ function PricingSection({ compact = false, language }) {
   }, []);
 
   return (
-    <section className={compact ? 'pricing-section compact' : 'pricing-section'}>
+    <section className={compact ? 'pricing-section compact' : 'pricing-section'} id="pricing">
       <div className="section-heading">
         <p className="eyebrow">{t(language, 'pricingLabel')}</p>
         <p>{t(language, 'pricingSubtitle')}</p>
@@ -684,6 +713,8 @@ function MenuExperience({ controls, isPreview = false, language, menuTheme, onDi
   const [filter, setFilter] = useState('all');
   const [viewMode, setViewMode] = useState('list');
   const [query, setQuery] = useState('');
+  const [pendingScrollCategoryId, setPendingScrollCategoryId] = useState('');
+  const categorySectionRefs = useRef({});
   const selectionEnabled = Boolean(selectionControls);
   const selectionLabel = selectionControls?.itemCount > 0
     ? `${t(language, 'viewSelection')} · ${selectionControls.itemCount} ${t(language, selectionControls.itemCount === 1 ? 'item' : 'items')}`
@@ -692,16 +723,16 @@ function MenuExperience({ controls, isPreview = false, language, menuTheme, onDi
   useEffect(() => {
     setActiveCategoryId(restaurant.categories[0]?.id || '');
     setFilter('all');
+    setPendingScrollCategoryId('');
   }, [restaurant.slug]);
 
   const activeCategory = restaurant.categories.find((category) => category.id === activeCategoryId) || restaurant.categories[0];
   const filterOptions = getFilterOptionsForCategory(activeCategory?.id);
+  const activeFilter = filterOptions.includes(filter) ? filter : 'all';
   const normalizedQuery = query.trim().toLowerCase();
-  const baseDishes = normalizedQuery
-    ? restaurant.dishes
-    : restaurant.dishes.filter((dish) => getDishCategoryId(dish) === activeCategory?.id);
-  const filteredDishes = baseDishes.filter((dish) => {
-    const matchesType = !filterOptions.length || filter === 'all' || getDishFilterValue(dish) === filter;
+
+  function dishMatchesMenuState(dish) {
+    const matchesType = !filterOptions.length || activeFilter === 'all' || getDishFilterValue(dish) === activeFilter;
     const searchable = [
       text(dish.name, language),
       text(dish.name, 'en'),
@@ -710,11 +741,78 @@ function MenuExperience({ controls, isPreview = false, language, menuTheme, onDi
       ...(dish.ingredients || []).map((ingredient) => ingredient.name),
     ].join(' ').toLowerCase();
     return matchesType && searchable.includes(normalizedQuery);
-  });
+  }
+
+  const categorySections = useMemo(() => (
+    restaurant.categories
+      .map((category) => ({
+        category,
+        dishes: restaurant.dishes
+          .filter((dish) => getDishCategoryId(dish) === category.id)
+          .filter(dishMatchesMenuState),
+      }))
+      .filter((section) => section.dishes.length > 0)
+  ), [activeFilter, language, normalizedQuery, restaurant.categories, restaurant.dishes]);
+  const visibleCategoryIds = categorySections.map((section) => section.category.id).join('|');
+  const hasVisibleDishes = categorySections.length > 0;
+
+  useEffect(() => {
+    if (!categorySections.length) return;
+    if (categorySections.some((section) => section.category.id === activeCategoryId)) return;
+    setActiveCategoryId(categorySections[0].category.id);
+  }, [activeCategoryId, categorySections, visibleCategoryIds]);
+
+  useEffect(() => {
+    if (!pendingScrollCategoryId) return;
+
+    const section = categorySectionRefs.current[pendingScrollCategoryId];
+    if (!section) {
+      setPendingScrollCategoryId('');
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setPendingScrollCategoryId('');
+    });
+  }, [pendingScrollCategoryId, visibleCategoryIds]);
+
+  useEffect(() => {
+    if (!categorySections.length || typeof IntersectionObserver === 'undefined') return undefined;
+
+    const observer = new IntersectionObserver((entries) => {
+      const visibleEntry = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+      const categoryId = visibleEntry?.target?.dataset?.categoryId;
+      if (categoryId) setActiveCategoryId(categoryId);
+    }, {
+      root: null,
+      rootMargin: '-22% 0px -58% 0px',
+      threshold: [0.1, 0.35, 0.6],
+    });
+
+    categorySections.forEach(({ category }) => {
+      const section = categorySectionRefs.current[category.id];
+      if (section) observer.observe(section);
+    });
+
+    return () => observer.disconnect();
+  }, [categorySections, visibleCategoryIds]);
 
   function chooseCategory(categoryId) {
     setActiveCategoryId(categoryId);
     setFilter('all');
+    setPendingScrollCategoryId(categoryId);
+  }
+
+  function setCategorySectionRef(categoryId, node) {
+    if (node) {
+      categorySectionRefs.current[categoryId] = node;
+    } else {
+      delete categorySectionRefs.current[categoryId];
+    }
   }
 
   return (
@@ -724,19 +822,27 @@ function MenuExperience({ controls, isPreview = false, language, menuTheme, onDi
         <HeaderControls controls={controls} />
       </div>
 
+      <RestaurantSchedule
+        language={language}
+        menuTheme={menuTheme || controls.themeMode}
+        schedule={restaurant.schedule}
+      />
+
       <div className="category-strip">
-        <span className="category-scroll-hint">{t(language, 'swipeCategories')}</span>
-        <div className="category-rail" aria-label={t(language, 'menuLabel')}>
-          {restaurant.categories.map((category) => (
-            <button
-              className={category.id === activeCategory?.id ? 'active' : ''}
-              key={category.id}
-              onClick={() => chooseCategory(category.id)}
-              type="button"
-            >
-              {text(category.label || category.name, language)}
-            </button>
-          ))}
+        <div className="category-rail-wrap">
+          <div className="category-rail" aria-label={t(language, 'menuLabel')}>
+            {restaurant.categories.map((category) => (
+              <button
+                className={category.id === activeCategory?.id ? 'active' : ''}
+                key={category.id}
+                onClick={() => chooseCategory(category.id)}
+                type="button"
+              >
+                {text(category.label || category.name, language)}
+              </button>
+            ))}
+          </div>
+          <span className="category-swipe-indicator" aria-hidden="true" />
         </div>
       </div>
 
@@ -746,13 +852,9 @@ function MenuExperience({ controls, isPreview = false, language, menuTheme, onDi
       </label>
 
       <div className="menu-toolbar">
-        <div>
-          <p className="eyebrow">{t(language, 'category')}</p>
-          <h2>{text(activeCategory?.label || activeCategory?.name, language)}</h2>
-        </div>
         <div className="toolbar-actions">
           {filterOptions.map((item) => (
-            <button className={filter === item ? 'active' : ''} key={item} onClick={() => setFilter(item)} type="button">
+            <button className={activeFilter === item ? 'active' : ''} key={item} onClick={() => setFilter(item)} type="button">
               <BadgeIcon type={item} />
               {t(language, item)}
             </button>
@@ -766,19 +868,33 @@ function MenuExperience({ controls, isPreview = false, language, menuTheme, onDi
         </div>
       </div>
 
-      <div className={`menu-dishes ${viewMode}`}>
-        {filteredDishes.map((dish) => (
-          <DishCard
-            dish={dish}
-            key={dish.id}
-            language={language}
-            onDecrementSelection={selectionEnabled ? () => selectionControls.decrementSelection(dish.id) : null}
-            onDetails={() => onDishSelect(dish)}
-            onIncrementSelection={selectionEnabled ? () => selectionControls.addToSelection(dish) : null}
-            selectionQuantity={selectionEnabled ? selectionControls.getQuantity(dish.id) : 0}
-          />
+      <div className="menu-dishes">
+        {categorySections.map(({ category, dishes }) => (
+          <section
+            className="menu-category-section"
+            data-category-id={category.id}
+            key={category.id}
+            ref={(node) => setCategorySectionRef(category.id, node)}
+          >
+            <div className="menu-category-heading">
+              <h2>{text(category.label || category.name, language)}</h2>
+            </div>
+            <div className={`menu-dish-list ${viewMode}`}>
+              {dishes.map((dish) => (
+                <DishCard
+                  dish={dish}
+                  key={dish.id}
+                  language={language}
+                  onDecrementSelection={selectionEnabled ? () => selectionControls.decrementSelection(dish.id) : null}
+                  onDetails={() => onDishSelect(dish)}
+                  onIncrementSelection={selectionEnabled ? () => selectionControls.addToSelection(dish) : null}
+                  selectionQuantity={selectionEnabled ? selectionControls.getQuantity(dish.id) : 0}
+                />
+              ))}
+            </div>
+          </section>
         ))}
-        {!filteredDishes.length && (
+        {!hasVisibleDishes && (
           <div className="empty-menu-state">{t(language, 'moreDishes')}</div>
         )}
       </div>
@@ -802,6 +918,60 @@ function MenuExperience({ controls, isPreview = false, language, menuTheme, onDi
         />
       )}
     </section>
+  );
+}
+
+function RestaurantSchedule({ language, menuTheme, schedule }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const days = schedule?.days || [];
+  const status = text(schedule?.status, language);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setIsOpen(false);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
+  if (!schedule || !status || !days.length) return null;
+
+  return (
+    <>
+      <div className="schedule-banner">
+        <div className="schedule-status">
+          <span className="schedule-status-dot" aria-hidden="true" />
+          <span>{status}</span>
+        </div>
+        <button onClick={() => setIsOpen(true)} type="button">
+          {t(language, 'seeSchedule')}
+        </button>
+      </div>
+
+      {isOpen && (
+        <div className={`schedule-backdrop menu-theme-${menuTheme}`} role="presentation" onClick={() => setIsOpen(false)}>
+          <section className="schedule-modal" role="dialog" aria-modal="true" aria-labelledby="schedule-title" onClick={(event) => event.stopPropagation()}>
+            <div className="schedule-modal-header">
+              <h2 id="schedule-title">{t(language, 'workingHours')}</h2>
+              <button aria-label={t(language, 'close')} className="sheet-icon-button" onClick={() => setIsOpen(false)} type="button">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="schedule-list">
+              {days.map((item) => (
+                <div className="schedule-row" key={text(item.day, 'en')}>
+                  <span>{text(item.day, language)}</span>
+                  <strong>{item.hours}</strong>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
+    </>
   );
 }
 
