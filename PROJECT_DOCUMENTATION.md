@@ -186,18 +186,16 @@ Important helper functions in `src/App.jsx`:
 
 ## 7. Restaurant/Menu Config Rules
 
-Category ids must stay consistent:
+Current demo category ids:
 
 ```text
-starters
-salads
 main-course
-grill
-desserts
+salads
+baked-goods
 drinks
 ```
 
-Every dish should reference one of those ids with `categoryId`. Dessert categories intentionally hide Veg/Meat filters and badges. Drink categories use `drinkType` values such as `alcoholic` and `non-alcoholic` instead of Veg/Meat labels.
+Every active demo dish should reference one of those ids with `categoryId`. Food categories use All / Veg filters; Meat is not shown as a filter or badge in the demo UI. Drink categories use `drinkType` values such as `alcoholic` and `non-alcoholic` instead of Veg/Meat labels.
 
 Drinks are photo-only. They should use existing dish photos, set `hasModel: false`, and should not render `model-viewer`, the Photo / 3D selector, or `View on your table`.
 
@@ -206,7 +204,7 @@ Each dish should include:
 ```js
 {
   id: 'steak',
-  categoryId: 'grill',
+  categoryId: 'main-course',
   type: 'meat', // food items use 'veg' or 'meat'; drinks use type: 'drink' plus drinkType
   name: { en: 'Steak', ka: 'Steak', ru: 'Steak' },
   description: {
@@ -215,6 +213,11 @@ Each dish should include:
     ru: '...',
   },
   priceGEL: 42,
+  calories: {
+    en: 'Approx. 780 kcal',
+    ka: 'დაახლოებით 780 კკალ',
+    ru: 'Примерно 780 ккал',
+  },
   image: '/images/dishes/steak.jpg',
   model: '/models/dishes/steak.glb',
   hasModel: true,
@@ -241,11 +244,9 @@ Base price is always `priceGEL`. Dish prices always display in GEL through `form
 
 Current category mapping in `sufra-old-town.js`:
 
-- `starters`: Adjaruli Khachapuri, Bruschetta
+- `main-course`: Mountain Khinkali, Steak, Chicken Alfredo
 - `salads`: Chicken Salad
-- `main-course`: Mountain Khinkali, Chicken Alfredo
-- `grill`: Steak, Mtsvadi
-- `desserts`: Tiramisu
+- `baked-goods`: Adjaruli Khachapuri, Bruschetta
 - `drinks`: Orange Juice (`drinkType: non-alcoholic`, photo-only)
 
 If a dish does not have a real model yet:
@@ -255,7 +256,7 @@ model: '/models/dishes/placeholder-dish.glb',
 hasModel: false,
 ```
 
-Current example: Mtsvadi uses the placeholder model.
+Calories are optional per dish. When present, `ModelViewerPage` shows them in the dish details card. Demo calorie values are estimates only; real client menus should use client-provided values.
 
 ## 8. Asset Rules
 
@@ -358,7 +359,7 @@ platformScale: {
 }
 ```
 
-If `platformScale` is omitted, all multipliers default to `1`. Android values should stay `1` unless real Android testing proves a specific model needs calibration. This keeps one shared GLB per dish and avoids duplicate iOS/Android model files. The temporary `test` dish using `/models/dishes/tst.glb` has Android calibration reset for clean testing of the corrected GLB: `default: 1`, `ios: 1`, `android: 1`, targeting an approximately 32-33 cm pizza diameter. Android-specific calibration may be reintroduced later only if clean physical testing proves it is still needed. There is a code comment in `ModelViewerPage` noting that iOS Quick Look may still use dimensions baked into the USDZ/GLB conversion.
+If `platformScale` is omitted, all multipliers default to `1`. Android values should stay `1` unless real Android testing proves a specific model needs calibration. This keeps one shared GLB per dish and avoids duplicate iOS/Android model files. Temporary calibration dishes should stay out of the active client demo menu unless a future testing task explicitly adds them back. There is a code comment in `ModelViewerPage` noting that iOS Quick Look may still use dimensions baked into the USDZ/GLB conversion.
 
 Rules:
 
@@ -702,7 +703,7 @@ Rules:
 
 - Menu UI must be thumb-friendly.
 - Category slider must be horizontally swipeable, with the swipe hint above the category chips and a subtle edge fade.
-- Category changes reset the active type filter to All. Desserts hide type filters/badges; Drinks use Alcoholic / Non-alcoholic filters and badges and remain photo-only.
+- Category changes reset the active type filter to All. Food categories show All / Veg filters only; Drinks use Alcoholic / Non-alcoholic filters and badges and remain photo-only.
 - Search must remain usable on mobile. When a query is active, search runs across all dishes in the current restaurant, not only the selected category.
 - Dish viewer details and selection controls must fit mobile screens.
 - AR button must be obvious and reachable for model-backed food dishes.
@@ -831,9 +832,7 @@ Current dish-to-asset mapping in `sufra-old-town.js`:
 | `bruschetta` | `/images/dishes/Bruschetta.jpg` | `/models/dishes/Bruschetta.glb` | Real model |
 | `chicken-salad` | `/images/dishes/Chicken Salad.jpg` | `/models/dishes/Chicken Salad.glb` | Real model |
 | `chicken-alfredo` | `/images/dishes/Chicken Alfredo.jpg` | `/models/dishes/Chicken Alfredo.glb` | Real model |
-| `tiramisu` | `/images/dishes/Tiramisu.jpg` | `/models/dishes/tiramisu.glb` | Real model |
 | `orange-juice` | `/images/dishes/orange juice.jpg` | none configured | Photo-only drink; existing GLB asset is not referenced |
-| `mtsvadi` | `/images/dishes/mtsvadi.jfif` | `/models/dishes/placeholder-dish.glb` | `hasModel: false`; no dedicated Mtsvadi model yet |
 
 ## 22. Current Known Issues / Future Improvements
 
@@ -845,11 +844,10 @@ Known issues/cleanup notes from inspection:
 - `src/data/brand.js` contains some translated about/description copy, but current visible page copy mostly comes from `src/data/translations.js`; contact identity still comes from `brand.js`.
 - `public/models/dishes/khinkali.glb.glb` appears to duplicate `khinkali.glb`. The app currently uses `/models/dishes/khinkali.glb`. Do not delete or move it unless doing an explicit asset cleanup.
 - Several asset filenames include spaces and uppercase letters. This is supported if paths are exact, but future assets should prefer lowercase kebab-case.
-- Mtsvadi uses `placeholder-dish.glb` and `hasModel: false`.
 - Drinks are photo-only; Orange Juice has `hasModel: false` and no configured model path.
 - `ingredientHotspots` positions are retained as data but are not currently rendered as visible model-viewer hotspot labels.
 - iOS Quick Look may handle scale differently than WebXR/Scene Viewer.
-- Temporary `Test` category/dish exists in the demo menu for GLB testing and should be removed after testing. It uses `/models/dishes/tst.glb` with `platformScale` reset to `1` for default, iOS, and Android so the corrected GLB can be tested cleanly at its own exported scale.
+- The temporary `Test` category/dish has been removed from the active demo menu config. The test GLB asset may remain in `public/models/dishes` for future calibration work unless an explicit asset cleanup removes it.
 
 Planned/future improvements:
 
