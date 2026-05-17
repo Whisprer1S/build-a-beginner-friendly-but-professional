@@ -36,6 +36,8 @@ Current routes:
 
 The homepage demo section should point to the existing `/menu/demo` route with a code-generated QR preview. Do not create copied demo configs, copied dish data, or duplicate image/GLB assets for the homepage.
 
+Guest-facing menu routes should use the simplified menu layout: no marketing site header, only the small `Designed with 🤍 by Sufra AR` credit footer, and the floating back-to-top control.
+
 Viewer routes use query params, for example:
 
 ```text

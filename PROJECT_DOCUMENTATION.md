@@ -75,13 +75,15 @@ Routes:
 | `/` | Product landing page with hero, value section, QR demo section, pricing preview, footer | `LandingPage` inside `Shell` | The QR demo section links to the real guest-facing `/menu/demo` route instead of embedding a duplicate interactive menu. |
 | `/pricing` | Full pricing page | `PricingPage` -> `PricingSection` | Pricing data comes from `src/data/plans.js`; visible translated text/features come from `src/data/translations.js`. |
 | `/about` | About page | `AboutPage` -> `InfoPage` | Uses translated text from `src/data/translations.js`. |
-| `/menu/demo` | Primary public demo menu page | `MenuExperience` inside `Shell` | Loads `src/data/restaurants/sufra-old-town.js`; the file name is legacy, but the public slug is `demo`. |
-| `/menu/demo-cafe` | Second sample restaurant menu page | `MenuExperience` inside `Shell` | Loads `src/data/restaurants/demo-cafe.js`, which currently reuses most of the demo config with a different slug/name/subtitle. |
+| `/menu/demo` | Primary public demo menu page | `MenuExperience` inside `GuestMenuShell` | Loads `src/data/restaurants/sufra-old-town.js`; the file name is legacy, but the public slug is `demo`. |
+| `/menu/demo-cafe` | Second sample restaurant menu page | `MenuExperience` inside `GuestMenuShell` | Loads `src/data/restaurants/demo-cafe.js`, which currently reuses most of the demo config with a different slug/name/subtitle. |
 | `/sufra-old-town` | Legacy redirect | `getRouteFromPath` | Old public route. Do not use for new links; it is immediately normalized to `/menu/demo`. |
-| `/demo-cafe` | Legacy direct sample route | `MenuExperience` inside `Shell` | Kept for compatibility with the older top-level slug system. Prefer `/menu/demo-cafe` for new links. |
+| `/demo-cafe` | Legacy direct sample route | `MenuExperience` inside `GuestMenuShell` | Kept for compatibility with the older top-level slug system. Prefer `/menu/demo-cafe` for new links. |
 | `/<invalid-slug>` | Not found page | `NotFoundPage` | Any non-static path is treated as a restaurant slug. If not found, a clean not-found page appears. |
 
 The homepage QR demo section is generated in React and encodes `https://sufraar.com/menu/demo` for client previews. `/menu/demo` remains the single real demo menu route and continues to reuse the existing demo restaurant config, images, and GLB models.
+
+Marketing routes use the full `SiteHeader` and `Footer`. Guest-facing menu routes use a simplified menu layout with no marketing header, a small `Designed with 🤍 by Sufra AR` credit footer, and a floating back-to-top button that appears after the guest scrolls down.
 
 Viewer query route:
 

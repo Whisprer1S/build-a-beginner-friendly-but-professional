@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Bookmark,
+  ChevronUp,
   ExternalLink,
   GlassWater,
   Globe,
@@ -456,7 +457,6 @@ function App() {
   if (isViewer) {
     return (
       <ModelViewerPage
-        controls={menuControls}
         dish={activeDish}
         language={menuLanguage}
         menuTheme={menuTheme}
@@ -472,7 +472,7 @@ function App() {
   if (route.page === 'about') return <AboutPage controls={controls} language={siteLanguage} style={themeStyle} />;
   if (route.page === 'menu') {
     return (
-      <Shell controls={controls} language={siteLanguage} restaurant={restaurant} style={themeStyle}>
+      <GuestMenuShell language={menuLanguage} menuTheme={menuTheme} style={themeStyle}>
         <MenuExperience
           controls={menuControls}
           language={menuLanguage}
@@ -481,7 +481,7 @@ function App() {
           restaurant={restaurant}
           selectionControls={selectionControls}
         />
-      </Shell>
+      </GuestMenuShell>
     );
   }
 
@@ -499,6 +499,55 @@ function Shell({ children, controls, language, restaurant, style }) {
       {children}
       <Footer language={language} restaurant={restaurant} />
     </div>
+  );
+}
+
+function GuestMenuShell({ children, language, menuTheme, style }) {
+  return (
+    <div className={`guest-menu-shell menu-theme-${menuTheme}`} style={style}>
+      {children}
+      <MenuCreditFooter language={language} />
+      <BackToTopButton language={language} />
+    </div>
+  );
+}
+
+function MenuCreditFooter({ language }) {
+  return (
+    <footer className="menu-credit-footer">
+      <p>{t(language, 'powered')}</p>
+    </footer>
+  );
+}
+
+function BackToTopButton({ language }) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const updateVisibility = () => {
+      const threshold = Math.min(640, Math.max(360, window.innerHeight * 0.65));
+      setIsVisible(window.scrollY > threshold);
+    };
+
+    updateVisibility();
+    window.addEventListener('scroll', updateVisibility, { passive: true });
+    window.addEventListener('resize', updateVisibility);
+
+    return () => {
+      window.removeEventListener('scroll', updateVisibility);
+      window.removeEventListener('resize', updateVisibility);
+    };
+  }, []);
+
+  return (
+    <button
+      aria-label={t(language, 'backToTop')}
+      className={`back-to-top-button ${isVisible ? 'visible' : ''}`}
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      type="button"
+    >
+      <ChevronUp size={20} />
+    </button>
   );
 }
 
@@ -1174,7 +1223,7 @@ function IngredientInfoCard({ ingredient, language, onClose }) {
   );
 }
 
-function ModelViewerPage({ controls, dish, language, menuTheme, onBack, restaurant, selectionControls, style }) {
+function ModelViewerPage({ dish, language, menuTheme, onBack, restaurant, selectionControls, style }) {
   const modelViewerRef = useRef(null);
   const canShowModel = hasDishModel(dish);
   const [viewerMode, setViewerMode] = useState(() => (canShowModel ? '3d' : 'photo'));
@@ -1203,7 +1252,6 @@ function ModelViewerPage({ controls, dish, language, menuTheme, onBack, restaura
 
   return (
     <div className={`viewer-shell menu-theme-${menuTheme}`} style={style}>
-      <SiteHeader controls={controls} restaurant={restaurant} />
       <main className="viewer-page">
         <button className="back-button" onClick={onBack} type="button">{t(language, 'backToMenu')}</button>
         <section className="viewer-layout">
@@ -1303,7 +1351,8 @@ function ModelViewerPage({ controls, dish, language, menuTheme, onBack, restaura
           </div>
         </section>
       </main>
-      <Footer language={language} restaurant={restaurant} />
+      <MenuCreditFooter language={language} />
+      <BackToTopButton language={language} />
     </div>
   );
 }

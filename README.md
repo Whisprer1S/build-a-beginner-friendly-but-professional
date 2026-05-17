@@ -54,6 +54,7 @@ public/models/dishes
 
 ## Menu Features
 
+- Guest-facing menu routes use a clean menu-only layout: no marketing website header, a small `Designed with 🤍 by Sufra AR` credit footer, and a floating back-to-top button after scrolling.
 - The menu shows all current categories as one continuous grouped menu. Category pills scroll to their sections and update as the guest scrolls.
 - Restaurant configs can include a static weekly schedule. When present, the menu shows an open-status row and a working-hours modal.
 - Viewer ingredient chips are clickable and open a small normal UI info card. `ingredientHotspots` may remain in menu data, but visible labels no longer float over the 3D model.
