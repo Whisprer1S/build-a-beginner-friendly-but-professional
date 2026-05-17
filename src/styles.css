@@ -45,11 +45,26 @@ img {
 }
 
 .app-shell,
-.viewer-shell {
+.viewer-shell,
+.guest-menu-shell {
   min-height: 100vh;
   color: var(--text);
   background: var(--bg);
   font-family: var(--body-font);
+}
+
+.guest-menu-shell,
+.viewer-shell {
+  color: var(--menu-text);
+  background: var(--menu-bg);
+}
+
+.guest-menu-shell {
+  padding: 0.85rem 0.75rem 1.1rem;
+}
+
+.viewer-shell {
+  padding-bottom: 1.1rem;
 }
 
 .site-header {
@@ -698,6 +713,58 @@ h2 {
   border: 1px solid var(--menu-border-strong);
   border-radius: 32px;
   box-shadow: var(--menu-shadow);
+}
+
+.menu-credit-footer {
+  width: min(480px, 100%);
+  margin: 0.9rem auto 0;
+  padding: 0.85rem 0.5rem 0.25rem;
+  color: var(--menu-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.viewer-shell .menu-credit-footer {
+  width: min(1180px, 100%);
+  padding-bottom: 0.25rem;
+}
+
+.menu-credit-footer p {
+  margin: 0;
+}
+
+.back-to-top-button {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: calc(5.25rem + env(safe-area-inset-bottom));
+  z-index: 24;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  color: var(--menu-active-text);
+  background: color-mix(in srgb, var(--menu-active-bg) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--menu-active-bg) 78%, var(--menu-border));
+  border-radius: 999px;
+  box-shadow: 0 16px 34px color-mix(in srgb, #121212 24%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.7rem) scale(0.94);
+  transition: opacity 180ms ease, transform 180ms ease, border-color 180ms ease;
+  backdrop-filter: blur(14px);
+}
+
+.back-to-top-button.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.back-to-top-button.visible:hover {
+  border-color: var(--menu-active-bg);
+  transform: translateY(-0.1rem) scale(1);
 }
 
 .menu-app.preview {
