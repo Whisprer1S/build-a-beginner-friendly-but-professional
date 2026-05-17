@@ -34,6 +34,8 @@ Current routes:
 - `/sufra-old-town` redirects to `/menu/demo` as a legacy route
 - `/demo-cafe` remains a legacy direct route for compatibility
 
+The homepage demo section should point to the existing `/menu/demo` route with a code-generated QR preview. Do not create copied demo configs, copied dish data, or duplicate image/GLB assets for the homepage.
+
 Viewer routes use query params, for example:
 
 ```text
@@ -101,6 +103,8 @@ Main files:
 - `src/data/brand.js` - brand identity and contact info
 
 Keep restaurant/menu data in config files, not hardcoded in components.
+
+Restaurant configs may include a static `schedule` object with translated status text and weekly hours. If a restaurant has no schedule, the menu schedule row should hide cleanly.
 
 Required category ids:
 
@@ -194,6 +198,8 @@ Selector labels:
 
 Visible UI translations live in `src/data/translations.js`. Site language and menu language state are separate; do not collapse them back into one shared state. Currency switching has been removed, and menu prices display in GEL only.
 
+The first-time/default language is Georgian (`ka`). Saved user language and explicit `lang=` URL query parameters should still be respected.
+
 Do not translate:
 
 - `Sufra AR`
@@ -213,6 +219,8 @@ When adding visible UI text, add it to `translations.js` and use `t(language, ke
 Dish descriptions and category labels live in restaurant configs.
 
 `My selection` is frontend-only and local-only. It stores minimal dish id/quantity data per restaurant with `sufra-selection-${restaurant.slug}` and must not become checkout, payment, order submission, table submission, login, admin, backend, or database behavior.
+
+The menu renders all current restaurant categories as one continuous grouped menu. Category pills are scroll shortcuts to category sections and should visually update as the user scrolls.
 
 ## Contact Info
 

@@ -23,7 +23,7 @@ npm run build
 ## Routes
 
 ```text
-/                  -> product landing page with pricing preview and demo menu
+/                  -> product landing page with pricing preview and QR demo section
 /menu/demo         -> primary public demo menu
 /menu/demo-cafe    -> second sample restaurant menu
 /sufra-old-town    -> legacy route that redirects to /menu/demo
@@ -54,9 +54,13 @@ public/models/dishes
 
 ## Menu Features
 
+- The menu shows all current categories as one continuous grouped menu. Category pills scroll to their sections and update as the guest scrolls.
+- Restaurant configs can include a static weekly schedule. When present, the menu shows an open-status row and a working-hours modal.
 - Viewer ingredient chips are clickable and open a small normal UI info card. `ingredientHotspots` may remain in menu data, but visible labels no longer float over the 3D model.
 - `My selection` is a local-only saved dishes list with compact dish card/viewer-page add controls and a subtle bottom `View selection` access button after dishes are saved. It stores dish ids and quantities per restaurant in `localStorage` with `sufra-selection-${restaurant.slug}`.
 - `My selection` is not checkout, ordering, payment, table submission, or a backend feature.
+
+The first-time/default language is Georgian (`ka`). Saved user choices and explicit `lang=` URL query parameters still override that default.
 
 ## Add A New Restaurant
 
@@ -86,6 +90,7 @@ src/data/restaurants/new-restaurant.js
 - `theme`
 - `categories`
 - `dishes`
+- `schedule`, if the venue should show working hours
 
 4. Import and register it in:
 
@@ -163,7 +168,13 @@ Currency switching and USD/EUR conversion are not active. Dish prices display as
 
 ## QR Codes
 
-Deploy the app, then generate one QR code per restaurant URL.
+The homepage includes a code-generated QR demo section that points to the live demo URL:
+
+```text
+https://sufraar.com/menu/demo
+```
+
+Deploy the app, then generate one QR code per restaurant URL for each real client venue.
 
 Examples:
 
