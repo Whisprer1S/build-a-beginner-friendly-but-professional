@@ -105,15 +105,13 @@ Keep restaurant/menu data in config files, not hardcoded in components.
 Required category ids:
 
 ```text
-starters
-salads
 main-course
-grill
-desserts
+salads
+baked-goods
 drinks
 ```
 
-Dessert categories hide Veg/Meat filters and badges. Drink categories use Alcoholic / Non-alcoholic filters and badges. Drinks are photo-only and should not render `model-viewer`, AR launch, or a Photo / 3D selector.
+Food categories use All / Veg filters; Meat is not shown as a filter or badge in the demo UI. Drink categories use Alcoholic / Non-alcoholic filters and badges. Drinks are photo-only and should not render `model-viewer`, AR launch, or a Photo / 3D selector.
 
 Each dish should have:
 
@@ -124,6 +122,7 @@ Each dish should have:
 - translated `name`
 - translated `description`
 - `priceGEL`
+- translated `calories` when calorie information is available
 - `image`
 - `model`
 - `hasModel`
@@ -177,12 +176,7 @@ Optional `platformScale` values default to `1` for all platforms. Do not add And
 
 Visible ingredient info in the viewer should come from clickable ingredient chips and a normal UI info card. Do not render floating `<model-viewer>` hotspot labels over the 3D model unless a future task explicitly asks for spatial callouts again. `ingredientHotspots` may remain in dish data as metadata/future positioning data.
 
-Mtsvadi currently uses:
-
-```js
-model: '/models/dishes/placeholder-dish.glb'
-hasModel: false
-```
+For dishes without a real model, keep `hasModel: false` so the viewer stays photo-only and does not render AR controls.
 
 ## Translation Rules
 

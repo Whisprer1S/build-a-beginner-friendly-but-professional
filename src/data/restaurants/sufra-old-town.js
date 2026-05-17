@@ -4,17 +4,13 @@
 // dishes, prices, images, models, ingredient tags, and AR settings below.
 
 const menuCategories = [
-  { id: "starters", label: { en: "Starters", ka: "სასუსნავი", ru: "Закуски" } },
-  { id: "salads", label: { en: "Salads", ka: "სალათები", ru: "Салаты" } },
   {
     id: "main-course",
     label: { en: "Main Course", ka: "ძირითადი კერძები", ru: "Основные блюда" },
   },
-  { id: "grill", label: { en: "Grill", ka: "გრილი", ru: "Гриль" } },
-  { id: "desserts", label: { en: "Desserts", ka: "დესერტები", ru: "Десерты" } },
+  { id: "salads", label: { en: "Salads", ka: "სალათები", ru: "Салаты" } },
+  { id: "baked-goods", label: { en: "Baked Goods", ka: "ცომეული", ru: "Выпечка" } },
   { id: "drinks", label: { en: "Drinks", ka: "სასმელები", ru: "Напитки" } },
-  // Temporary GLB testing category. Remove after the test model has been verified.
-  { id: "test", label: { en: "Test", ka: "ტესტი", ru: "Тест" } },
 ];
 
 const sufraOldTown = {
@@ -53,7 +49,7 @@ const sufraOldTown = {
   dishes: [
     {
       id: "adjaruli-khachapuri",
-      categoryId: "starters",
+      categoryId: "baked-goods",
       type: "veg",
       name: {
         en: "Adjaruli Khachapuri",
@@ -66,6 +62,11 @@ const sufraOldTown = {
         ru: "Грузинская сырная лепёшка в форме лодочки с яичным желтком и сливочным маслом.",
       },
       priceGEL: 24,
+      calories: {
+        en: "Approx. 850 kcal",
+        ka: "დაახლოებით 850 კკალ",
+        ru: "Примерно 850 ккал",
+      },
       image: "/images/dishes/adjaruli khachapuri.jfif",
       model: "/models/dishes/adjaruli-khachapuri.glb",
       hasModel: true,
@@ -111,6 +112,11 @@ const sufraOldTown = {
         ru: "Хинкали ручной лепки с пряным мясом и горячим бульоном.",
       },
       priceGEL: 18,
+      calories: {
+        en: "Approx. 620 kcal",
+        ka: "დაახლოებით 620 კკალ",
+        ru: "Примерно 620 ккал",
+      },
       image: "/images/dishes/mtis khinkali.webp",
       model: "/models/dishes/khinkali.glb",
       hasModel: true,
@@ -143,7 +149,7 @@ const sufraOldTown = {
     },
     {
       id: "steak",
-      categoryId: "grill",
+      categoryId: "main-course",
       type: "meat",
       name: { en: "Steak", ka: "სტეიკი", ru: "Стейк" },
       description: {
@@ -152,6 +158,11 @@ const sufraOldTown = {
         ru: "Стейк на гриле с зеленью и соусом.",
       },
       priceGEL: 42,
+      calories: {
+        en: "Approx. 780 kcal",
+        ka: "დაახლოებით 780 კკალ",
+        ru: "Примерно 780 ккал",
+      },
       image: "/images/dishes/steak.jpg",
       model: "/models/dishes/steak.glb",
       hasModel: true,
@@ -184,7 +195,7 @@ const sufraOldTown = {
     },
     {
       id: "bruschetta",
-      categoryId: "starters",
+      categoryId: "baked-goods",
       type: "veg",
       name: { en: "Bruschetta", ka: "ბრუსკეტა", ru: "Брускетта" },
       description: {
@@ -193,6 +204,11 @@ const sufraOldTown = {
         ru: "Поджаренный хлеб с помидором, базиликом и оливковым маслом.",
       },
       priceGEL: 16,
+      calories: {
+        en: "Approx. 320 kcal",
+        ka: "დაახლოებით 320 კკალ",
+        ru: "Примерно 320 ккал",
+      },
       image: "/images/dishes/Bruschetta.jpg",
       model: "/models/dishes/Bruschetta.glb",
       hasModel: true,
@@ -234,6 +250,11 @@ const sufraOldTown = {
         ru: "Свежий салат с курицей, листьями салата, помидором и огурцом.",
       },
       priceGEL: 22,
+      calories: {
+        en: "Approx. 390 kcal",
+        ka: "დაახლოებით 390 კკალ",
+        ru: "Примерно 390 ккал",
+      },
       image: "/images/dishes/Chicken Salad.jpg",
       model: "/models/dishes/Chicken Salad.glb",
       hasModel: true,
@@ -279,6 +300,11 @@ const sufraOldTown = {
         ru: "Сливочная паста с курицей, пармезаном и соусом Альфредо.",
       },
       priceGEL: 28,
+      calories: {
+        en: "Approx. 760 kcal",
+        ka: "დაახლოებით 760 კკალ",
+        ru: "Примерно 760 ккал",
+      },
       image: "/images/dishes/Chicken Alfredo.jpg",
       model: "/models/dishes/Chicken Alfredo.glb",
       hasModel: true,
@@ -310,47 +336,6 @@ const sufraOldTown = {
       fieldOfView: "30deg",
     },
     {
-      id: "tiramisu",
-      categoryId: "desserts",
-      type: "veg",
-      name: { en: "Tiramisu", ka: "ტირამისუ", ru: "Тирамису" },
-      description: {
-        en: "Classic Italian dessert with coffee, mascarpone, and cocoa.",
-        ka: "კლასიკური იტალიური დესერტი ყავით, მასკარპონეთი და კაკაოთი.",
-        ru: "Классический итальянский десерт с кофе, маскарпоне и какао.",
-      },
-      priceGEL: 15,
-      image: "/images/dishes/Tiramisu.jpg",
-      model: "/models/dishes/tiramisu.glb",
-      hasModel: true,
-      ingredients: [
-        { name: "Mascarpone", benefits: ["Creamy texture", "Calcium"] },
-        { name: "Coffee", benefits: ["Aroma", "Depth"] },
-        { name: "Cocoa", benefits: ["Antioxidants", "Bitter balance"] },
-        { name: "Biscuit", benefits: ["Texture", "Sweetness"] },
-      ],
-      ingredientHotspots: [
-        {
-          id: "coffee",
-          name: "Coffee",
-          position: "0m 0.08m 0m",
-          normal: "0m 1m 0m",
-          benefits: ["Aroma", "Depth"],
-        },
-        {
-          id: "cocoa",
-          name: "Cocoa",
-          position: "0.06m 0.12m 0.04m",
-          normal: "0m 1m 0m",
-          benefits: ["Antioxidants", "Bitter balance"],
-        },
-      ],
-      arScale: "1 1 1",
-      arPlacement: "floor",
-      cameraOrbit: "35deg 70deg 2.1m",
-      fieldOfView: "34deg",
-    },
-    {
       id: "orange-juice",
       categoryId: "drinks",
       type: "drink",
@@ -366,6 +351,11 @@ const sufraOldTown = {
         ru: "Свежий апельсиновый сок с ярким цитрусовым вкусом.",
       },
       priceGEL: 9,
+      calories: {
+        en: "Approx. 110 kcal",
+        ka: "დაახლოებით 110 კკალ",
+        ru: "Примерно 110 ккал",
+      },
       image: "/images/dishes/orange juice.jpg",
       model: "",
       hasModel: false,
@@ -387,63 +377,6 @@ const sufraOldTown = {
       arPlacement: "floor",
       cameraOrbit: "35deg 70deg 2m",
       fieldOfView: "34deg",
-    },
-    {
-      id: "mtsvadi",
-      categoryId: "grill",
-      type: "meat",
-      name: { en: "Mtsvadi", ka: "მწვადი", ru: "Мцвади" },
-      description: {
-        en: "Georgian grilled skewers served with onion and herbs.",
-        ka: "ქართული მწვადი ხახვით და მწვანილებით.",
-        ru: "Грузинский шашлык с луком и зеленью.",
-      },
-      priceGEL: 30,
-      image: "/images/dishes/mtsvadi.jfif",
-      // No dedicated Mtsvadi model exists yet. Placeholder keeps AR flow working.
-      model: "/models/dishes/placeholder-dish.glb",
-      hasModel: false,
-      ingredients: [
-        { name: "Pork or Beef", benefits: ["Protein", "Iron"] },
-        { name: "Onion", benefits: ["Aroma", "Sweetness"] },
-        { name: "Herbs", benefits: ["Freshness", "Aroma"] },
-        { name: "Smoke", benefits: ["Char flavor", "Depth"] },
-      ],
-      ingredientHotspots: [
-        {
-          id: "meat",
-          name: "Pork or Beef",
-          position: "0m 0.08m 0m",
-          normal: "0m 1m 0m",
-          benefits: ["Protein", "Iron"],
-        },
-      ],
-      arScale: "1 1 1",
-      arPlacement: "floor",
-      cameraOrbit: "35deg 70deg 2.4m",
-      fieldOfView: "30deg",
-    },
-    {
-      id: "test",
-      categoryId: "test",
-      type: "veg",
-      name: { en: "Test", ka: "ტესტი", ru: "Тест" },
-      description: {
-        en: "Temporary GLB test dish.",
-        ka: "დროებითი GLB სატესტო კერძი.",
-        ru: "Временное тестовое блюдо GLB.",
-      },
-      priceGEL: 1,
-      image: "/images/dishes/steak.jpg",
-      model: "/models/dishes/tst.glb",
-      hasModel: true,
-      ingredients: [],
-      ingredientHotspots: [],
-      arScale: "1 1 1",
-      platformScale: { default: 1, ios: 1, android: 1 },
-      arPlacement: "floor",
-      cameraOrbit: "35deg 70deg 2.4m",
-      fieldOfView: "30deg",
     },
   ],
 };

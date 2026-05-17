@@ -1,6 +1,5 @@
-﻿import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
-  Beef,
   Bookmark,
   ExternalLink,
   GlassWater,
@@ -224,7 +223,7 @@ function hasDishModel(dish) {
   return Boolean(dish?.hasModel && dish?.model && getDishCategoryId(dish) !== 'drinks');
 }
 
-const FOOD_FILTER_OPTIONS = ['all', 'veg', 'meat'];
+const FOOD_FILTER_OPTIONS = ['all', 'veg'];
 const DRINK_FILTER_OPTIONS = ['all', 'alcoholic', 'non-alcoholic'];
 
 function isSupportedLanguage(language) {
@@ -251,7 +250,7 @@ function getDishBadgeType(dish) {
   const categoryId = getDishCategoryId(dish);
   if (categoryId === 'desserts') return null;
   if (categoryId === 'drinks') return dish.drinkType || null;
-  return dish.type || null;
+  return dish.type === 'veg' ? 'veg' : null;
 }
 
 function getSelectionStorageKey(slug) {
@@ -318,7 +317,6 @@ function setSelectionQuantity(selection, dishId, quantity) {
 
 function BadgeIcon({ size = 14, type }) {
   if (type === 'veg') return <Leaf size={size} />;
-  if (type === 'meat') return <Beef size={size} />;
   if (type === 'alcoholic') return <Wine size={size} />;
   if (type === 'non-alcoholic') return <GlassWater size={size} />;
   return null;
@@ -1018,6 +1016,7 @@ function ModelViewerPage({ controls, dish, language, menuTheme, onBack, restaura
   const ingredientInfos = getIngredientInfos(dish);
   const selectedIngredient = selectedIngredientName ? getIngredientInfo(dish, selectedIngredientName) : null;
   const selectionQuantity = selectionControls?.getQuantity(dish.id) || 0;
+  const calories = text(dish.calories, language);
 
   useEffect(() => {
     setSelectedIngredientName(null);
@@ -1104,6 +1103,12 @@ function ModelViewerPage({ controls, dish, language, menuTheme, onBack, restaura
               <h1>{text(dish.name, language)}</h1>
             </div>
             <p>{text(dish.description, language)}</p>
+            {calories && (
+              <div className="viewer-calories-row">
+                <span>{t(language, 'calories')}</span>
+                <strong>{calories}</strong>
+              </div>
+            )}
             <IngredientTags
               ingredients={ingredientInfos}
               language={language}

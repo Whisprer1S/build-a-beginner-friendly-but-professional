@@ -106,6 +106,7 @@ Each dish can control:
 - translated `name`
 - translated `description`
 - `priceGEL`
+- translated `calories` when available
 - `image`
 - `model`
 - `hasModel`
@@ -121,9 +122,14 @@ Example:
 ```js
 {
   id: 'steak',
-  categoryId: 'grill',
+  categoryId: 'main-course',
   type: 'meat',
   priceGEL: 42,
+  calories: {
+    en: 'Approx. 780 kcal',
+    ka: 'დაახლოებით 780 კკალ',
+    ru: 'Примерно 780 ккал',
+  },
   image: '/images/dishes/steak.jpg',
   model: '/models/dishes/steak.glb',
   hasModel: true,
@@ -134,7 +140,7 @@ Example:
 }
 ```
 
-Dessert categories hide Veg/Meat filters and badges. Drink categories use Alcoholic / Non-alcoholic filters and badges. Drinks are photo-only and should not show AR/model-viewer.
+The current demo menu uses `main-course`, `salads`, `baked-goods`, and `drinks`. Food categories show All / Veg filters only; Meat is not shown as a visible filter or badge. Drink categories use Alcoholic / Non-alcoholic filters and badges. Drinks are photo-only and should not show AR/model-viewer.
 
 If a custom 3D model is not ready, use:
 
