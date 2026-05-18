@@ -152,6 +152,13 @@ function text(value, language) {
   return value?.[language] || value?.en || '';
 }
 
+function formatCaloriesValue(value, language) {
+  if (value === null || value === undefined || value === '') return '';
+  const rawValue = typeof value === 'number' ? String(value) : text(value, language) || String(value);
+  const numberMatch = rawValue.match(/\d+(?:[.,]\d+)?/);
+  return numberMatch ? `${numberMatch[0].replace(',', '.')} Cal` : '';
+}
+
 function getParams() {
   return new URLSearchParams(window.location.search);
 }
@@ -643,13 +650,14 @@ function DemoQrSection({ language }) {
       <div className="demo-qr-panel">
         <div className="demo-qr-copy">
           <p>{t(language, 'demoQrSupport')}</p>
-          <a className="primary-link" href={buildRestaurantUrl(defaultRestaurantSlug)}>
+        </div>
+        <div className="demo-qr-action">
+          <div className="demo-qr-card">
+            <DemoQrCode language={language} value={DEMO_MENU_QR_URL} />
+          </div>
+          <a className="primary-link demo-qr-button" href={buildRestaurantUrl(defaultRestaurantSlug)}>
             <span className="wipe-label" data-text={t(language, 'openDemoMenu')}>{t(language, 'openDemoMenu')}</span>
           </a>
-        </div>
-        <div className="demo-qr-card">
-          <DemoQrCode language={language} value={DEMO_MENU_QR_URL} />
-          <p>{DEMO_MENU_QR_URL}</p>
         </div>
       </div>
     </section>
@@ -1235,7 +1243,7 @@ function ModelViewerPage({ dish, language, menuTheme, onBack, restaurant, select
   const ingredientInfos = getIngredientInfos(dish);
   const selectedIngredient = selectedIngredientName ? getIngredientInfo(dish, selectedIngredientName) : null;
   const selectionQuantity = selectionControls?.getQuantity(dish.id) || 0;
-  const calories = text(dish.calories, language);
+  const calories = formatCaloriesValue(dish.calories, language);
 
   useEffect(() => {
     setSelectedIngredientName(null);

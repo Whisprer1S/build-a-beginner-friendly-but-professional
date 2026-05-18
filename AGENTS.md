@@ -128,7 +128,7 @@ Each dish should have:
 - translated `name`
 - translated `description`
 - `priceGEL`
-- translated `calories` when calorie information is available
+- numeric `calories` when calorie information is available; display as `620 Cal`
 - `image`
 - `model`
 - `hasModel`

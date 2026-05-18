@@ -112,7 +112,7 @@ Each dish can control:
 - translated `name`
 - translated `description`
 - `priceGEL`
-- translated `calories` when available
+- numeric `calories` when available; the UI displays it as `620 Cal`
 - `image`
 - `model`
 - `hasModel`
@@ -131,11 +131,7 @@ Example:
   categoryId: 'main-course',
   type: 'meat',
   priceGEL: 42,
-  calories: {
-    en: 'Approx. 780 kcal',
-    ka: 'დაახლოებით 780 კკალ',
-    ru: 'Примерно 780 ккал',
-  },
+  calories: 780,
   image: '/images/dishes/steak.jpg',
   model: '/models/dishes/steak.glb',
   hasModel: true,
