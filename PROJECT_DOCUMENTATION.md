@@ -204,7 +204,7 @@ Every active demo dish should reference one of those ids with `categoryId`. Food
 
 Drinks are photo-only. They should use existing dish photos, set `hasModel: false`, and should not render `model-viewer`, the Photo / 3D selector, or `View on your table`.
 
-The menu renders these categories together as one continuous grouped menu. Category pills remain horizontally swipeable and scroll the page to the matching category section instead of permanently hiding the other sections. The active pill is updated from the visible section while the guest scrolls.
+The menu renders these categories together as one continuous grouped menu. Category pills remain horizontally swipeable, stay sticky near the top while the guest scrolls, and scroll the page to the matching category section instead of permanently hiding the other sections. The active pill is updated from the visible section while the guest scrolls.
 
 Each dish should include:
 
@@ -220,11 +220,7 @@ Each dish should include:
     ru: '...',
   },
   priceGEL: 42,
-  calories: {
-    en: 'Approx. 780 kcal',
-    ka: 'დაახლოებით 780 კკალ',
-    ru: 'Примерно 780 ккал',
-  },
+  calories: 780,
   image: '/images/dishes/steak.jpg',
   model: '/models/dishes/steak.glb',
   hasModel: true,
@@ -263,7 +259,7 @@ model: '/models/dishes/placeholder-dish.glb',
 hasModel: false,
 ```
 
-Calories are optional per dish. When present, `ModelViewerPage` shows them in the dish details card. Demo calorie values are estimates only; real client menus should use client-provided values.
+Calories are optional numeric values per dish. When present, `ModelViewerPage` shows them in the dish details card as a short value such as `620 Cal`. Demo calorie values are estimates only; real client menus should use client-provided values.
 
 Restaurant configs can include static working hours:
 

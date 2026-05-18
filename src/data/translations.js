@@ -82,7 +82,7 @@ export const translations = {
     pricingSetupFee: '+ setup fee',
     pricingCustomPrice: 'Prices may vary',
     pricingContactUs: 'Please contact us',
-    pricingSubscriptionNote: 'Monthly subscription starts 1 month after the setup fee payment.',
+    pricingSubscriptionNote: 'Start your Sufra AR subscription 1 month after setup.',
     getStarted: 'Get started',
     swipePlans: 'Swipe plans',
     pricingBasicFeatures: [
@@ -114,7 +114,7 @@ export const translations = {
       'Give guests the chance to see the full dish exactly as it will arrive at the table.',
     ],
 
-    footerDescription: 'Premium WebAR menu experiences for restaurants and cafes.',
+    footerDescription: 'Premium WebAR menu for restaurants and cafes.',
 
     ingredientNames: {
       Cheese: 'Cheese',
@@ -233,7 +233,7 @@ export const translations = {
     pricingSetupFee: '+ დაყენების საფასური',
     pricingCustomPrice: 'ფასი შეიძლება განსხვავდებოდეს',
     pricingContactUs: 'გთხოვთ, დაგვიკავშირდეთ',
-    pricingSubscriptionNote: 'ყოველთვიური გამოწერა იწყება დაყენების საფასურის გადახდიდან 1 თვის შემდეგ.',
+    pricingSubscriptionNote: 'Sufra AR-ის გამოწერა დაიწყეთ დაყენებიდან 1 თვის შემდეგ.',
     getStarted: 'დაწყება',
     swipePlans: 'გადაფურცლეთ პაკეტები',
     pricingBasicFeatures: [
@@ -420,7 +420,7 @@ export const translations = {
     pricingSetupFee: '+ плата за настройку',
     pricingCustomPrice: 'Цены могут отличаться',
     pricingContactUs: 'Пожалуйста, свяжитесь с нами',
-    pricingSubscriptionNote: 'Ежемесячная подписка начинается через 1 месяц после оплаты setup fee.',
+    pricingSubscriptionNote: 'Начните подписку Sufra AR через 1 месяц после настройки.',
     getStarted: 'Начать',
     swipePlans: 'Проведите по планам',
     pricingBasicFeatures: [
@@ -452,7 +452,7 @@ export const translations = {
       'Дайте гостям возможность увидеть блюдо целиком именно таким, каким оно появится на столе.',
     ],
 
-    footerDescription: 'Премиальные WebAR-меню для ресторанов и кафе.',
+    footerDescription: 'Премиальное WebAR-меню для ресторанов и кафе.',
 
     ingredientNames: {
       Cheese: 'Сыр',
